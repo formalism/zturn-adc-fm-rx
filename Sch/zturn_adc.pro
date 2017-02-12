@@ -1,4 +1,4 @@
-update=2017/02/08 2:14:01
+update=2017/02/10 23:32:23
 version=1
 last_client=kicad
 [pcbnew]
@@ -59,3 +59,4 @@ LibName27=atmel
 LibName28=contrib
 LibName29=valves
 LibName30=zturn_adc
+LibName31=CYUSB3014
