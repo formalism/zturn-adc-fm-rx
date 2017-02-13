@@ -35,7 +35,7 @@ EELAYER 25 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 1 4
+Sheet 1 5
 Title ""
 Date ""
 Rev ""
@@ -84,5 +84,11 @@ S 7800 1650 2450 1200
 U 58A0A991
 F0 "FX3_DQ" 60
 F1 "FX3_DQ.sch" 60
+$EndSheet
+$Sheet
+S 7300 3600 1900 900 
+U 58A1C0F3
+F0 "RF_in" 60
+F1 "RF_in.sch" 60
 $EndSheet
 $EndSCHEMATC
