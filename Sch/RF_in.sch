@@ -35,7 +35,7 @@ EELAYER 25 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 5 6
+Sheet 5 7
 Title ""
 Date ""
 Rev ""
@@ -684,4 +684,6 @@ Wire Wire Line
 Connection ~ 3800 1600
 Wire Wire Line
 	2000 7000 1550 7000
+Text Notes 2500 5350 0    60   ~ 0
+TODO: LDO3.3V->3.0V
 $EndSCHEMATC

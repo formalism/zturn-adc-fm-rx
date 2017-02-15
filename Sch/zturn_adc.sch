@@ -35,7 +35,7 @@ EELAYER 25 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 1 6
+Sheet 1 7
 Title ""
 Date ""
 Rev ""
@@ -79,8 +79,16 @@ Text Notes 1500 5000 0    60   ~ 0
 OK
 Text Notes 1400 2100 0    60   ~ 0
 OK
-Text Notes 700  3600 0    60   ~ 0
-TODO: Generate 1.2V
 Text Notes 6700 2350 0    60   ~ 0
 TODO: ADC Clock
+$Sheet
+S 4100 4500 1800 850 
+U 58A458E3
+F0 "FX3VDD" 60
+F1 "FX3VDD.sch" 60
+$EndSheet
+Text Notes 3850 5000 0    60   ~ 0
+OK
+Text Notes 1400 3550 0    60   ~ 0
+OK
 $EndSCHEMATC

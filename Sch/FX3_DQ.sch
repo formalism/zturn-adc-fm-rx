@@ -35,7 +35,7 @@ EELAYER 25 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 4 6
+Sheet 4 7
 Title ""
 Date ""
 Rev ""
@@ -699,7 +699,6 @@ F 3 "" H 7900 850 50  0000 C CNN
 	1    7900 850 
 	-1   0    0    1   
 $EndComp
-NoConn ~ 6200 2050
 NoConn ~ 6200 2150
 NoConn ~ 6200 2250
 NoConn ~ 8100 1850
@@ -738,9 +737,9 @@ NoConn ~ 4500 5150
 NoConn ~ 4000 5250
 Text Label 650  2750 0    60   ~ 0
 IO_B13_LP11(SRCC)
-Text GLabel 6200 1850 0    60   Input ~ 0
+Text GLabel 5200 2250 2    60   Input ~ 0
 FX3_GPIO[27]
-Text GLabel 6200 1950 0    60   Input ~ 0
+Text GLabel 5200 2350 2    60   Input ~ 0
 FX3_GPIO[26]
 $Comp
 L +3V3 #PWR048
@@ -1229,7 +1228,7 @@ $EndComp
 Wire Wire Line
 	2250 7100 2050 7100
 Wire Wire Line
-	2050 7000 2250 7000
+	2250 7000 2050 7000
 Wire Wire Line
 	2250 5750 2250 7100
 Wire Wire Line
@@ -1273,4 +1272,80 @@ Wire Wire Line
 Wire Wire Line
 	1000 5750 2250 5750
 Connection ~ 2250 6800
+Text GLabel 2250 1050 0    60   Input ~ 0
+PG_FX3VDD
+Wire Wire Line
+	2250 1050 2800 1050
+Text Label 2350 1050 0    60   ~ 0
+IO_B13_LP15
+NoConn ~ 6200 2050
+NoConn ~ 6200 1950
+NoConn ~ 6200 1850
+Text Label 6250 1550 0    60   ~ 0
+XADC_INP0
+Text Label 6250 1650 0    60   ~ 0
+XADC_INN0
+NoConn ~ 6200 1550
+NoConn ~ 6200 1650
+Text Label 6250 1750 0    60   ~ 0
+XADC_VCC
+NoConn ~ 6200 1750
+Wire Wire Line
+	7350 1550 8100 1550
+Wire Wire Line
+	7350 1650 8100 1650
+Wire Wire Line
+	7350 1750 8100 1750
+NoConn ~ 8100 1550
+NoConn ~ 8100 1650
+NoConn ~ 8100 1750
+Text Label 7400 1550 0    60   ~ 0
+XADC_TEMP_P
+Text Label 7400 1650 0    60   ~ 0
+XADC_TEMP_N
+Text Label 7400 1750 0    60   ~ 0
+XADC_GND
+Text Label 5950 3850 0    60   ~ 0
+VDDIO_35_PL
+Wire Wire Line
+	4000 2050 3050 2050
+Wire Wire Line
+	3050 2050 3050 1400
+Text Label 3150 2050 0    60   ~ 0
+VDDIO_13_PL
+Wire Wire Line
+	4000 1550 3300 1550
+Text Label 3350 1550 0    60   ~ 0
+VDD18_KEY_BACKUP
+Wire Wire Line
+	4500 1550 5200 1550
+Wire Wire Line
+	4500 1650 5200 1650
+Wire Wire Line
+	4500 1750 5200 1750
+Wire Wire Line
+	4500 1950 5200 1950
+Text Label 4550 1550 0    60   ~ 0
+JTAG_TCK
+Text Label 4550 1650 0    60   ~ 0
+JTAG_TMS
+Text Label 4550 1750 0    60   ~ 0
+JTAG_TDI
+Text Label 4550 1850 0    60   ~ 0
+JTAG_TDO
+Text Label 4550 1950 0    60   ~ 0
+JTAG_NRST
+Wire Wire Line
+	4500 1850 5200 1850
+$Comp
+L Header5 J2
+U 1 1 58A52616
+P 5400 1750
+F 0 "J2" H 5400 1450 60  0000 C CNN
+F 1 "Header5" H 5450 2100 60  0000 C CNN
+F 2 "" H 5400 1850 60  0001 C CNN
+F 3 "" H 5400 1850 60  0001 C CNN
+	1    5400 1750
+	1    0    0    -1  
+$EndComp
 $EndSCHEMATC
