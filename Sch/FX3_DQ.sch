@@ -626,7 +626,6 @@ Text Label 650  3000 0    60   ~ 0
 IO_B34_LN6
 Text Label 650  2900 0    60   ~ 0
 IO_B34_LP6
-NoConn ~ 8100 2450
 NoConn ~ 3300 3550
 NoConn ~ 3300 3650
 Text GLabel 6200 2650 0    60   Input ~ 0
@@ -737,9 +736,9 @@ NoConn ~ 4500 5150
 NoConn ~ 4000 5250
 Text Label 650  2750 0    60   ~ 0
 IO_B13_LP11(SRCC)
-Text GLabel 5200 2250 2    60   Input ~ 0
+Text GLabel 8100 2450 2    60   Input ~ 0
 FX3_GPIO[27]
-Text GLabel 5200 2350 2    60   Input ~ 0
+Text GLabel 6200 2750 0    60   Input ~ 0
 FX3_GPIO[26]
 $Comp
 L +3V3 #PWR048
@@ -1348,4 +1347,9 @@ F 3 "" H 5400 1850 60  0001 C CNN
 	1    5400 1750
 	1    0    0    -1  
 $EndComp
+NoConn ~ 5200 2050
+NoConn ~ 5200 2150
+NoConn ~ 5200 2250
+NoConn ~ 5200 2350
+NoConn ~ 6200 2550
 $EndSCHEMATC
