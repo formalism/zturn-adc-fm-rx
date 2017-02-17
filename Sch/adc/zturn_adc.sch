@@ -58,5 +58,5 @@ F0 "RF_in" 60
 F1 "RF_in.sch" 60
 $EndSheet
 Text Notes 6100 3550 0    60   ~ 0
-TODO: B input and Connector, ADC clock buffer, Audio out
+TODO: input jumper??, ADC clock buffer, Audio out
 $EndSCHEMATC
