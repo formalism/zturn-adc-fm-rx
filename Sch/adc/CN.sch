@@ -214,7 +214,7 @@ Text Label 3950 1850 0    60   ~ 0
 IO_B13_LN15
 Text Label 1550 2800 0    60   ~ 0
 IO_B34_LP7
-Text Label 1550 2600 0    60   ~ 0
+Text Label 1550 2900 0    60   ~ 0
 IO_B34_LP6
 NoConn ~ 5950 3950
 NoConn ~ 5950 4050
@@ -373,6 +373,160 @@ F 3 "" H 3150 6950 50  0000 C CNN
 	1    3150 6950
 	1    0    0    -1  
 $EndComp
+$Comp
+L JP4 J1
+U 1 1 58A5FE9F
+P 2550 6650
+F 0 "J1" H 2600 6350 60  0000 C CNN
+F 1 "JP4" H 2600 7000 60  0000 C CNN
+F 2 "" H 2550 6900 60  0001 C CNN
+F 3 "" H 2550 6900 60  0001 C CNN
+	1    2550 6650
+	1    0    0    -1  
+$EndComp
+Text Label 5800 2450 0    60   ~ 0
+VDDIO_13_PL
+Text Label 6000 1950 0    60   ~ 0
+VDD18_KEY_BACKUP
+Text Label 7200 1950 0    60   ~ 0
+JTAG_TCK
+Text Label 7200 2050 0    60   ~ 0
+JTAG_TMS
+Text Label 7200 2150 0    60   ~ 0
+JTAG_TDI
+Text Label 7200 2250 0    60   ~ 0
+JTAG_TDO
+Text Label 7200 2350 0    60   ~ 0
+JTAG_NRST
+$Comp
+L Header5 J2
+U 1 1 58A52616
+P 8350 2150
+F 0 "J2" H 8350 1850 60  0000 C CNN
+F 1 "Header5" H 8400 2500 60  0000 C CNN
+F 2 "" H 8350 2250 60  0001 C CNN
+F 3 "" H 8350 2250 60  0001 C CNN
+	1    8350 2150
+	1    0    0    -1  
+$EndComp
+NoConn ~ 7850 2450
+NoConn ~ 7850 2550
+NoConn ~ 7850 2650
+NoConn ~ 7850 2750
+NoConn ~ 5950 1950
+NoConn ~ 5950 2150
+NoConn ~ 5950 2350
+NoConn ~ 5950 2650
+NoConn ~ 5950 2750
+Text GLabel 5950 2550 0    60   Input ~ 0
+ADC_CLK
+NoConn ~ 5950 2250
+$Comp
+L R_Pack04 RN1
+U 1 1 58A5BF52
+P 3700 2050
+F 0 "RN1" V 3400 2050 50  0000 C CNN
+F 1 "22" V 3900 2050 50  0000 C CNN
+F 2 "" V 3975 2050 50  0001 C CNN
+F 3 "" H 3700 2050 50  0000 C CNN
+	1    3700 2050
+	0    1    1    0   
+$EndComp
+$Comp
+L R_Pack04 RN2
+U 1 1 58A5BFD7
+P 3700 2450
+F 0 "RN2" V 3400 2450 50  0000 C CNN
+F 1 "22" V 3900 2450 50  0000 C CNN
+F 2 "" V 3975 2450 50  0001 C CNN
+F 3 "" H 3700 2450 50  0000 C CNN
+	1    3700 2450
+	0    1    1    0   
+$EndComp
+$Comp
+L R_Pack04 RN3
+U 1 1 58A5C027
+P 3700 2850
+F 0 "RN3" V 3400 2850 50  0000 C CNN
+F 1 "22" V 3900 2850 50  0000 C CNN
+F 2 "" V 3975 2850 50  0001 C CNN
+F 3 "" H 3700 2850 50  0000 C CNN
+	1    3700 2850
+	0    1    1    0   
+$EndComp
+$Comp
+L R_Pack04 RN4
+U 1 1 58A5C02D
+P 3700 3250
+F 0 "RN4" V 3400 3250 50  0000 C CNN
+F 1 "22" V 3900 3250 50  0000 C CNN
+F 2 "" V 3975 3250 50  0001 C CNN
+F 3 "" H 3700 3250 50  0000 C CNN
+	1    3700 3250
+	0    1    1    0   
+$EndComp
+NoConn ~ 3500 3150
+NoConn ~ 3500 3250
+NoConn ~ 3500 3350
+NoConn ~ 3900 3350
+NoConn ~ 3900 3250
+NoConn ~ 3900 3150
+Text Notes 7950 3800 0    60   ~ 0
+LED
+Text Notes 7950 3700 0    60   ~ 0
+LED
+Text Notes 5700 3700 0    60   ~ 0
+LED
+NoConn ~ 5950 3650
+NoConn ~ 7850 3750
+Text Notes 3700 7150 0    60   ~ 0
+MODE, Output Format, Clock Duty Cycle Stabilizer\n0, Offset Binary, Off\n1/3Vdd, Offset Binary, On\n2/3Vdd, 2's complement, On\nVdd, 2's complement, Off
+Text GLabel 1550 5700 0    60   Input ~ 0
+VDD3
+$Comp
+L GND #PWR?
+U 1 1 58A86709
+P 950 2950
+F 0 "#PWR?" H 950 2700 50  0001 C CNN
+F 1 "GND" H 950 2800 50  0000 C CNN
+F 2 "" H 950 2950 50  0000 C CNN
+F 3 "" H 950 2950 50  0000 C CNN
+	1    950  2950
+	1    0    0    -1  
+$EndComp
+$Comp
+L R R?
+U 1 1 58A86735
+P 950 2800
+F 0 "R?" V 1030 2800 50  0000 C CNN
+F 1 "49k" V 950 2800 50  0000 C CNN
+F 2 "" V 880 2800 50  0000 C CNN
+F 3 "" H 950 2800 50  0000 C CNN
+	1    950  2800
+	1    0    0    -1  
+$EndComp
+$Comp
+L GND #PWR?
+U 1 1 58A87202
+P 1600 3350
+F 0 "#PWR?" H 1600 3100 50  0001 C CNN
+F 1 "GND" H 1600 3200 50  0000 C CNN
+F 2 "" H 1600 3350 50  0000 C CNN
+F 3 "" H 1600 3350 50  0000 C CNN
+	1    1600 3350
+	1    0    0    -1  
+$EndComp
+$Comp
+L R R?
+U 1 1 58A87208
+P 1600 3200
+F 0 "R?" V 1680 3200 50  0000 C CNN
+F 1 "49k" V 1600 3200 50  0000 C CNN
+F 2 "" V 1530 3200 50  0000 C CNN
+F 3 "" H 1600 3200 50  0000 C CNN
+	1    1600 3200
+	1    0    0    -1  
+$EndComp
 Wire Wire Line
 	6550 1500 6550 1750
 Wire Wire Line
@@ -503,7 +657,7 @@ Wire Wire Line
 Wire Wire Line
 	4600 1850 3900 1850
 Wire Wire Line
-	2200 2600 1500 2600
+	950  2600 2200 2600
 Wire Wire Line
 	2200 2800 1500 2800
 Wire Wire Line
@@ -516,17 +670,6 @@ Wire Wire Line
 	1800 6700 1800 6800
 Wire Wire Line
 	1800 7100 3150 7100
-$Comp
-L JP4 J1
-U 1 1 58A5FE9F
-P 2550 6650
-F 0 "J1" H 2600 6350 60  0000 C CNN
-F 1 "JP4" H 2600 7000 60  0000 C CNN
-F 2 "" H 2550 6900 60  0001 C CNN
-F 3 "" H 2550 6900 60  0001 C CNN
-	1    2550 6650
-	1    0    0    -1  
-$EndComp
 Wire Wire Line
 	3150 6800 2950 6800
 Wire Wire Line
@@ -576,12 +719,8 @@ Wire Wire Line
 Connection ~ 3150 6500
 Wire Wire Line
 	6650 2450 5700 2450
-Text Label 5800 2450 0    60   ~ 0
-VDDIO_13_PL
 Wire Wire Line
 	6650 1950 5950 1950
-Text Label 6000 1950 0    60   ~ 0
-VDD18_KEY_BACKUP
 Wire Wire Line
 	7150 1950 8150 1950
 Wire Wire Line
@@ -590,85 +729,8 @@ Wire Wire Line
 	7150 2150 8150 2150
 Wire Wire Line
 	7150 2350 8150 2350
-Text Label 7200 1950 0    60   ~ 0
-JTAG_TCK
-Text Label 7200 2050 0    60   ~ 0
-JTAG_TMS
-Text Label 7200 2150 0    60   ~ 0
-JTAG_TDI
-Text Label 7200 2250 0    60   ~ 0
-JTAG_TDO
-Text Label 7200 2350 0    60   ~ 0
-JTAG_NRST
 Wire Wire Line
 	7150 2250 8150 2250
-$Comp
-L Header5 J2
-U 1 1 58A52616
-P 8350 2150
-F 0 "J2" H 8350 1850 60  0000 C CNN
-F 1 "Header5" H 8400 2500 60  0000 C CNN
-F 2 "" H 8350 2250 60  0001 C CNN
-F 3 "" H 8350 2250 60  0001 C CNN
-	1    8350 2150
-	1    0    0    -1  
-$EndComp
-NoConn ~ 7850 2450
-NoConn ~ 7850 2550
-NoConn ~ 7850 2650
-NoConn ~ 7850 2750
-NoConn ~ 5950 1950
-NoConn ~ 5950 2150
-NoConn ~ 5950 2350
-NoConn ~ 5950 2650
-NoConn ~ 5950 2750
-Text GLabel 5950 2550 0    60   Input ~ 0
-ADC_CLK
-NoConn ~ 5950 2250
-$Comp
-L R_Pack04 RN1
-U 1 1 58A5BF52
-P 3700 2050
-F 0 "RN1" V 3400 2050 50  0000 C CNN
-F 1 "22" V 3900 2050 50  0000 C CNN
-F 2 "" V 3975 2050 50  0001 C CNN
-F 3 "" H 3700 2050 50  0000 C CNN
-	1    3700 2050
-	0    1    1    0   
-$EndComp
-$Comp
-L R_Pack04 RN2
-U 1 1 58A5BFD7
-P 3700 2450
-F 0 "RN2" V 3400 2450 50  0000 C CNN
-F 1 "22" V 3900 2450 50  0000 C CNN
-F 2 "" V 3975 2450 50  0001 C CNN
-F 3 "" H 3700 2450 50  0000 C CNN
-	1    3700 2450
-	0    1    1    0   
-$EndComp
-$Comp
-L R_Pack04 RN3
-U 1 1 58A5C027
-P 3700 2850
-F 0 "RN3" V 3400 2850 50  0000 C CNN
-F 1 "22" V 3900 2850 50  0000 C CNN
-F 2 "" V 3975 2850 50  0001 C CNN
-F 3 "" H 3700 2850 50  0000 C CNN
-	1    3700 2850
-	0    1    1    0   
-$EndComp
-$Comp
-L R_Pack04 RN4
-U 1 1 58A5C02D
-P 3700 3250
-F 0 "RN4" V 3400 3250 50  0000 C CNN
-F 1 "22" V 3900 3250 50  0000 C CNN
-F 2 "" V 3975 3250 50  0001 C CNN
-F 3 "" H 3700 3250 50  0000 C CNN
-	1    3700 3250
-	0    1    1    0   
-$EndComp
 Wire Wire Line
 	3300 1850 3500 1850
 Wire Wire Line
@@ -695,34 +757,45 @@ Wire Wire Line
 	3300 2950 3500 2950
 Wire Wire Line
 	3300 3050 3500 3050
-NoConn ~ 3500 3150
-NoConn ~ 3500 3250
-NoConn ~ 3500 3350
-NoConn ~ 3900 3350
-NoConn ~ 3900 3250
-NoConn ~ 3900 3150
 Wire Wire Line
-	2100 2800 2100 2900
-Wire Wire Line
-	2100 2900 2200 2900
-Connection ~ 2100 2800
+	1500 2900 2200 2900
 Wire Wire Line
 	2100 2600 2100 2700
 Wire Wire Line
 	2100 2700 2200 2700
 Connection ~ 2100 2600
-Text Notes 7950 3800 0    60   ~ 0
-LED
-Text Notes 7950 3700 0    60   ~ 0
-LED
-Text Notes 5700 3700 0    60   ~ 0
-LED
-NoConn ~ 5950 3650
-NoConn ~ 7850 3750
-Text Notes 3700 7150 0    60   ~ 0
-MODE, Output Format, Clock Duty Cycle Stabilizer\n0, Offset Binary, Off\n1/3Vdd, Offset Binary, On\n2/3Vdd, 2's complement, On\nVdd, 2's complement, Off
-Text GLabel 1550 5700 0    60   Input ~ 0
-VDD3
 Wire Wire Line
 	1550 5700 1800 5700
+Wire Wire Line
+	950  2600 950  2650
+$Comp
+L GND #PWR?
+U 1 1 58A87749
+P 1750 3350
+F 0 "#PWR?" H 1750 3100 50  0001 C CNN
+F 1 "GND" H 1750 3200 50  0000 C CNN
+F 2 "" H 1750 3350 50  0000 C CNN
+F 3 "" H 1750 3350 50  0000 C CNN
+	1    1750 3350
+	1    0    0    -1  
+$EndComp
+$Comp
+L R R?
+U 1 1 58A8774F
+P 1750 3200
+F 0 "R?" V 1830 3200 50  0000 C CNN
+F 1 "49k" V 1750 3200 50  0000 C CNN
+F 2 "" V 1680 3200 50  0000 C CNN
+F 3 "" H 1750 3200 50  0000 C CNN
+	1    1750 3200
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	1750 3050 1750 2900
+Connection ~ 1750 2900
+Wire Wire Line
+	1600 3050 1600 2800
+Connection ~ 1600 2800
+Text Notes 750  3300 0    60   ~ 0
+High=nap mode
 $EndSCHEMATC
