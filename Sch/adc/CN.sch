@@ -69,8 +69,6 @@ NoConn ~ 3300 4250
 NoConn ~ 3300 4350
 NoConn ~ 3300 4450
 NoConn ~ 3300 4550
-Text Notes 1800 1450 0    60   ~ 0
-Clock to the ADC should be fed to FPGA!
 Text Notes 2450 4850 0    60   ~ 0
 Digital 19pin
 $Comp
@@ -193,9 +191,9 @@ IO_B34_LP5
 Text Label 3950 2850 0    60   ~ 0
 IO_B34_LN5
 Text Label 3950 2950 0    60   ~ 0
-IO_B34_LP7
+IO_B34_LP8
 Text Label 3950 3050 0    60   ~ 0
-IO_B34_LN7
+IO_B34_LN8
 Text Label 3950 2650 0    60   ~ 0
 IO_B34_LN4
 Text Label 3950 2550 0    60   ~ 0
@@ -214,12 +212,8 @@ Text Label 3950 2250 0    60   ~ 0
 IO_B34_LN3
 Text Label 3950 1850 0    60   ~ 0
 IO_B13_LN15
-Text Label 1550 2900 0    60   ~ 0
-IO_B34_LN8
 Text Label 1550 2800 0    60   ~ 0
-IO_B34_LP8
-Text Label 1550 2700 0    60   ~ 0
-IO_B34_LN6
+IO_B34_LP7
 Text Label 1550 2600 0    60   ~ 0
 IO_B34_LP6
 NoConn ~ 5950 3950
@@ -325,17 +319,6 @@ NoConn ~ 6650 5650
 Text Label 1550 2450 0    60   ~ 0
 IO_B13_LP11(SRCC)
 $Comp
-L +3V3 #PWR011
-U 1 1 58A5E943
-P 1800 5900
-F 0 "#PWR011" H 1800 5750 50  0001 C CNN
-F 1 "+3V3" H 1800 6040 50  0000 C CNN
-F 2 "" H 1800 5900 50  0000 C CNN
-F 3 "" H 1800 5900 50  0000 C CNN
-	1    1800 5900
-	1    0    0    -1  
-$EndComp
-$Comp
 L R R24
 U 1 1 58A5E977
 P 1800 6150
@@ -369,10 +352,10 @@ F 3 "" H 1800 6950 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GND #PWR012
+L GND #PWR011
 U 1 1 58A5EE0A
 P 3150 7100
-F 0 "#PWR012" H 3150 6850 50  0001 C CNN
+F 0 "#PWR011" H 3150 6850 50  0001 C CNN
 F 1 "GND" H 3150 6950 50  0000 C CNN
 F 2 "" H 3150 7100 50  0000 C CNN
 F 3 "" H 3150 7100 50  0000 C CNN
@@ -522,15 +505,11 @@ Wire Wire Line
 Wire Wire Line
 	2200 2600 1500 2600
 Wire Wire Line
-	2200 2700 1500 2700
-Wire Wire Line
 	2200 2800 1500 2800
-Wire Wire Line
-	2200 2900 1500 2900
 Wire Wire Line
 	2200 2450 1500 2450
 Wire Wire Line
-	1800 5900 1800 6000
+	1800 5700 1800 6000
 Wire Wire Line
 	1800 6300 1800 6400
 Wire Wire Line
@@ -722,4 +701,28 @@ NoConn ~ 3500 3350
 NoConn ~ 3900 3350
 NoConn ~ 3900 3250
 NoConn ~ 3900 3150
+Wire Wire Line
+	2100 2800 2100 2900
+Wire Wire Line
+	2100 2900 2200 2900
+Connection ~ 2100 2800
+Wire Wire Line
+	2100 2600 2100 2700
+Wire Wire Line
+	2100 2700 2200 2700
+Connection ~ 2100 2600
+Text Notes 7950 3800 0    60   ~ 0
+LED
+Text Notes 7950 3700 0    60   ~ 0
+LED
+Text Notes 5700 3700 0    60   ~ 0
+LED
+NoConn ~ 5950 3650
+NoConn ~ 7850 3750
+Text Notes 3700 7150 0    60   ~ 0
+MODE, Output Format, Clock Duty Cycle Stabilizer\n0, Offset Binary, Off\n1/3Vdd, Offset Binary, On\n2/3Vdd, 2's complement, On\nVdd, 2's complement, Off
+Text GLabel 1550 5700 0    60   Input ~ 0
+VDD3
+Wire Wire Line
+	1550 5700 1800 5700
 $EndSCHEMATC
