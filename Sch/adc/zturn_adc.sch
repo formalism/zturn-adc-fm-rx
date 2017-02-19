@@ -57,8 +57,6 @@ U 58A1C0F3
 F0 "RF_in" 60
 F1 "RF_in.sch" 60
 $EndSheet
-Text Notes 6100 4600 0    60   ~ 0
-TODO: Audio out
 $Sheet
 S 4100 4450 1850 800 
 U 58A92E28
