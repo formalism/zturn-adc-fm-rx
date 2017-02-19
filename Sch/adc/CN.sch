@@ -35,7 +35,7 @@ EELAYER 25 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 2 3
+Sheet 2 4
 Title ""
 Date ""
 Rev ""
@@ -410,9 +410,6 @@ F 3 "" H 8350 2250 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 NoConn ~ 7850 2450
-NoConn ~ 7850 2550
-NoConn ~ 7850 2650
-NoConn ~ 7850 2750
 NoConn ~ 5950 1950
 NoConn ~ 5950 2150
 NoConn ~ 5950 2350
@@ -798,4 +795,10 @@ Wire Wire Line
 Connection ~ 1600 2800
 Text Notes 750  3300 0    60   ~ 0
 High=nap mode
+Text GLabel 7850 2550 2    60   Output ~ 0
+FS
+Text GLabel 7850 2650 2    60   Output ~ 0
+BCLK
+Text GLabel 7850 2750 2    60   Output ~ 0
+DACIN
 $EndSCHEMATC

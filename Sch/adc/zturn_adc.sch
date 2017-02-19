@@ -35,7 +35,7 @@ EELAYER 25 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 1 3
+Sheet 1 4
 Title ""
 Date ""
 Rev ""
@@ -57,6 +57,12 @@ U 58A1C0F3
 F0 "RF_in" 60
 F1 "RF_in.sch" 60
 $EndSheet
-Text Notes 6100 3550 0    60   ~ 0
+Text Notes 6100 4600 0    60   ~ 0
 TODO: Audio out
+$Sheet
+S 4100 4450 1850 800 
+U 58A92E28
+F0 "AudioDAC" 60
+F1 "AudioDAC.sch" 60
+$EndSheet
 $EndSCHEMATC

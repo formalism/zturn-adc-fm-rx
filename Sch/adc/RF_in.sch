@@ -35,7 +35,7 @@ EELAYER 25 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 3 3
+Sheet 3 4
 Title ""
 Date ""
 Rev ""
@@ -803,7 +803,7 @@ Text Label 8550 5300 0    60   ~ 0
 VDD3
 Text Label 8550 5400 0    60   ~ 0
 VCMB
-Text GLabel 5000 4750 2    60   Input ~ 0
+Text GLabel 5000 4750 2    60   Output ~ 0
 ADC_CLK
 $Comp
 L GND #PWR033
@@ -1453,31 +1453,18 @@ F 3 "" H 3400 4600 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	2400 4100 3300 4100
+	800  4100 3300 4100
 $Comp
 L +3V3 #PWR045
 U 1 1 58A88C4E
-P 1950 4100
-F 0 "#PWR045" H 1950 3950 50  0001 C CNN
-F 1 "+3V3" H 1950 4240 50  0000 C CNN
-F 2 "" H 1950 4100 50  0000 C CNN
-F 3 "" H 1950 4100 50  0000 C CNN
-	1    1950 4100
+P 2000 3750
+F 0 "#PWR045" H 2000 3600 50  0001 C CNN
+F 1 "+3V3" H 2000 3890 50  0000 C CNN
+F 2 "" H 2000 3750 50  0000 C CNN
+F 3 "" H 2000 3750 50  0000 C CNN
+	1    2000 3750
 	1    0    0    -1  
 $EndComp
-$Comp
-L L L10
-U 1 1 58A88C54
-P 2250 4100
-F 0 "L10" V 2200 4100 50  0000 C CNN
-F 1 "L" V 2325 4100 50  0000 C CNN
-F 2 "" H 2250 4100 50  0000 C CNN
-F 3 "" H 2250 4100 50  0000 C CNN
-	1    2250 4100
-	0    1    1    0   
-$EndComp
-Wire Wire Line
-	2100 4100 1950 4100
 $Comp
 L C C19
 U 1 1 58A88EDD
@@ -1537,18 +1524,16 @@ Wire Wire Line
 $Comp
 L L L9
 U 1 1 58A8A3F4
-P 1800 4100
-F 0 "L9" V 1750 4100 50  0000 C CNN
-F 1 "L" V 1875 4100 50  0000 C CNN
-F 2 "" H 1800 4100 50  0000 C CNN
-F 3 "" H 1800 4100 50  0000 C CNN
-	1    1800 4100
+P 1850 3750
+F 0 "L9" V 1800 3750 50  0000 C CNN
+F 1 "L" V 1925 3750 50  0000 C CNN
+F 2 "" H 1850 3750 50  0000 C CNN
+F 3 "" H 1850 3750 50  0000 C CNN
+	1    1850 3750
 	0    1    1    0   
 $EndComp
 Wire Wire Line
 	1150 4450 1150 4100
-Wire Wire Line
-	800  4100 1650 4100
 Wire Wire Line
 	2550 4950 2550 5450
 Wire Wire Line
@@ -1614,7 +1599,7 @@ F 3 "" H 3050 3350 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 Connection ~ 3050 3350
-Text GLabel 3450 7500 2    60   Input ~ 0
+Text GLabel 3450 7500 2    60   Output ~ 0
 VDD3
 $Comp
 L R R?
@@ -1656,7 +1641,7 @@ $EndComp
 Wire Wire Line
 	2550 6650 2700 6650
 Wire Wire Line
-	2700 7000 2700 6650
+	2700 6650 2700 7000
 Wire Wire Line
 	1700 6450 1200 6450
 Connection ~ 1200 6450
@@ -1697,4 +1682,7 @@ Text Label 2900 7500 0    60   ~ 0
 VDD3
 Text Notes 2950 5600 0    60   ~ 0
 Select 3V/3.3V
+Wire Wire Line
+	1700 4100 1700 3750
+Connection ~ 1700 4100
 $EndSCHEMATC
