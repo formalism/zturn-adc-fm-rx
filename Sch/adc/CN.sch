@@ -217,7 +217,6 @@ IO_B34_LP7
 Text Label 1550 2900 0    60   ~ 0
 IO_B34_LP6
 NoConn ~ 5950 3950
-NoConn ~ 5950 4050
 Text Notes 5100 800  0    60   ~ 0
 Bank13,34,35=3.3V
 $Comp
@@ -411,13 +410,11 @@ F 3 "" H 8350 2250 60  0001 C CNN
 $EndComp
 NoConn ~ 7850 2450
 NoConn ~ 5950 1950
-NoConn ~ 5950 2150
 NoConn ~ 5950 2350
 NoConn ~ 5950 2650
 NoConn ~ 5950 2750
 Text GLabel 5950 2550 0    60   Input ~ 0
 ADC_CLK
-NoConn ~ 5950 2250
 $Comp
 L R_Pack04 RN1
 U 1 1 58A5BF52
@@ -801,4 +798,10 @@ Text GLabel 7850 2650 2    60   Output ~ 0
 BCLK
 Text GLabel 7850 2750 2    60   Output ~ 0
 DACIN
+Text GLabel 5950 4050 0    60   Output ~ 0
+MCLK
+Text GLabel 5950 2150 0    60   BiDi ~ 0
+SCL
+Text GLabel 5950 2250 0    60   BiDi ~ 0
+SDA
 $EndSCHEMATC
