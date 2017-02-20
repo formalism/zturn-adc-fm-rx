@@ -177,23 +177,23 @@ $EndComp
 $Comp
 L +3V3 #PWR053
 U 1 1 58A98414
-P 4750 2150
-F 0 "#PWR053" H 4750 2000 50  0001 C CNN
-F 1 "+3V3" H 4750 2290 50  0000 C CNN
-F 2 "" H 4750 2150 50  0000 C CNN
-F 3 "" H 4750 2150 50  0000 C CNN
-	1    4750 2150
+P 4750 1750
+F 0 "#PWR053" H 4750 1600 50  0001 C CNN
+F 1 "+3V3" H 4750 1890 50  0000 C CNN
+F 2 "" H 4750 1750 50  0000 C CNN
+F 3 "" H 4750 1750 50  0000 C CNN
+	1    4750 1750
 	1    0    0    -1  
 $EndComp
 $Comp
 L L L8
 U 1 1 58A98450
-P 4900 2150
-F 0 "L8" V 4850 2150 50  0000 C CNN
-F 1 "L" V 4975 2150 50  0000 C CNN
-F 2 "" H 4900 2150 50  0001 C CNN
-F 3 "" H 4900 2150 50  0000 C CNN
-	1    4900 2150
+P 4900 1750
+F 0 "L8" V 4850 1750 50  0000 C CNN
+F 1 "L" V 4975 1750 50  0000 C CNN
+F 2 "" H 4900 1750 50  0001 C CNN
+F 3 "" H 4900 1750 50  0000 C CNN
+	1    4900 1750
 	0    1    1    0   
 $EndComp
 Text GLabel 4650 3800 0    60   Input ~ 0
@@ -403,15 +403,11 @@ Wire Wire Line
 	3900 4800 3900 4950
 Connection ~ 5300 4950
 Wire Wire Line
-	5050 2150 6750 2150
+	5050 1750 6750 1750
 Wire Wire Line
-	5400 2150 5400 2450
+	5500 1750 5500 2450
 Wire Wire Line
-	5500 2150 5500 2450
-Connection ~ 5400 2150
-Wire Wire Line
-	5600 2150 5600 2450
-Connection ~ 5500 2150
+	5600 1750 5600 2450
 Wire Wire Line
 	6800 2800 7050 2800
 Wire Wire Line
@@ -428,24 +424,20 @@ Wire Wire Line
 	8650 2800 8900 2800
 Wire Wire Line
 	8650 2500 8900 2500
-Connection ~ 5600 2150
 Wire Wire Line
 	8650 1650 8650 2500
 Wire Wire Line
 	5600 2250 8050 2250
 Wire Wire Line
 	8050 2250 8050 2500
-Connection ~ 5600 2250
 Wire Wire Line
 	5500 2300 7450 2300
 Wire Wire Line
 	7450 2300 7450 2500
-Connection ~ 5500 2300
 Wire Wire Line
 	5400 2350 6800 2350
 Wire Wire Line
 	6800 2350 6800 2500
-Connection ~ 5400 2350
 Wire Wire Line
 	4650 4000 3700 4000
 Wire Wire Line
@@ -473,7 +465,7 @@ Wire Wire Line
 	6500 4950 6500 4700
 Connection ~ 5650 4950
 Wire Wire Line
-	4650 4100 3050 4100
+	3050 4100 4650 4100
 Wire Wire Line
 	3050 4200 4650 4200
 $Comp
@@ -499,9 +491,9 @@ F 3 "" H 3350 3600 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	4750 2150 3550 2150
+	4750 1750 3550 1750
 Wire Wire Line
-	3550 2150 3550 3450
+	3550 1750 3550 3450
 Wire Wire Line
 	3550 3750 3550 4100
 Connection ~ 3550 4100
@@ -527,8 +519,6 @@ F 3 "" H 7050 1750 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	6750 2150 6750 1750
-Wire Wire Line
 	7450 1750 7450 1650
 Wire Wire Line
 	7450 1650 8650 1650
@@ -539,4 +529,12 @@ Wire Wire Line
 Connection ~ 8650 2200
 Text Notes 4750 2600 0    60   ~ 0
 100mW
+Wire Wire Line
+	5400 1750 5400 2450
+Connection ~ 5600 1750
+Connection ~ 5600 2250
+Connection ~ 5500 1750
+Connection ~ 5500 2300
+Connection ~ 5400 1750
+Connection ~ 5400 2350
 $EndSCHEMATC
