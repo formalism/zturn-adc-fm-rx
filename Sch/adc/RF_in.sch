@@ -759,7 +759,7 @@ Text Label 8550 5300 0    60   ~ 0
 VDD3
 Text Label 8550 5400 0    60   ~ 0
 VCMB
-Text GLabel 5000 4750 2    60   Output ~ 0
+Text GLabel 5000 4650 2    60   Output ~ 0
 ADC_CLK
 $Comp
 L GND #PWR034
@@ -1523,7 +1523,7 @@ F 3 "" H 3400 5150 50  0000 C CNN
 $EndComp
 Wire Wire Line
 	3750 4650 4300 4650
-Text Label 4650 4650 0    60   ~ 0
+Text Label 4650 4750 0    60   ~ 0
 CLK40M
 Wire Wire Line
 	3750 4750 4300 4750
