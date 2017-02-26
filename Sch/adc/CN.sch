@@ -187,35 +187,35 @@ IO_B13_LN11
 Text Label 6000 2050 0    60   ~ 0
 IO_B13_LP11(SRCC)
 Text Label 4200 2750 0    60   ~ 0
-IO_B34_LP5
+IO_B13_LN11
 Text Label 4200 2850 0    60   ~ 0
-IO_B34_LN5
+IO_B13_LP12(MRCC)
 Text Label 4200 2950 0    60   ~ 0
-IO_B34_LP8
+IO_B13_LP21
 Text Label 4200 3050 0    60   ~ 0
-IO_B34_LN8
+IO_B13_LN21
 Text Label 4200 2550 0    60   ~ 0
-IO_B34_LN4
+IO_B34_LP1
 Text Label 4200 2450 0    60   ~ 0
-IO_B34_LP4
+IO_B13_LN15
 Text Label 4200 2350 0    60   ~ 0
 IO_B34_LN2
 Text Label 4200 2250 0    60   ~ 0
-IO_B34_LP2
+IO_B34_LN3
 Text Label 4200 1850 0    60   ~ 0
-IO_B34_LP1
+IO_B34_LN4
 Text Label 4200 1950 0    60   ~ 0
 IO_B34_LN1
 Text Label 4200 2050 0    60   ~ 0
 IO_B34_LP3
 Text Label 4200 2150 0    60   ~ 0
-IO_B34_LN3
+IO_B34_LP2
 Text Label 4200 1750 0    60   ~ 0
-IO_B13_LN15
+IO_B34_LP4
 Text Label 1550 2800 0    60   ~ 0
 IO_B34_LP7
 Text Label 1550 2900 0    60   ~ 0
-IO_B34_LP6
+IO_B13_LN14
 NoConn ~ 5950 3950
 Text Notes 5100 800  0    60   ~ 0
 Bank13,34,35=3.3V
@@ -386,12 +386,11 @@ F 3 "" H 8350 2250 60  0001 C CNN
 	1    8350 2150
 	1    0    0    -1  
 $EndComp
-NoConn ~ 7850 2450
 NoConn ~ 5950 1950
 NoConn ~ 5950 2350
 NoConn ~ 5950 2650
 NoConn ~ 5950 2750
-Text GLabel 5950 2550 0    60   Input ~ 0
+Text GLabel 7850 2450 2    60   Input ~ 0
 ADC_CLK
 $Comp
 L R_Pack04 RN1
@@ -552,13 +551,13 @@ Wire Wire Line
 Wire Wire Line
 	6650 3350 5950 3350
 Wire Wire Line
-	6650 3550 5950 3550
+	5100 3550 6650 3550
 Wire Wire Line
 	6650 3650 5950 3650
 Wire Wire Line
-	6650 3750 5950 3750
+	5100 3750 6650 3750
 Wire Wire Line
-	6650 3850 5950 3850
+	5100 3850 6650 3850
 Wire Wire Line
 	6650 3950 5950 3950
 Wire Wire Line
@@ -566,11 +565,7 @@ Wire Wire Line
 Wire Wire Line
 	7150 2450 7850 2450
 Wire Wire Line
-	7150 2550 8650 2550
-Wire Wire Line
-	7150 2650 8650 2650
-Wire Wire Line
-	7150 2750 8650 2750
+	7150 2650 8350 2650
 Wire Wire Line
 	7150 2950 7850 2950
 Wire Wire Line
@@ -726,31 +721,29 @@ Wire Wire Line
 Connection ~ 1600 2800
 Text Notes 750  3300 0    60   ~ 0
 High=nap mode
-Text GLabel 9050 2550 2    60   Output ~ 0
+Text GLabel 4700 3650 0    60   Output ~ 0
 FS
-Text GLabel 9050 2650 2    60   Output ~ 0
+Text GLabel 4700 3750 0    60   Output ~ 0
 BCLK
-Text GLabel 9050 2750 2    60   Output ~ 0
+Text GLabel 4700 3850 0    60   Output ~ 0
 DACIN
 Text GLabel 5650 4050 0    60   Output ~ 0
 MCLK
-Text GLabel 5950 2150 0    60   BiDi ~ 0
+Text GLabel 7850 3550 2    60   BiDi ~ 0
 SCL
-Text GLabel 5950 2250 0    60   BiDi ~ 0
+Text GLabel 7850 3450 2    60   BiDi ~ 0
 SDA
 $Comp
 L R_Pack04 RN5
 U 1 1 58A9A1DD
-P 8850 2650
-F 0 "RN5" V 8550 2650 50  0000 C CNN
-F 1 "22" V 9050 2650 50  0000 C CNN
-F 2 "adc_lib:EXB-38V220JV" V 9125 2650 50  0001 C CNN
-F 3 "" H 8850 2650 50  0000 C CNN
-	1    8850 2650
-	0    1    1    0   
+P 4900 3850
+F 0 "RN5" V 4600 3850 50  0000 C CNN
+F 1 "22" V 5100 3850 50  0000 C CNN
+F 2 "adc_lib:EXB-38V220JV" V 5175 3850 50  0001 C CNN
+F 3 "" H 4900 3850 50  0000 C CNN
+	1    4900 3850
+	0    -1   1    0   
 $EndComp
-NoConn ~ 8650 2450
-NoConn ~ 9050 2450
 $Comp
 L R R12
 U 1 1 58A9A823
@@ -900,4 +893,13 @@ Wire Wire Line
 	3450 1950 3450 1750
 Wire Wire Line
 	3450 1750 3750 1750
+Wire Wire Line
+	7150 2750 8350 2750
+Wire Wire Line
+	7150 2550 8350 2550
+Wire Wire Line
+	5100 3550 5100 3650
+NoConn ~ 4700 3950
+NoConn ~ 5100 3950
+NoConn ~ 5950 2550
 $EndSCHEMATC
