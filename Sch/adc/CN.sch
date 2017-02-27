@@ -147,9 +147,9 @@ IO_B34_LP5
 Text Label 7200 3550 0    60   ~ 0
 IO_B34_LN5
 Text Label 7200 3650 0    60   ~ 0
-IO_B34_LP7
+SHDNA
 Text Label 7200 3750 0    60   ~ 0
-IO_B34_LN7
+SHDNB
 Text Label 6000 4050 0    60   ~ 0
 IO_B34_LN11
 Text Label 6000 3950 0    60   ~ 0
@@ -187,35 +187,35 @@ IO_B13_LN11
 Text Label 6000 2050 0    60   ~ 0
 IO_B13_LP11(SRCC)
 Text Label 4200 2750 0    60   ~ 0
-IO_B13_LN11
-Text Label 4200 2850 0    60   ~ 0
-IO_B13_LP12(MRCC)
-Text Label 4200 2950 0    60   ~ 0
 IO_B13_LP21
+Text Label 4200 2850 0    60   ~ 0
+IO_B13_LN13
+Text Label 4200 2950 0    60   ~ 0
+IO_B13_LP15
 Text Label 4200 3050 0    60   ~ 0
 IO_B13_LN21
 Text Label 4200 2550 0    60   ~ 0
-IO_B34_LP1
+IO_B34_LN1
 Text Label 4200 2450 0    60   ~ 0
 IO_B13_LN15
 Text Label 4200 2350 0    60   ~ 0
-IO_B34_LN2
+IO_B34_LP1
 Text Label 4200 2250 0    60   ~ 0
 IO_B34_LN3
 Text Label 4200 1850 0    60   ~ 0
 IO_B34_LN4
 Text Label 4200 1950 0    60   ~ 0
-IO_B34_LN1
+IO_B34_LP2
 Text Label 4200 2050 0    60   ~ 0
 IO_B34_LP3
 Text Label 4200 2150 0    60   ~ 0
-IO_B34_LP2
+IO_B34_LN2
 Text Label 4200 1750 0    60   ~ 0
 IO_B34_LP4
 Text Label 1550 2800 0    60   ~ 0
-IO_B34_LP7
+SHDNA
 Text Label 1550 2900 0    60   ~ 0
-IO_B13_LN14
+SHDNB
 NoConn ~ 5950 3950
 Text Notes 5100 800  0    60   ~ 0
 Bank13,34,35=3.3V
@@ -293,8 +293,6 @@ NoConn ~ 6650 5450
 NoConn ~ 6650 5550
 NoConn ~ 7150 5550
 NoConn ~ 6650 5650
-Text Label 1550 2450 0    60   ~ 0
-IO_B13_LP11(SRCC)
 $Comp
 L R R24
 U 1 1 58A5E977
@@ -387,9 +385,6 @@ F 3 "" H 8350 2250 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 NoConn ~ 5950 1950
-NoConn ~ 5950 2350
-NoConn ~ 5950 2650
-NoConn ~ 5950 2750
 Text GLabel 7850 2450 2    60   Input ~ 0
 ADC_CLK
 $Comp
@@ -445,7 +440,6 @@ LED
 Text Notes 5700 3700 0    60   ~ 0
 LED
 NoConn ~ 5950 3650
-NoConn ~ 7850 3750
 Text Notes 3700 7150 0    60   ~ 0
 MODE, Output Format, Clock Duty Cycle Stabilizer\n0, Offset Binary, Off\n1/3Vdd, Offset Binary, On\n2/3Vdd, 2's complement, On\nVdd, 2's complement, Off
 Text GLabel 1550 5700 0    60   Input ~ 0
@@ -901,5 +895,26 @@ Wire Wire Line
 	5100 3550 5100 3650
 NoConn ~ 4700 3950
 NoConn ~ 5100 3950
+NoConn ~ 5950 2250
+NoConn ~ 5950 2150
+$Comp
+L R R1
+U 1 1 58B3E1F0
+P 5800 2350
+F 0 "R1" V 5880 2350 50  0000 C CNN
+F 1 "22" V 5800 2350 50  0000 C CNN
+F 2 "adc_lib:R0603" V 5730 2350 50  0001 C CNN
+F 3 "" H 5800 2350 50  0000 C CNN
+	1    5800 2350
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	5650 2350 5200 2350
+Text Label 5300 2350 0    60   ~ 0
+MUX
+Text Label 1700 2450 0    60   ~ 0
+MUX
+NoConn ~ 5950 2050
+NoConn ~ 8350 2550
 NoConn ~ 5950 2550
 $EndSCHEMATC
