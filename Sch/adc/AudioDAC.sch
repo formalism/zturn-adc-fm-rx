@@ -645,4 +645,5 @@ Text Label 8350 1150 0    60   ~ 0
 VDDC
 Text Notes 7300 1100 0    60   ~ 0
 +3V
+Connection ~ 5850 4950
 $EndSCHEMATC
