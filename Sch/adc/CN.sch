@@ -489,9 +489,6 @@ Wire Wire Line
 	7150 1850 7600 1850
 Connection ~ 7600 1850
 Wire Wire Line
-	7150 5650 7600 5650
-Connection ~ 7600 5650
-Wire Wire Line
 	7150 2850 7600 2850
 Connection ~ 7600 2850
 Wire Wire Line
@@ -917,4 +914,5 @@ MUX
 NoConn ~ 5950 2050
 NoConn ~ 8350 2550
 NoConn ~ 5950 2550
+NoConn ~ 7150 5650
 $EndSCHEMATC
