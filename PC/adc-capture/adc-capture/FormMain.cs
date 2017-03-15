@@ -22,6 +22,18 @@ namespace adc_capture
         public static int SERVER_PORT = 12345;
         public static string SERVER_ADR = "192.168.56.101";
 
+        private UInt32 read_uint(byte[] buf, UInt32 offset)
+        {
+            UInt32 ret = 0;
+            ret += buf[offset];
+            ret += ((UInt32)buf[offset + 1]) << 8;
+            ret += ((UInt32)buf[offset + 2]) << 16;
+            ret += ((UInt32)buf[offset + 3]) << 24;
+            return ret;
+        }
+
+        static UInt32 MB = 1024 * 1024;
+
         private void button_capture_Click(object sender, EventArgs e)
         {
             TcpClient tcp;
@@ -31,24 +43,25 @@ namespace adc_capture
             else
                 tcp = new TcpClient(SERVER_ADR, SERVER_PORT);
 
-            byte[] buf = new byte[1024*1024];
+            byte[] buf = new byte[256*MB];
             using (NetworkStream ns = tcp.GetStream())
             {
-                uint i = 0;
                 Stopwatch sw = Stopwatch.StartNew();
-                while (true)
+                int total = 0;
+                while (total < buf.Length)
                 {
-                    int total = 0;
-                    while (total < buf.Length)
-                    {
-                        int len = ns.Read(buf, 0, buf.Length-total);  // Read 1MBytes
-                        total += len;
-                    }
-                    i++;
-                    if (i >= 256)    // 256MBytes
-                        break;
+                    total += ns.Read(buf, total, buf.Length-total);
                 }
                 sw.Stop();
+
+                for (UInt32 i = 0; i < 256*MB; i += 4)
+                {
+                    UInt32 val = read_uint(buf, i);
+                    if (val != i/4)
+                    {
+                        MessageBox.Show("val="+val.ToString("X8")+" i="+i.ToString("X8"));
+                    }
+                }
                 MessageBox.Show(sw.ElapsedMilliseconds + "[ms]");
             }
         }
