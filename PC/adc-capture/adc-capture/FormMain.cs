@@ -1,4 +1,6 @@
-﻿using System;
+﻿using MathNet.Numerics;
+using MathNet.Numerics.IntegralTransforms;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -6,9 +8,11 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Net.Sockets;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows.Forms.DataVisualization.Charting;
 
 namespace adc_capture
 {
@@ -34,8 +38,9 @@ namespace adc_capture
 
         static UInt32 MB = 1024 * 1024;
 
-        private void button_capture_Click(object sender, EventArgs e)
+        private byte[] get_raw_values()
         {
+            int size = (int)(numericUpDown_size.Value * MB);
             TcpClient tcp;
             string ip = textBox_IP.Text;
             if (ip != null)
@@ -43,27 +48,104 @@ namespace adc_capture
             else
                 tcp = new TcpClient(SERVER_ADR, SERVER_PORT);
 
-            byte[] buf = new byte[256*MB];
+            byte[] buf = new byte[size];
             using (NetworkStream ns = tcp.GetStream())
             {
                 Stopwatch sw = Stopwatch.StartNew();
+                byte[] lenstr = System.Text.Encoding.ASCII.GetBytes(size.ToString("X8"));   // send how many bytes to receive
+                ns.Write(lenstr, 0, lenstr.Length);
+
                 int total = 0;
-                while (total < buf.Length)
+                while (total < size)
                 {
-                    total += ns.Read(buf, total, buf.Length-total);
+                    total += ns.Read(buf, total, size - total);
                 }
                 sw.Stop();
-
-                for (UInt32 i = 0; i < 256*MB; i += 4)
-                {
-                    UInt32 val = read_uint(buf, i);
-                    if (val != i/4)
-                    {
-                        MessageBox.Show("val="+val.ToString("X8")+" i="+i.ToString("X8"));
-                    }
-                }
-                MessageBox.Show(sw.ElapsedMilliseconds + "[ms]");
             }
+            /*
+                            for (UInt32 i = 0; i < size; i += 4)
+                            {
+                                UInt32 val = read_uint(buf, i);
+                                if (val != i/4)
+                                {
+                                    MessageBox.Show("val="+val.ToString("X8")+" i="+i.ToString("X8"));
+                                }
+                            }*/
+            //                MessageBox.Show(sw.ElapsedMilliseconds + "[ms]");
+            return buf;
+        }
+
+        int[] decode_values(byte[] buf, int len)
+        {
+            int[] data = new int[len + 4];  // allocate more
+
+            // decode raw data to integer values
+            for (int i = 0; i < len; i += 5)
+            {
+                data[i] = buf[i * 8 + 0] | ((buf[i * 8 + 1] << 8) & 0xF00);
+                data[i + 1] = ((buf[i * 8 + 1] & 0xF0) >> 4) | (buf[i * 8 + 2] << 4);
+                data[i + 2] = buf[i * 8 + 3] | ((buf[i * 8 + 4] << 8) & 0xF00);
+                data[i + 3] = ((buf[i * 8 + 4] & 0xF0) >> 4) | (buf[i * 8 + 5] << 4);
+                data[i + 4] = buf[i * 8 + 6] | ((buf[i * 8 + 7] << 8) & 0xF00);
+            }
+
+            for (int i = 0; i < len; i++)
+                if ((data[i] & 0x800) != 0)    // negative
+                    data[i] = data[i] - 0xFFF + 1;
+
+            return data;
+        }
+
+        private void button_capture_Click(object sender, EventArgs e)
+        {
+            byte[] buf = get_raw_values();
+
+            chart.Series.Clear();
+            chart.ChartAreas.Clear();
+            chart.ChartAreas.Add(new ChartArea("data"));
+            chart.ChartAreas.Add(new ChartArea("FFT"));
+
+            int[] data = decode_values(buf, 4096);
+            Complex[] data2 = new Complex[4096];
+
+            Series dat = new Series();
+            dat.ChartType = SeriesChartType.Line;
+            dat.Color = Color.Aqua;
+            dat.BorderWidth = 1;
+            dat.LegendText = "data";
+        
+            for (int i = 0; i < 512; i++)
+            {
+                dat.Points.AddXY(i, data[i]);
+            }
+            dat.ChartArea = "data";
+            chart.Series.Add(dat);
+
+            var window = Window.Hamming(4096);
+            for (int i = 0; i < 4096; i++)
+            {
+                data2[i] = new Complex(data[i] * (float)window[i], 0.0f);
+            }
+            Fourier.Radix2Forward(data2, FourierOptions.Default);
+
+            dat = new Series();
+            dat.ChartType = SeriesChartType.Line;
+            dat.Color = Color.Green;
+            dat.BorderWidth = 1;
+            dat.LegendText = "FFT";
+            float s = 4096.0f / (40.0f);    // 40MHz
+            for (int i = 0; i < 4096/2; i++)
+            {
+                Complex val = data2[i];
+                dat.Points.AddXY((float)i / s, val.Real * val.Real + val.Imaginary * val.Imaginary);
+            }
+            dat.ChartArea = "FFT";
+            chart.Series.Add(dat);
+        }
+
+        private void FormMain_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }

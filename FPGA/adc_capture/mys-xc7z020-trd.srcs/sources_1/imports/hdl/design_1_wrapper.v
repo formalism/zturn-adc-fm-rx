@@ -42,6 +42,12 @@ module design_1_wrapper (
   wire			w_clk40m;
   wire			w_tready, w_tvalid;
   reg[31:0]		r_cnt = 32'd0;
+  wire[15:0]	w_sin3mhz, w_sin11mhz;
+  reg[63:0]		r_axis_data;
+  reg[2:0]		r_cnt5;
+  reg[2:0]		r_sw;
+
+  assign	LEDS	=	3'b000;
 
   design_1 design_1_i
        (.DDR_addr       (DDR_addr),
@@ -76,14 +82,57 @@ module design_1_wrapper (
         .IIC_0_sda_o	(iic_0_sda_o),
         .IIC_0_sda_t	(iic_0_sda_t),
 
-		.s_axis_aclk	(w_clk40m),
-		.s_axis_aresetn	(1'b1),
-        .S_AXIS_tdata	({r_cnt+32'd1, r_cnt}),
-        .S_AXIS_tready	(w_tready),
-        .S_AXIS_tvalid	(1'b1)
+		.s_axis_aclk				(w_clk40m),
+		.s_axis_aresetn				(1'b1),
+		.S_AXIS_tdata				(r_axis_data),
+		.S_AXIS_tready				(w_tready),
+		.S_AXIS_tvalid				(r_cnt5 == 3'd0),	// each 5 clocks @ 40MHz
+
+		.M_AXIS_DATA_3MHZ_tdata		(w_sin3mhz),
+		.M_AXIS_DATA_3MHZ_tvalid	(),
+		.M_AXIS_DATA_11MHZ_tdata	(w_sin11mhz),
+		.M_AXIS_DATA_11MHZ_tvalid	()
 	);
 
 	always @(posedge w_clk40m) begin
+		r_sw	<=	{r_sw[1:0], SW[0]};		// sync
+
+		if (r_cnt5 >= 3'd4)		// 0-4
+			r_cnt5	<=	3'd0;
+		else
+			r_cnt5	<=	r_cnt5 + 3'd1;
+
+		if (r_sw[2])
+			case (r_cnt5)
+				3'd0:
+					r_axis_data	<=	{4'd0, r_axis_data[59:12], w_sin3mhz};
+				3'd1:
+					r_axis_data	<=	{4'd0, r_axis_data[59:24], w_sin3mhz, r_axis_data[11:0]};
+				3'd2:
+					r_axis_data	<=	{4'd0, r_axis_data[59:36], w_sin3mhz, r_axis_data[23:0]};
+				3'd3:
+					r_axis_data	<=	{4'd0, r_axis_data[59:48], w_sin3mhz, r_axis_data[35:0]};
+				3'd4:
+					r_axis_data	<=	{4'd0, w_sin3mhz, r_axis_data[47:0]};
+				default:
+					r_axis_data	<=	r_axis_data;
+			endcase
+		else
+			case (r_cnt5)
+				3'd0:
+					r_axis_data	<=	{4'd0, r_axis_data[59:12], w_sin11mhz};
+				3'd1:
+					r_axis_data	<=	{4'd0, r_axis_data[59:24], w_sin11mhz, r_axis_data[11:0]};
+				3'd2:
+					r_axis_data	<=	{4'd0, r_axis_data[59:36], w_sin11mhz, r_axis_data[23:0]};
+				3'd3:
+					r_axis_data	<=	{4'd0, r_axis_data[59:48], w_sin11mhz, r_axis_data[35:0]};
+				3'd4:
+					r_axis_data	<=	{4'd0, w_sin11mhz, r_axis_data[47:0]};
+				default:
+					r_axis_data	<=	r_axis_data;
+			endcase
+
 		if (w_tready)
 			r_cnt	<=	r_cnt + 32'd2;
 		else

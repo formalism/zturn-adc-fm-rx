@@ -17,6 +17,9 @@
 #define KB ((1024))
 #define MB ((1024*1024))
 
+static sem_t sem_cap, sem_xfer;
+static unsigned int capture_size = (256*MB);
+
 void bind_and_open(int* sock0, int* sock)
 {
     struct sockaddr_in addr;
@@ -44,9 +47,10 @@ void set_axi_dma_reg(unsigned int* addr){
     /* IP Interrupt Status Register */
 
     /* offset */
-    addr[4] = (512*MB)/8;     /* 512MBytes offset */
+    addr[4] = (512*MB)/8;     /* fixed 512MBytes offset */
+
     /* len */
-    addr[6] = (256*MB)/8;     /* 256MBytes */
+    addr[6] = capture_size/8;
 }
 
 void start_axi_dma(unsigned int* addr){
@@ -57,8 +61,6 @@ void clear_interrupt(unsigned int* addr){
     unsigned int status = addr[3];
     addr[3] = 1;                /* clear ap_done */
 }
-
-static sem_t sem_cap, sem_xfer;
 
 void* thread_func(void* arg){
     int uiofd;
@@ -78,7 +80,7 @@ void* thread_func(void* arg){
     }
 
     while (1){
-        printf("Write DMA registers\n");
+        //        printf("Write DMA registers\n");
         set_axi_dma_reg(map_addr);
         write(uiofd, &one, 4);       /* enable interrupt */
         printf("Start DMA!!\n");
@@ -87,23 +89,38 @@ void* thread_func(void* arg){
         if (4 != read(uiofd, &i, 4)) /* wait interrupt */
             perror("uio read:");
         
-        printf("DMA Done\n");
+        //        printf("DMA Done\n");
         clear_interrupt(map_addr);
-        sem_post(&sem_cap);
-        sem_wait(&sem_xfer);
+        if (EINVAL == sem_post(&sem_cap)){
+            break;
+        }
+        if (EINVAL == sem_wait(&sem_xfer)){
+            break;
+        }
     }
 
  thread_exit:
     pthread_exit(NULL);
 }
 
+void dump_mem(unsigned char* buf, int sz){
+    int i;
+
+    for (i = 0; i < sz; i++){
+        printf("%02X ", buf[i]);
+        if ((i+1 % 16) == 0)
+            putchar('\n');
+    }
+}
+
 int main(int argc, char** argv)
 {
     int sock0, sock;
-    int i=0, j;
+    int i;
 	pthread_t th;
     int memfd;
     unsigned char* mem;
+    unsigned char buf[16];
    
     if (sem_init(&sem_cap, 0, 0)){
         perror("sem_init");
@@ -125,19 +142,28 @@ int main(int argc, char** argv)
     }
 
     bind_and_open(&sock0, &sock);
+    while (i < 8){
+        i += read(sock, buf, 8);
+    }
+    sscanf(buf, "%x", &capture_size);
+    printf("capture_size=%08X\n", capture_size);
 
 	pthread_create(&th, NULL, &thread_func, (void*)NULL);
 
     while (1){
         sem_wait(&sem_cap);
         printf("Start transfer\n");
-        if (-1 == write(sock, mem, 256*MB))
+        if (-1 == write(sock, mem, capture_size))
             break;
         sem_post(&sem_xfer);
     }
 
+    dump_mem(mem, 256);
+
     sem_destroy(&sem_cap);
     sem_destroy(&sem_xfer);
+
+    pthread_join(th, NULL);
 
  _exit:
     printf("closed file descriptor\n");
