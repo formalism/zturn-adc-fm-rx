@@ -77,21 +77,30 @@ namespace adc_capture
 
         int[] decode_values(byte[] buf, int len)
         {
+            int i, j;
             int[] data = new int[len + 4];  // allocate more
 
             // decode raw data to integer values
-            for (int i = 0; i < len; i += 5)
+            for (i = 0, j = 0; i < len; i += 5, j++)
             {
-                data[i] = buf[i * 8 + 0] | ((buf[i * 8 + 1] << 8) & 0xF00);
-                data[i + 1] = ((buf[i * 8 + 1] & 0xF0) >> 4) | (buf[i * 8 + 2] << 4);
-                data[i + 2] = buf[i * 8 + 3] | ((buf[i * 8 + 4] << 8) & 0xF00);
-                data[i + 3] = ((buf[i * 8 + 4] & 0xF0) >> 4) | (buf[i * 8 + 5] << 4);
-                data[i + 4] = buf[i * 8 + 6] | ((buf[i * 8 + 7] << 8) & 0xF00);
+                uint b0 = buf[j * 8 + 0];
+                uint b1 = buf[j * 8 + 1];
+                uint b2 = buf[j * 8 + 2];
+                uint b3 = buf[j * 8 + 3];
+                uint b4 = buf[j * 8 + 4];
+                uint b5 = buf[j * 8 + 5];
+                uint b6 = buf[j * 8 + 6];
+                uint b7 = buf[j * 8 + 7];
+                data[i] = (int)(b0 | ((b1 & 0xF) << 8));
+                data[i + 1] = (int)(((b1 & 0xF0u) >> 4) | (b2 << 4));
+                data[i + 2] = (int)(b3 | ((b4 & 0xF) << 8));
+                data[i + 3] = (int)(((b4 & 0xF0u) >> 4) | (b5 << 4));
+                data[i + 4] = (int)(b6 | ((b7 & 0xF) << 8));
             }
 
-            for (int i = 0; i < len; i++)
+            for (i = 0; i < len; i++)
                 if ((data[i] & 0x800) != 0)    // negative
-                    data[i] = data[i] - 0xFFF + 1;
+                    data[i] = data[i] - 0x1000;
 
             return data;
         }

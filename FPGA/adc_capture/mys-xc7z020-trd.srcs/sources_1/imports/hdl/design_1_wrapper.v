@@ -105,30 +105,30 @@ module design_1_wrapper (
 		if (r_sw[2])
 			case (r_cnt5)
 				3'd0:
-					r_axis_data	<=	{4'd0, r_axis_data[59:12], w_sin3mhz};
+					r_axis_data	<=	{4'd0, r_axis_data[59:12], w_sin3mhz[11:0]};
 				3'd1:
-					r_axis_data	<=	{4'd0, r_axis_data[59:24], w_sin3mhz, r_axis_data[11:0]};
+					r_axis_data	<=	{4'd0, r_axis_data[59:24], w_sin3mhz[11:0], r_axis_data[11:0]};
 				3'd2:
-					r_axis_data	<=	{4'd0, r_axis_data[59:36], w_sin3mhz, r_axis_data[23:0]};
+					r_axis_data	<=	{4'd0, r_axis_data[59:36], w_sin3mhz[11:0], r_axis_data[23:0]};
 				3'd3:
-					r_axis_data	<=	{4'd0, r_axis_data[59:48], w_sin3mhz, r_axis_data[35:0]};
+					r_axis_data	<=	{4'd0, r_axis_data[59:48], w_sin3mhz[11:0], r_axis_data[35:0]};
 				3'd4:
-					r_axis_data	<=	{4'd0, w_sin3mhz, r_axis_data[47:0]};
+					r_axis_data	<=	{4'd0, w_sin3mhz[11:0], r_axis_data[47:0]};
 				default:
 					r_axis_data	<=	r_axis_data;
 			endcase
 		else
 			case (r_cnt5)
 				3'd0:
-					r_axis_data	<=	{4'd0, r_axis_data[59:12], w_sin11mhz};
+					r_axis_data	<=	{4'd0, r_axis_data[59:12], w_sin11mhz[11:0]};
 				3'd1:
-					r_axis_data	<=	{4'd0, r_axis_data[59:24], w_sin11mhz, r_axis_data[11:0]};
+					r_axis_data	<=	{4'd0, r_axis_data[59:24], w_sin11mhz[11:0], r_axis_data[11:0]};
 				3'd2:
-					r_axis_data	<=	{4'd0, r_axis_data[59:36], w_sin11mhz, r_axis_data[23:0]};
+					r_axis_data	<=	{4'd0, r_axis_data[59:36], w_sin11mhz[11:0], r_axis_data[23:0]};
 				3'd3:
-					r_axis_data	<=	{4'd0, r_axis_data[59:48], w_sin11mhz, r_axis_data[35:0]};
+					r_axis_data	<=	{4'd0, r_axis_data[59:48], w_sin11mhz[11:0], r_axis_data[35:0]};
 				3'd4:
-					r_axis_data	<=	{4'd0, w_sin11mhz, r_axis_data[47:0]};
+					r_axis_data	<=	{4'd0, w_sin11mhz[11:0], r_axis_data[47:0]};
 				default:
 					r_axis_data	<=	r_axis_data;
 			endcase
