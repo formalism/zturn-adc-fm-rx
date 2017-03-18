@@ -84,7 +84,7 @@
             this.numericUpDown_size.Size = new System.Drawing.Size(86, 22);
             this.numericUpDown_size.TabIndex = 4;
             this.numericUpDown_size.Value = new decimal(new int[] {
-            8,
+            2,
             0,
             0,
             0});
@@ -120,6 +120,7 @@
             this.Controls.Add(this.button_capture);
             this.Name = "FormMain";
             this.Text = "Capture";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FormMain_FormClosing);
             this.Load += new System.EventHandler(this.FormMain_Load);
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_size)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.chart)).EndInit();

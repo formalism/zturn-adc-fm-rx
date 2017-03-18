@@ -1,4 +1,8 @@
 *.bak
 *.bck
+*.*~
 Sch/adc/*.gbr
-
+PC/adc-capture/adc-capture/bin/*
+PC/adc-capture/adc-capture/obj/*
+FPGA/adc_capture/*.jou
+FPGA/adc_capture/*.log

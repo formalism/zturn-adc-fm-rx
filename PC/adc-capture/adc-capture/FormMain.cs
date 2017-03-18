@@ -37,42 +37,42 @@ namespace adc_capture
         }
 
         static UInt32 MB = 1024 * 1024;
+        private NetworkStream ns = null;
+        private TcpClient tcp = null;
 
-        private byte[] get_raw_values()
+        private void open_connection()
         {
-            int size = (int)(numericUpDown_size.Value * MB);
-            TcpClient tcp;
             string ip = textBox_IP.Text;
             if (ip != null)
                 tcp = new TcpClient(ip, SERVER_PORT);
             else
                 tcp = new TcpClient(SERVER_ADR, SERVER_PORT);
+            ns = tcp.GetStream();
+        }
 
-            byte[] buf = new byte[size];
-            using (NetworkStream ns = tcp.GetStream())
+        private int set_capture_size()
+        {
+            int size = (int)(numericUpDown_size.Value * MB);
+            if (tcp == null)
+                open_connection();
+
+            byte[] lenstr = System.Text.Encoding.ASCII.GetBytes(size.ToString("X8"));   // send how many bytes to receive
+            ns.Write(lenstr, 0, lenstr.Length);
+            return size;
+        }
+
+        private void get_raw_values(byte[] buf)
+        {
+            int size = buf.Length;
+
+            Stopwatch sw = Stopwatch.StartNew();
+            int total = 0;
+            while (total < size)
             {
-                Stopwatch sw = Stopwatch.StartNew();
-                byte[] lenstr = System.Text.Encoding.ASCII.GetBytes(size.ToString("X8"));   // send how many bytes to receive
-                ns.Write(lenstr, 0, lenstr.Length);
-
-                int total = 0;
-                while (total < size)
-                {
-                    total += ns.Read(buf, total, size - total);
-                }
-                sw.Stop();
+                total += ns.Read(buf, total, size - total);
             }
-            /*
-                            for (UInt32 i = 0; i < size; i += 4)
-                            {
-                                UInt32 val = read_uint(buf, i);
-                                if (val != i/4)
-                                {
-                                    MessageBox.Show("val="+val.ToString("X8")+" i="+i.ToString("X8"));
-                                }
-                            }*/
+            sw.Stop();
             //                MessageBox.Show(sw.ElapsedMilliseconds + "[ms]");
-            return buf;
         }
 
         int[] decode_values(byte[] buf, int len)
@@ -105,56 +105,94 @@ namespace adc_capture
             return data;
         }
 
+        private bool running = false;
+        private static int FFT_POINTS = 4096;
+        private static float SAMPLE_FREQ = 40.0f;
+
+        private void capture_and_display()
+        {
+            int size = set_capture_size();
+            byte[] buf = new byte[size];
+
+            while (running)
+            {
+                get_raw_values(buf);
+
+                int[] data = decode_values(buf, FFT_POINTS);
+                Complex[] data2 = new Complex[FFT_POINTS];
+
+                var window = Window.Hamming(FFT_POINTS);
+                for (int i = 0; i < FFT_POINTS; i++)
+                {
+                    data2[i] = new Complex(data[i] * (float)window[i], 0.0f);
+                }
+                Fourier.Radix2Forward(data2, FourierOptions.Default);
+
+                chart.Invoke(new Action(() =>
+                {
+                    chart.Series.Clear();
+                    chart.ChartAreas.Clear();
+                    chart.ChartAreas.Add(new ChartArea("data"));
+                    chart.ChartAreas.Add(new ChartArea("FFT"));
+
+                    Series dat = new Series();
+                    dat.ChartType = SeriesChartType.Line;
+                    dat.Color = Color.Aqua;
+                    dat.BorderWidth = 1;
+                    dat.LegendText = "data";
+
+                    for (int i = 0; i < 512; i++)
+                    {
+                        dat.Points.AddXY(i, data[i]);
+                    }
+                    dat.ChartArea = "data";
+                    chart.Series.Add(dat);
+
+                    dat = new Series();
+                    dat.ChartType = SeriesChartType.Line;
+                    dat.Color = Color.Green;
+                    dat.BorderWidth = 1;
+                    dat.LegendText = "FFT";
+                    float s = SAMPLE_FREQ / (float)FFT_POINTS;
+                    for (int i = 0; i < FFT_POINTS / 2; i++)
+                    {
+                        Complex val = data2[i];
+                        dat.Points.AddXY((float)i * s, val.Real * val.Real + val.Imaginary * val.Imaginary);
+                    }
+                    dat.ChartArea = "FFT";
+                    chart.Series.Add(dat);
+                }));
+            }
+        }
+
         private void button_capture_Click(object sender, EventArgs e)
         {
-            byte[] buf = get_raw_values();
-
-            chart.Series.Clear();
-            chart.ChartAreas.Clear();
-            chart.ChartAreas.Add(new ChartArea("data"));
-            chart.ChartAreas.Add(new ChartArea("FFT"));
-
-            int[] data = decode_values(buf, 4096);
-            Complex[] data2 = new Complex[4096];
-
-            Series dat = new Series();
-            dat.ChartType = SeriesChartType.Line;
-            dat.Color = Color.Aqua;
-            dat.BorderWidth = 1;
-            dat.LegendText = "data";
-        
-            for (int i = 0; i < 512; i++)
+            if (!running)
             {
-                dat.Points.AddXY(i, data[i]);
+                running = true;
+                button_capture.Text = "Stop";
+                Task.Factory.StartNew(() =>
+                {
+                    capture_and_display();
+                });
+            }else{
+                running = false;
+                button_capture.Text = "Capture";
             }
-            dat.ChartArea = "data";
-            chart.Series.Add(dat);
-
-            var window = Window.Hamming(4096);
-            for (int i = 0; i < 4096; i++)
-            {
-                data2[i] = new Complex(data[i] * (float)window[i], 0.0f);
-            }
-            Fourier.Radix2Forward(data2, FourierOptions.Default);
-
-            dat = new Series();
-            dat.ChartType = SeriesChartType.Line;
-            dat.Color = Color.Green;
-            dat.BorderWidth = 1;
-            dat.LegendText = "FFT";
-            float s = 4096.0f / (40.0f);    // 40MHz
-            for (int i = 0; i < 4096/2; i++)
-            {
-                Complex val = data2[i];
-                dat.Points.AddXY((float)i / s, val.Real * val.Real + val.Imaginary * val.Imaginary);
-            }
-            dat.ChartArea = "FFT";
-            chart.Series.Add(dat);
         }
 
         private void FormMain_Load(object sender, EventArgs e)
         {
 
+        }
+
+        private void FormMain_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            running = false;
+            if (ns != null)
+                ns.Close();
+            if (tcp != null)
+                tcp.Close();
         }
     }
 }
