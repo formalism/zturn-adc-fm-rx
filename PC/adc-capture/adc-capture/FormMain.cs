@@ -108,11 +108,17 @@ namespace adc_capture
         private bool running = false;
         private static int FFT_POINTS = 4096;
         private static float SAMPLE_FREQ = 40.0f;
+        private static int ADC_WIDTH = 12;
 
         private void capture_and_display()
         {
             int size = set_capture_size();
             byte[] buf = new byte[size];
+            var window_sum = 0.0;
+            var window = Window.Hamming(FFT_POINTS);
+            foreach (var w in window)
+                window_sum += w;
+            window_sum /= 2;
 
             while (running)
             {
@@ -121,10 +127,9 @@ namespace adc_capture
                 int[] data = decode_values(buf, FFT_POINTS);
                 Complex[] data2 = new Complex[FFT_POINTS];
 
-                var window = Window.Hamming(FFT_POINTS);
                 for (int i = 0; i < FFT_POINTS; i++)
-                {
-                    data2[i] = new Complex(data[i] * (float)window[i], 0.0f);
+                {       // normalize ADC value to [-1,1]
+                    data2[i] = new Complex(data[i] / (float)(1<<(ADC_WIDTH-1)) * (float)window[i], 0.0f);
                 }
                 Fourier.Radix2Forward(data2, FourierOptions.Default);
 
@@ -134,6 +139,8 @@ namespace adc_capture
                     chart.ChartAreas.Clear();
                     chart.ChartAreas.Add(new ChartArea("data"));
                     chart.ChartAreas.Add(new ChartArea("FFT"));
+                    chart.ChartAreas["FFT"].AxisY.Title = "[dB]";
+                    chart.ChartAreas["FFT"].AxisX.Title = "MHz";
 
                     Series dat = new Series();
                     dat.ChartType = SeriesChartType.Line;
@@ -156,8 +163,8 @@ namespace adc_capture
                     float s = SAMPLE_FREQ / (float)FFT_POINTS;
                     for (int i = 0; i < FFT_POINTS / 2; i++)
                     {
-                        Complex val = data2[i];
-                        dat.Points.AddXY((float)i * s, val.Real * val.Real + val.Imaginary * val.Imaginary);
+                        double val = Complex.Abs(data2[i]);
+                        dat.Points.AddXY((float)i * s, 20.0 * Math.Log10(val * 0.54));
                     }
                     dat.ChartArea = "FFT";
                     chart.Series.Add(dat);
