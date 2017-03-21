@@ -141,6 +141,15 @@ namespace adc_capture
                     chart.ChartAreas.Add(new ChartArea("FFT"));
                     chart.ChartAreas["FFT"].AxisY.Title = "[dB]";
                     chart.ChartAreas["FFT"].AxisX.Title = "MHz";
+                    chart.ChartAreas["FFT"].CursorX.IsUserEnabled = true;
+                    chart.ChartAreas["FFT"].CursorX.IsUserSelectionEnabled= true;
+                    chart.ChartAreas["FFT"].AxisX.ScaleView.Zoomable = true;
+                    chart.ChartAreas["FFT"].AxisX.ScrollBar.IsPositionedInside = true;
+                    chart.ChartAreas["FFT"].AxisX.Minimum = 0.0;
+                    chart.ChartAreas["FFT"].AxisX.Maximum = SAMPLE_FREQ / 2.0;
+                    //                    chart.ChartAreas["FFT"].AxisX.Interval = 0.25; // 0=Auto
+                    chart.ChartAreas["FFT"].AxisX.Interval = 0;
+                    chart.ChartAreas["FFT"].AxisX.IntervalAutoMode = IntervalAutoMode.VariableCount;
 
                     Series dat = new Series();
                     dat.ChartType = SeriesChartType.Line;
