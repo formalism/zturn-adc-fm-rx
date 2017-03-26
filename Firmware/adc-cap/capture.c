@@ -17,8 +17,7 @@
 #define KB ((1024))
 #define MB ((1024*1024))
 
-static sem_t sem_cap, sem_xfer;
-static unsigned int capture_size = (256*MB);
+static sem_t sem_cap_a, sem_cap_b, sem_xfer_a, sem_xfer_b;
 
 void bind_and_open(int* sock0, int* sock)
 {
@@ -37,29 +36,29 @@ void bind_and_open(int* sock0, int* sock)
     *sock = accept(*sock0, (struct sockaddr*)&client, &len);
 }
 
-void set_axi_dma_reg(unsigned int* addr){
-    unsigned int status = addr[0]; /* clear ap_done */
+void set_axi_dma_reg(unsigned int* reg_addr, unsigned int size, unsigned int offset){
+    unsigned int status = reg_addr[0]; /* clear ap_done */
 
     /* Global Interrupt Enable Register */
-    addr[1] = 1;                /* enable */
+    reg_addr[1] = 1;                /* enable */
     /* IP Interrupt Enable Register */
-    addr[2] = 1;                /* ap_done */
+    reg_addr[2] = 1;                /* ap_done */
     /* IP Interrupt Status Register */
 
     /* offset */
-    addr[4] = (512*MB)/8;     /* fixed 512MBytes offset */
+    reg_addr[4] = offset/8;
 
     /* len */
-    addr[6] = capture_size/8;
+    reg_addr[6] = size/8;
 }
 
-void start_axi_dma(unsigned int* addr){
-    addr[0] = 1;
+void start_axi_dma(unsigned int* reg_addr){
+    reg_addr[0] = 1;
 }
 
-void clear_interrupt(unsigned int* addr){
-    unsigned int status = addr[3];
-    addr[3] = 1;                /* clear ap_done */
+void clear_interrupt(unsigned int* reg_addr){
+    unsigned int status = reg_addr[3];
+    reg_addr[3] = 1;                /* clear ap_done */
 }
 
 void* thread_func(void* arg){
@@ -67,6 +66,7 @@ void* thread_func(void* arg){
     unsigned int* map_addr;
     unsigned int one = 1;
 	int i,j=0;
+    unsigned int size = *(unsigned int*)arg;
 
     uiofd = open("/dev/uio0", O_RDWR);
     if (uiofd < 0){
@@ -79,11 +79,16 @@ void* thread_func(void* arg){
         goto thread_exit;
     }
 
+    printf("size=%08X\n", size);
+
     while (1){
         //        printf("Write DMA registers\n");
-        set_axi_dma_reg(map_addr);
+        if (EINVAL == sem_wait(&sem_cap_a)){
+            break;
+        }
+        set_axi_dma_reg(map_addr, size, (512*MB));
         write(uiofd, &one, 4);       /* enable interrupt */
-        printf("Start DMA!!\n");
+        //        printf("Start DMA(A)!!\n");
         start_axi_dma(map_addr);
         
         if (4 != read(uiofd, &i, 4)) /* wait interrupt */
@@ -91,10 +96,22 @@ void* thread_func(void* arg){
         
         //        printf("DMA Done\n");
         clear_interrupt(map_addr);
-        if (EINVAL == sem_post(&sem_cap)){
+        if (EINVAL == sem_post(&sem_xfer_a)){
             break;
         }
-        if (EINVAL == sem_wait(&sem_xfer)){
+
+        if (EINVAL == sem_wait(&sem_cap_b)){
+            break;
+        }
+        set_axi_dma_reg(map_addr, size, ((512+256)*MB));
+        write(uiofd, &one, 4);       /* enable interrupt */
+        //        printf("Start DMA(B)!!\n");
+        start_axi_dma(map_addr);
+        
+        if (4 != read(uiofd, &i, 4)) /* wait interrupt */
+            perror("uio read:");
+        clear_interrupt(map_addr);
+        if (EINVAL == sem_post(&sem_xfer_b)){
             break;
         }
     }
@@ -113,29 +130,45 @@ void dump_mem(unsigned char* buf, int sz){
     }
 }
 
+int init_semaphore(){
+    if (sem_init(&sem_cap_a, 0, 1)){
+        perror("sem_init");
+        return 1;
+    }
+    if (sem_init(&sem_xfer_a, 0, 0)){
+        perror("sem_init");
+        return 1;
+    }
+    if (sem_init(&sem_cap_b, 0, 1)){
+        perror("sem_init");
+        return 1;
+    }
+    if (sem_init(&sem_xfer_b, 0, 0)){
+        perror("sem_init");
+        return 1;
+    }
+    return 0;
+}
+
 int main(int argc, char** argv)
 {
     int sock0, sock;
-    int i;
+    int i=0;
 	pthread_t th;
     int memfd;
     unsigned char* mem;
     unsigned char buf[16];
+    unsigned int capture_size;
+
+    if (init_semaphore())
+        exit(1);
    
-    if (sem_init(&sem_cap, 0, 0)){
-        perror("sem_init");
-        exit(1);
-    }
-    if (sem_init(&sem_xfer, 0, 0)){
-        perror("sem_init");
-        exit(1);
-    }
     memfd = open("/dev/mem", O_RDWR|O_SYNC);
     if (memfd < 0){
         perror("/dev/mem");
         exit(1);
     }
-    mem = mmap(0, 256*MB, PROT_READ|PROT_WRITE, MAP_SHARED, memfd, 512*MB);
+    mem = mmap(0, 512*MB, PROT_READ|PROT_WRITE, MAP_SHARED, memfd, 512*MB);
     if (mem < 0){
         perror("mmap");
         exit(1);
@@ -143,25 +176,36 @@ int main(int argc, char** argv)
 
     bind_and_open(&sock0, &sock);
     while (i < 8){
-        i += read(sock, buf, 8);
+        i += read(sock, buf, 8-i);
     }
     sscanf(buf, "%x", &capture_size);
     printf("capture_size=%08X\n", capture_size);
 
-	pthread_create(&th, NULL, &thread_func, (void*)NULL);
+	if (pthread_create(&th, NULL, &thread_func, &capture_size)){
+        perror("pthread_create");
+        exit(1);
+    }
 
     while (1){
-        sem_wait(&sem_cap);
-        printf("Start transfer\n");
+        sem_wait(&sem_xfer_a);
+        //        printf("Start transfer A\n");
         if (-1 == write(sock, mem, capture_size))
             break;
-        sem_post(&sem_xfer);
+        sem_post(&sem_cap_a);
+
+        sem_wait(&sem_xfer_b);
+        //        printf("Start transfer B\n");
+        if (-1 == write(sock, &mem[256*MB], capture_size))
+            break;
+        sem_post(&sem_cap_b);
     }
 
     dump_mem(mem, 256);
 
-    sem_destroy(&sem_cap);
-    sem_destroy(&sem_xfer);
+    sem_destroy(&sem_cap_a);
+    sem_destroy(&sem_xfer_a);
+    sem_destroy(&sem_cap_b);
+    sem_destroy(&sem_xfer_b);
 
     pthread_join(th, NULL);
 
