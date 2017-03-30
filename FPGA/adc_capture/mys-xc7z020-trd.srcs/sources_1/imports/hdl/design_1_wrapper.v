@@ -34,7 +34,8 @@ module design_1_wrapper (
     inout			I2C0_SCL,
     inout			I2C0_SDA,
 	output[2:0]		LEDS,
-	input[3:0]		SW
+	input[3:0]		SW,
+	output			BP
 );
 
   wire[63:0]	w_gpio_tri_t;
@@ -47,7 +48,8 @@ module design_1_wrapper (
   reg[2:0]		r_cnt5;
   reg[2:0]		r_sw;
 
-  assign	LEDS	=	3'b000;
+	assign	LEDS	=	3'b000;
+	assign	BP		=	1'b0;
 
   design_1 design_1_i
        (.DDR_addr       (DDR_addr),
