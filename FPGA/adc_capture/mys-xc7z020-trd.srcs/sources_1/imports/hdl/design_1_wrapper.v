@@ -33,23 +33,64 @@ module design_1_wrapper (
     inout			FIXED_IO_ps_srstb,
     inout			I2C0_SCL,
     inout			I2C0_SDA,
-	output[2:0]		LEDS,
+	input			ADC_CK,
+	input[11:0]		AD,
+	input			OFA,
+	output			MUX,
+	output			SHDNA,
+	output			SHDNB,
+	output[2:2]		LEDS,
 	input[3:0]		SW,
 	output			BP
 );
 
-  wire[63:0]	w_gpio_tri_t;
-  wire[63:0]	w_gpio_tri_o;
-  wire			w_clk40m;
-  wire			w_tready, w_tvalid;
-  reg[31:0]		r_cnt = 32'd0;
-  wire[15:0]	w_sin3mhz, w_sin11mhz;
-  reg[63:0]		r_axis_data;
-  reg[2:0]		r_cnt5;
-  reg[2:0]		r_sw;
+	wire[63:0]	w_gpio_tri_t;
+	wire[63:0]	w_gpio_tri_o;
+	wire		w_clk40m;
+	wire		w_tready, w_tvalid;
+	reg[31:0]	r_cnt = 32'd0;
+	wire[15:0]	w_sin3mhz, w_sin11mhz;
+	reg[63:0]	r_axis_data;
+	reg[2:0]	r_cnt5;
+	reg[2:0]	r_sw;
+	wire[11:0]	w_ad, w_ad2;
+	wire		w_ofa, w_ofa2;
+	wire		w_adck;
 
-	assign	LEDS	=	3'b000;
-	assign	BP		=	1'b0;
+	assign	LEDS[2:2]	=	1'b1;
+	assign	BP			=	1'b0;
+
+	assign	SHDNA		=	1'b0;
+	assign	SHDNB		=	1'b0;
+	assign	MUX			=	SW[1];	// 2-7, High->Ch A, Low->Ch B
+
+	BUFG bufg_inst (
+		.I		(ADC_CK),
+		.O		(w_adck)
+	);
+
+	generate
+		genvar i;
+		for (i = 0; i < 12; i = i + 1) begin
+		IDDR #(.DDR_CLK_EDGE ("SAME_EDGE_PIPELINED")) iddr_inst 
+		(
+			.R		(1'b0),
+			.C		(w_adck),
+			.CE		(1'b1),
+			.D		(AD[i]),
+			.Q1		(w_ad[i]),
+			.Q2		(w_ad2[i])
+		); end
+	endgenerate;
+
+	IDDR #(.DDR_CLK_EDGE ("SAME_EDGE_PIPELINED")) iddr_ofa (
+		.R		(1'b0),
+		.C		(w_adck),
+		.CE		(1'b1),
+		.D		(OFA),
+		.Q1		(w_ofa),
+		.Q2		(w_ofa2)
+	);
 
   design_1 design_1_i
        (.DDR_addr       (DDR_addr),
@@ -84,7 +125,7 @@ module design_1_wrapper (
         .IIC_0_sda_o	(iic_0_sda_o),
         .IIC_0_sda_t	(iic_0_sda_t),
 
-		.s_axis_aclk				(w_clk40m),
+		.s_axis_aclk				(w_adck),
 		.s_axis_aresetn				(1'b1),
 		.S_AXIS_tdata				(r_axis_data),
 		.S_AXIS_tready				(w_tready),
@@ -96,7 +137,7 @@ module design_1_wrapper (
 		.M_AXIS_DATA_11MHZ_tvalid	()
 	);
 
-	always @(posedge w_clk40m) begin
+	always @(posedge w_adck) begin
 		r_sw	<=	{r_sw[1:0], SW[0]};		// sync
 
 		if (r_cnt5 >= 3'd4)		// 0-4
@@ -122,15 +163,15 @@ module design_1_wrapper (
 		else
 			case (r_cnt5)
 				3'd0:
-					r_axis_data	<=	{4'd0, r_axis_data[59:12], w_sin11mhz[11:0]};
+					r_axis_data	<=	{4'd0, r_axis_data[59:12], w_ad[11:0]};
 				3'd1:
-					r_axis_data	<=	{4'd0, r_axis_data[59:24], w_sin11mhz[11:0], r_axis_data[11:0]};
+					r_axis_data	<=	{4'd0, r_axis_data[59:24], w_ad[11:0], r_axis_data[11:0]};
 				3'd2:
-					r_axis_data	<=	{4'd0, r_axis_data[59:36], w_sin11mhz[11:0], r_axis_data[23:0]};
+					r_axis_data	<=	{4'd0, r_axis_data[59:36], w_ad[11:0], r_axis_data[23:0]};
 				3'd3:
-					r_axis_data	<=	{4'd0, r_axis_data[59:48], w_sin11mhz[11:0], r_axis_data[35:0]};
+					r_axis_data	<=	{4'd0, r_axis_data[59:48], w_ad[11:0], r_axis_data[35:0]};
 				3'd4:
-					r_axis_data	<=	{4'd0, w_sin11mhz[11:0], r_axis_data[47:0]};
+					r_axis_data	<=	{4'd0, w_ad[11:0], r_axis_data[47:0]};
 				default:
 					r_axis_data	<=	r_axis_data;
 			endcase

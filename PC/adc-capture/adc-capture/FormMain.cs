@@ -98,15 +98,40 @@ namespace adc_capture
                 data[i + 4] = (int)(b6 | ((b7 & 0xF) << 8));
             }
 
-            for (i = 0; i < len; i++)
-                if ((data[i] & 0x800) != 0)    // negative
-                    data[i] = data[i] - 0x1000;
-
+            if (radioButton_signed.Checked)
+                for (i = 0; i < len; i++)
+                {
+                    if ((data[i] & 0x800) != 0)
+                    {    // negative
+                        data[i] = data[i] - 0x1000;
+                    }
+                }
+            else if (radioButton_offset.Checked) {
+                for (i = 0; i < len; i++)
+                    data[i] -= (1 << (ADC_WIDTH-1));
+            }
             return data;
         }
 
+        void init_chart()
+        {
+            chart.ChartAreas.Add(new ChartArea("data"));
+            chart.ChartAreas.Add(new ChartArea("FFT"));
+            chart.ChartAreas["FFT"].AxisY.Title = "[dB]";
+            chart.ChartAreas["FFT"].AxisX.Title = "MHz";
+            chart.ChartAreas["FFT"].CursorX.IsUserEnabled = true;
+            chart.ChartAreas["FFT"].CursorX.IsUserSelectionEnabled = true;
+            chart.ChartAreas["FFT"].AxisX.ScaleView.Zoomable = true;
+            chart.ChartAreas["FFT"].AxisX.ScrollBar.IsPositionedInside = true;
+            chart.ChartAreas["FFT"].AxisX.Minimum = 0.0;
+            chart.ChartAreas["FFT"].AxisX.Maximum = SAMPLE_FREQ / 2.0;
+                //                    chart.ChartAreas["FFT"].AxisX.Interval = 0.25; // 0=Auto
+            chart.ChartAreas["FFT"].AxisX.Interval = 0;
+            chart.ChartAreas["FFT"].AxisX.IntervalAutoMode = IntervalAutoMode.VariableCount;
+        }
+
         private bool running = false;
-        private static int FFT_POINTS = 4096;
+        private static int FFT_POINTS = 8192*2;
         private static float SAMPLE_FREQ = 40.0f;
         private static int ADC_WIDTH = 12;
 
@@ -136,26 +161,13 @@ namespace adc_capture
                 chart.Invoke(new Action(() =>
                 {
                     chart.Series.Clear();
-                    chart.ChartAreas.Clear();
-                    chart.ChartAreas.Add(new ChartArea("data"));
-                    chart.ChartAreas.Add(new ChartArea("FFT"));
-                    chart.ChartAreas["FFT"].AxisY.Title = "[dB]";
-                    chart.ChartAreas["FFT"].AxisX.Title = "MHz";
-                    chart.ChartAreas["FFT"].CursorX.IsUserEnabled = true;
-                    chart.ChartAreas["FFT"].CursorX.IsUserSelectionEnabled= true;
-                    chart.ChartAreas["FFT"].AxisX.ScaleView.Zoomable = true;
-                    chart.ChartAreas["FFT"].AxisX.ScrollBar.IsPositionedInside = true;
-                    chart.ChartAreas["FFT"].AxisX.Minimum = 0.0;
-                    chart.ChartAreas["FFT"].AxisX.Maximum = SAMPLE_FREQ / 2.0;
-                    //                    chart.ChartAreas["FFT"].AxisX.Interval = 0.25; // 0=Auto
-                    chart.ChartAreas["FFT"].AxisX.Interval = 0;
-                    chart.ChartAreas["FFT"].AxisX.IntervalAutoMode = IntervalAutoMode.VariableCount;
 
                     Series dat = new Series();
                     dat.ChartType = SeriesChartType.Line;
                     dat.Color = Color.Aqua;
                     dat.BorderWidth = 1;
                     dat.LegendText = "data";
+                    chart.ChartAreas["data"].RecalculateAxesScale();
 
                     for (int i = 0; i < 512; i++)
                     {
@@ -199,7 +211,7 @@ namespace adc_capture
 
         private void FormMain_Load(object sender, EventArgs e)
         {
-
+            init_chart();
         }
 
         private void FormMain_FormClosing(object sender, FormClosingEventArgs e)

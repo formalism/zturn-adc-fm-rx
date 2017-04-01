@@ -28,14 +28,13 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.button_capture = new System.Windows.Forms.Button();
             this.textBox_IP = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.numericUpDown_size = new System.Windows.Forms.NumericUpDown();
             this.chart = new System.Windows.Forms.DataVisualization.Charting.Chart();
+            this.radioButton_signed = new System.Windows.Forms.RadioButton();
+            this.radioButton_offset = new System.Windows.Forms.RadioButton();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_size)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.chart)).BeginInit();
             this.SuspendLayout();
@@ -94,25 +93,41 @@
             this.chart.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            chartArea1.Name = "ChartArea1";
-            this.chart.ChartAreas.Add(chartArea1);
-            legend1.Name = "Legend1";
-            this.chart.Legends.Add(legend1);
             this.chart.Location = new System.Drawing.Point(160, 24);
             this.chart.Name = "chart";
-            series1.ChartArea = "ChartArea1";
-            series1.Legend = "Legend1";
-            series1.Name = "Series1";
-            this.chart.Series.Add(series1);
             this.chart.Size = new System.Drawing.Size(547, 460);
             this.chart.TabIndex = 5;
             this.chart.Text = "chart1";
+            // 
+            // radioButton_signed
+            // 
+            this.radioButton_signed.AutoSize = true;
+            this.radioButton_signed.Location = new System.Drawing.Point(12, 151);
+            this.radioButton_signed.Name = "radioButton_signed";
+            this.radioButton_signed.Size = new System.Drawing.Size(68, 19);
+            this.radioButton_signed.TabIndex = 6;
+            this.radioButton_signed.Text = "signed";
+            this.radioButton_signed.UseVisualStyleBackColor = true;
+            // 
+            // radioButton_offset
+            // 
+            this.radioButton_offset.AutoSize = true;
+            this.radioButton_offset.Checked = true;
+            this.radioButton_offset.Location = new System.Drawing.Point(12, 176);
+            this.radioButton_offset.Name = "radioButton_offset";
+            this.radioButton_offset.Size = new System.Drawing.Size(66, 19);
+            this.radioButton_offset.TabIndex = 7;
+            this.radioButton_offset.TabStop = true;
+            this.radioButton_offset.Text = "offset";
+            this.radioButton_offset.UseVisualStyleBackColor = true;
             // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(719, 496);
+            this.Controls.Add(this.radioButton_offset);
+            this.Controls.Add(this.radioButton_signed);
             this.Controls.Add(this.chart);
             this.Controls.Add(this.numericUpDown_size);
             this.Controls.Add(this.label1);
@@ -136,6 +151,8 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.NumericUpDown numericUpDown_size;
         private System.Windows.Forms.DataVisualization.Charting.Chart chart;
+        private System.Windows.Forms.RadioButton radioButton_signed;
+        private System.Windows.Forms.RadioButton radioButton_offset;
     }
 }
 
