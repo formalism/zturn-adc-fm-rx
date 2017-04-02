@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Net.Sockets;
 using System.Numerics;
@@ -221,6 +222,26 @@ namespace adc_capture
                 ns.Close();
             if (tcp != null)
                 tcp.Close();
+        }
+
+        private void button_capture_single_Click(object sender, EventArgs e)
+        {
+            int size = set_capture_size();
+            byte[] buf = new byte[size];
+            get_raw_values(buf);
+            int[] vals = decode_values(buf, size / 8 * 5);
+            SaveFileDialog dlg = new SaveFileDialog();
+            if (DialogResult.OK == dlg.ShowDialog())
+            {
+                using (BinaryWriter writer = new BinaryWriter(File.OpenWrite(dlg.FileName)))
+                {
+                    for (var i = 0; i < vals.Length; i++)
+                    {
+                        writer.Write((UInt16)vals[i]);
+                    }
+                }
+                MessageBox.Show("written "+ vals.Length.ToString() + " values");
+            }
         }
     }
 }

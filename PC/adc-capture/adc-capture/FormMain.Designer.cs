@@ -35,6 +35,7 @@
             this.chart = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.radioButton_signed = new System.Windows.Forms.RadioButton();
             this.radioButton_offset = new System.Windows.Forms.RadioButton();
+            this.button_capture_single = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_size)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.chart)).BeginInit();
             this.SuspendLayout();
@@ -45,7 +46,7 @@
             this.button_capture.Name = "button_capture";
             this.button_capture.Size = new System.Drawing.Size(118, 39);
             this.button_capture.TabIndex = 0;
-            this.button_capture.Text = "capture";
+            this.button_capture.Text = "continuous";
             this.button_capture.UseVisualStyleBackColor = true;
             this.button_capture.Click += new System.EventHandler(this.button_capture_Click);
             // 
@@ -121,11 +122,22 @@
             this.radioButton_offset.Text = "offset";
             this.radioButton_offset.UseVisualStyleBackColor = true;
             // 
+            // button_capture_single
+            // 
+            this.button_capture_single.Location = new System.Drawing.Point(14, 297);
+            this.button_capture_single.Name = "button_capture_single";
+            this.button_capture_single.Size = new System.Drawing.Size(118, 39);
+            this.button_capture_single.TabIndex = 8;
+            this.button_capture_single.Text = "single";
+            this.button_capture_single.UseVisualStyleBackColor = true;
+            this.button_capture_single.Click += new System.EventHandler(this.button_capture_single_Click);
+            // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(719, 496);
+            this.Controls.Add(this.button_capture_single);
             this.Controls.Add(this.radioButton_offset);
             this.Controls.Add(this.radioButton_signed);
             this.Controls.Add(this.chart);
@@ -153,6 +165,7 @@
         private System.Windows.Forms.DataVisualization.Charting.Chart chart;
         private System.Windows.Forms.RadioButton radioButton_signed;
         private System.Windows.Forms.RadioButton radioButton_offset;
+        private System.Windows.Forms.Button button_capture_single;
     }
 }
 
