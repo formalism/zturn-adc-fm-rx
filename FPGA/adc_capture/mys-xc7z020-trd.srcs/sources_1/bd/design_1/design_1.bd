@@ -1369,14 +1369,14 @@
           <spirit:configurableElementValue spirit:referenceId="bd:xciName">design_1_dds_compiler_0_3</spirit:configurableElementValue>
           <spirit:configurableElementValue spirit:referenceId="DDS_Clock_Rate">40</spirit:configurableElementValue>
           <spirit:configurableElementValue spirit:referenceId="Spurious_Free_Dynamic_Range">68</spirit:configurableElementValue>
-          <spirit:configurableElementValue spirit:referenceId="Frequency_Resolution">0.4</spirit:configurableElementValue>
+          <spirit:configurableElementValue spirit:referenceId="Frequency_Resolution">13020</spirit:configurableElementValue>
           <spirit:configurableElementValue spirit:referenceId="Noise_Shaping">Auto</spirit:configurableElementValue>
-          <spirit:configurableElementValue spirit:referenceId="Phase_Width">27</spirit:configurableElementValue>
+          <spirit:configurableElementValue spirit:referenceId="Phase_Width">12</spirit:configurableElementValue>
           <spirit:configurableElementValue spirit:referenceId="Output_Width">12</spirit:configurableElementValue>
           <spirit:configurableElementValue spirit:referenceId="Output_Selection">Sine</spirit:configurableElementValue>
           <spirit:configurableElementValue spirit:referenceId="Latency">7</spirit:configurableElementValue>
           <spirit:configurableElementValue spirit:referenceId="Output_Frequency1">3</spirit:configurableElementValue>
-          <spirit:configurableElementValue spirit:referenceId="PINC1">100110011001100110011001</spirit:configurableElementValue>
+          <spirit:configurableElementValue spirit:referenceId="PINC1">100110011</spirit:configurableElementValue>
         </spirit:configurableElementValues>
       </spirit:componentInstance>
     </spirit:componentInstances>

@@ -117,6 +117,11 @@ namespace adc_capture
         void init_chart()
         {
             chart.ChartAreas.Add(new ChartArea("data"));
+            chart.ChartAreas["data"].CursorX.IsUserEnabled = true;
+            chart.ChartAreas["data"].CursorX.IsUserSelectionEnabled = true;
+            chart.ChartAreas["data"].AxisX.ScaleView.Zoomable = true;
+            chart.ChartAreas["data"].AxisX.ScrollBar.IsPositionedInside = true;
+
             chart.ChartAreas.Add(new ChartArea("FFT"));
             chart.ChartAreas["FFT"].AxisY.Title = "[dB]";
             chart.ChartAreas["FFT"].AxisX.Title = "MHz";
@@ -170,7 +175,7 @@ namespace adc_capture
                     dat.LegendText = "data";
                     chart.ChartAreas["data"].RecalculateAxesScale();
 
-                    for (int i = 0; i < 512; i++)
+                    for (int i = 4096; i < 4096+512; i++)
                     {
                         dat.Points.AddXY(i, data[i]);
                     }
