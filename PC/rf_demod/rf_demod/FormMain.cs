@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -355,7 +356,7 @@ namespace rf_demod
             6.237074932031003e-19
         };
 
-        private double[] cic(Int16[] dat, int N, int M)
+        private double[] cic(Int32[] dat, int N, int M)
         {
             double[] result = new double[dat.Length / M + 1024];
             Int64[] sums = new Int64[N];
@@ -427,26 +428,68 @@ namespace rf_demod
             bw.Write(sz);
         }
 
-        private void am_demodulate(Int16[] dat, string wavefilename)
+        private Int32[] init_sin_table()
         {
-            Int16[] i_dat = new Int16[dat.Length];
-            Int16[] q_dat = new Int16[dat.Length];
+            List<Int32> sin = new List<Int32>();
+            for (int i = 0; i < SAMPLE_FREQ; i++)
+            {
+                sin.Add((Int32)(Math.Sin(i * Math.PI * 2.0 * AM_TUNE_FREQ / SAMPLE_FREQ) * (1<<12)));
+            }
+            return sin.ToArray();
+        }
 
+        // s1.12
+        private Int32[] init_cos_table()
+        {
+            List<Int32> cos = new List<Int32>();
+            for (int i = 0; i < SAMPLE_FREQ; i++)
+            {
+                cos.Add((Int32)(Math.Cos(i * Math.PI * 2.0 * AM_TUNE_FREQ / SAMPLE_FREQ) * (1<<12)));
+            }
+            return cos.ToArray();
+        }
+
+        private void mixer(Int16[] dat, Int32[] i_dat, Int32[] q_dat)
+        {
+            Int32[] sin = init_sin_table();
+            Int32[] cos = init_cos_table();
+            int sample_freq = (int)SAMPLE_FREQ;
             for (var i = 0; i < dat.Length; i++)
             {
-                i_dat[i] = (Int16)(Math.Sin(((double)i) * Math.PI * 2.0 * AM_TUNE_FREQ / SAMPLE_FREQ) * ((double)dat[i]));
-                q_dat[i] = (Int16)(Math.Cos(((double)i) * Math.PI * 2.0 * AM_TUNE_FREQ / SAMPLE_FREQ) * ((double)dat[i]));
-            }
+                i_dat[i] = sin[i % sample_freq] * dat[i];     // s11 * s1.12 -> s13.12
+                q_dat[i] = cos[i % sample_freq] * dat[i];
 
+                i_dat[i] >>= 5;     // s13.12 -> s13.7
+                q_dat[i] >>= 5;
+            }
+        }
+
+        private void am_demodulate(Int16[] dat, string wavefilename, Stopwatch sw, List<long> ellapsedms)
+        {
+            Int32[] i_dat = new Int32[dat.Length];
+            Int32[] q_dat = new Int32[dat.Length];
+
+            sw.Restart();
+            mixer(dat, i_dat, q_dat);
+            sw.Stop();
+            ellapsedms.Add(sw.ElapsedMilliseconds);
+
+            sw.Restart();
             // 40MHz -> (CIC 1/32) -> 1.25MHz -> (FIR 2/5) -> 500kHz -> (FIR 2/5) -> 200kHz -> (FIR 6/25) -> 48kHz
             double[] i_cic = cic(i_dat, 4, 32);
             double[] q_cic = cic(q_dat, 4, 32);
+            sw.Stop();
+            ellapsedms.Add(sw.ElapsedMilliseconds);
+
+            sw.Restart();
             double[] i_fir1 = fir(i_cic, 2, 5, fir_coef_2over5);
             double[] q_fir1 = fir(q_cic, 2, 5, fir_coef_2over5);
             double[] i_fir2 = fir(i_fir1, 2, 5, fir_coef_2over5);
             double[] q_fir2 = fir(q_fir1, 2, 5, fir_coef_2over5);
             double[] i_fir3 = fir(i_fir2, 6, 25, fir_coef_6over25);
             double[] q_fir3 = fir(q_fir2, 6, 25, fir_coef_6over25);
+            sw.Stop();
+            ellapsedms.Add(sw.ElapsedMilliseconds);
 
             FileStream fs = new FileStream(wavefilename, FileMode.CreateNew);
             BinaryWriter bw = new BinaryWriter(fs, Encoding.ASCII);
@@ -474,6 +517,8 @@ namespace rf_demod
             if (DialogResult.OK == dlg.ShowDialog())
             {
                 AM_TUNE_FREQ = Convert.ToInt32(textBox_am_freq.Text) * 1000;
+                Stopwatch sw = Stopwatch.StartNew();
+                List<long> ellapsedms = new List<long>();
                 FileStream fs = new FileStream(dlg.FileName, FileMode.Open);
                 BinaryReader br = new BinaryReader(fs);
                 Int16[] dat = new Int16[fs.Length / 2];
@@ -483,8 +528,12 @@ namespace rf_demod
                 }
                 br.Close();
                 fs.Close();
-                am_demodulate(dat, dlg.FileName+".wav");
-                MessageBox.Show("Done");
+                sw.Stop();
+                ellapsedms.Add(sw.ElapsedMilliseconds);
+                am_demodulate(dat, dlg.FileName+".wav", sw, ellapsedms);
+                MessageBox.Show("file read="+ellapsedms[0]+"[ms], "+
+                    "mixer="+ellapsedms[1]+"[ms], "+"cic="+ellapsedms[2]+"[ms], "+
+                    "fir="+ellapsedms[3]+"[ms]");
             }
         }
     }
