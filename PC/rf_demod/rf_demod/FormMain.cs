@@ -280,7 +280,139 @@ namespace rf_demod
             -2.537459624811725e-05 ,
             -4.986485019118435e-05
         };
-           
+
+        // 2/5 FIR 127 tap cutoff = 0.0625
+        static double[] fir_coef_2over5_cutoff0625 = new double[]
+        {
+            -1.546818029213384e-04 ,
+            -2.925004870268151e-04 ,
+            -3.966986867022709e-04 ,
+            -4.516701628984094e-04 ,
+            -4.442135830734009e-04 ,
+            -3.656543457610535e-04 ,
+            -2.146379652732230e-04 ,
+            5.249930862455637e-19 ,
+            2.571802716327274e-04 ,
+            5.233268682807924e-04 ,
+            7.547206480323007e-04 ,
+            9.028137263232300e-04 ,
+            9.222011919604226e-04 ,
+            7.802098281225421e-04 ,
+            4.664142516044763e-04 ,
+            -9.881677457885650e-19 ,
+            -5.671020370321612e-04 ,
+            -1.152916277586480e-03 ,
+            -1.654655376590399e-03 ,
+            -1.963956883619263e-03 ,
+            -1.986262193754624e-03 ,
+            -1.661297964337517e-03 ,
+            -9.808625495047495e-04 ,
+            1.709387001661791e-18 ,
+            1.161720681402882e-03 ,
+            2.330730236729762e-03 ,
+            3.301750365502651e-03 ,
+            3.869590457920005e-03 ,
+            3.866075001856550e-03 ,
+            3.196135472913853e-03 ,
+            1.866395431989273e-03 ,
+            -2.575385117778895e-18 ,
+            -2.166948070538122e-03 ,
+            -4.309332859201571e-03 ,
+            -6.056000406925641e-03 ,
+            -7.046905253823974e-03 ,
+            -6.996485655950362e-03 ,
+            -5.753251666302258e-03 ,
+            -3.344974121175266e-03 ,
+            3.450159188958671e-18 ,
+            3.861925462530938e-03 ,
+            7.671686409067631e-03 ,
+            1.078293292417739e-02 ,
+            1.256641723547502e-02 ,
+            1.251421931463348e-02 ,
+            1.033869874788177e-02 ,
+            6.050294052720844e-03 ,
+            -4.196328067547952e-18 ,
+            -7.123592424663372e-03 ,
+            -1.434686917507014e-02 ,
+            -2.051051727966336e-02 ,
+            -2.440561040310835e-02 ,
+            -2.493033177551300e-02 ,
+            -2.124705820274432e-02 ,
+            -1.291809561477477e-02 ,
+            4.696707739684259e-18 ,
+            1.691895532657975e-02 ,
+            3.674654138976958e-02 ,
+            5.797937264673658e-02 ,
+            7.885167283528034e-02 ,
+            9.752301960387494e-02 ,
+            1.122822917636505e-01 ,
+            1.217422657666724e-01 ,
+            1.250000000000000e-01 ,
+            1.217422657666724e-01 ,
+            1.122822917636505e-01 ,
+            9.752301960387494e-02 ,
+            7.885167283528034e-02 ,
+            5.797937264673658e-02 ,
+            3.674654138976958e-02 ,
+            1.691895532657975e-02 ,
+            4.696707739684259e-18 ,
+            -1.291809561477477e-02 ,
+            -2.124705820274432e-02 ,
+            -2.493033177551300e-02 ,
+            -2.440561040310835e-02 ,
+            -2.051051727966336e-02 ,
+            -1.434686917507014e-02 ,
+            -7.123592424663372e-03 ,
+            -4.196328067547952e-18 ,
+            6.050294052720844e-03 ,
+            1.033869874788177e-02 ,
+            1.251421931463348e-02 ,
+            1.256641723547502e-02 ,
+            1.078293292417739e-02 ,
+            7.671686409067631e-03 ,
+            3.861925462530938e-03 ,
+            3.450159188958671e-18 ,
+            -3.344974121175266e-03 ,
+            -5.753251666302258e-03 ,
+            -6.996485655950362e-03 ,
+            -7.046905253823974e-03 ,
+            -6.056000406925641e-03 ,
+            -4.309332859201571e-03 ,
+            -2.166948070538122e-03 ,
+            -2.575385117778895e-18 ,
+            1.866395431989273e-03 ,
+            3.196135472913853e-03 ,
+            3.866075001856550e-03 ,
+            3.869590457920005e-03 ,
+            3.301750365502651e-03 ,
+            2.330730236729762e-03 ,
+            1.161720681402882e-03 ,
+            1.709387001661791e-18 ,
+            -9.808625495047495e-04 ,
+            -1.661297964337517e-03 ,
+            -1.986262193754624e-03 ,
+            -1.963956883619263e-03 ,
+            -1.654655376590399e-03 ,
+            -1.152916277586480e-03 ,
+            -5.671020370321612e-04 ,
+            -9.881677457885650e-19 ,
+            4.664142516044763e-04 ,
+            7.802098281225421e-04 ,
+            9.222011919604226e-04 ,
+            9.028137263232300e-04 ,
+            7.547206480323007e-04 ,
+            5.233268682807924e-04 ,
+            2.571802716327274e-04 ,
+            5.249930862455637e-19 ,
+            -2.146379652732230e-04 ,
+            -3.656543457610535e-04 ,
+            -4.442135830734009e-04 ,
+            -4.516701628984094e-04 ,
+            -3.966986867022709e-04 ,
+            -2.925004870268151e-04 ,
+            -1.546818029213384e-04
+        };
+
         // for 2/5 FIR 71tap (2phase) cutoff=0.1
         static double[] fir_coef_2over5 = new double[] {
             6.237074932031003e-19 ,
@@ -512,31 +644,133 @@ namespace rf_demod
             fs.Close();
         }
 
+        private double[] fm_demodulate_sub(double[] i, double[] q)
+        {
+            double[] result = new double[i.Length];
+            double i_prev = 0.0, q_prev = 0.0;
+
+            for (int x = 0; x < i.Length; x++)
+            {
+                result[x] = Math.Atan2(i_prev * q[x] - q_prev * i[x], i_prev * i[x] + q_prev * q[x]);
+                i_prev = i[x];
+                q_prev = q[x];
+            }
+            return result;
+        }
+
+        // https://tomroelandts.com/articles/low-pass-single-pole-iir-filter
+        private double[] de_emphasis(double[] vals, double decay)
+        {
+            double b = 1.0 - decay;
+            double[] result = new double[vals.Length];
+            for (var i = 1; i < vals.Length; i++)
+            {
+                result[i] = b * vals[i] + decay * result[i - 1];  // single pole IIR
+            }
+            return result;
+        }
+
+        private void fm_demodulate(double tune_freq, Int16[] dat, string wavefilename, Stopwatch sw, List<long> ellapsedms)
+        {
+            Int32[] i_dat = new Int32[dat.Length];
+            Int32[] q_dat = new Int32[dat.Length];
+
+            int rem = (int)(tune_freq / SAMPLE_FREQ);
+            tune_freq = tune_freq - SAMPLE_FREQ * rem;  // TODO: correctly calculate frequency aliasing
+
+            sw.Restart();
+            mixer((int)tune_freq, dat, i_dat, q_dat);
+            sw.Stop();
+            ellapsedms.Add(sw.ElapsedMilliseconds);
+
+            sw.Restart();
+            // 40MHz -> (CIC 1/32) -> 1.25MHz -> (FIR 2/5) -> 500kHz -> (FIR 6/25) -> 120kHz -> (FIR 2/5 cutoff 15kHz) -> 48kHz
+            double[] i_cic = cic(i_dat, 4, 32);
+            double[] q_cic = cic(q_dat, 4, 32); // 1.25MHz
+            sw.Stop();
+            ellapsedms.Add(sw.ElapsedMilliseconds);
+
+            sw.Restart();
+            double[] i_fir1 = fir(i_cic, 2, 5, fir_coef_2over5);    // 500kHz
+            double[] q_fir1 = fir(q_cic, 2, 5, fir_coef_2over5);
+
+            // FM demodulation
+            double[] arctans = fm_demodulate_sub(i_fir1, q_fir1);
+            double[] arctans2 = fir(arctans, 6, 25, fir_coef_6over25);  // 120kHz
+            double[] arctans3 = fir(arctans2, 2, 5, fir_coef_2over5_cutoff0625); // 48kHz
+            double[] arctans4 = de_emphasis(arctans3, 0.67523190665);   // fc = 3kHz/48kHz = 0.0625, e^(-2pi*0.0625)
+            sw.Stop();
+            ellapsedms.Add(sw.ElapsedMilliseconds);
+
+            FileStream fs = new FileStream(wavefilename, FileMode.CreateNew);
+            BinaryWriter bw = new BinaryWriter(fs, Encoding.ASCII);
+            write_wave_header(bw, (uint)arctans4.Length * 2);
+            double maxAmp = 0.0;
+            for (var i = 0; i < arctans4.Length; i++)
+            {
+                double val = Math.Abs(arctans4[i]);
+                if (maxAmp < val)
+                    maxAmp = val;
+            }
+            for (var i = 0; i < arctans4.Length; i++)
+            {
+                double v = arctans4[i];
+                short val = (short)((v / maxAmp) * (1 << 15) + (1 << 14));
+                bw.Write(val);
+            }
+            bw.Close();
+            fs.Close();
+        }
+
+        private Int16[] read_data_file(string fname)
+        {
+            FileStream fs = new FileStream(fname, FileMode.Open);
+            BinaryReader br = new BinaryReader(fs);
+            byte[] bindat = br.ReadBytes((int)fs.Length);
+            br.Close();
+            fs.Close();
+
+            Int16[] dat = new Int16[bindat.Length / 2];
+            for (var i = 0; i < bindat.Length; i += 2)
+            {
+                dat[i / 2] = BitConverter.ToInt16(bindat, i);
+            }
+            return dat;
+        }
+
         private void button_am_Click(object sender, EventArgs e)
         {
             int am_tune_freq = Convert.ToInt32(textBox_am_freq.Text) * 1000;
             OpenFileDialog dlg = new OpenFileDialog();
             if (DialogResult.OK == dlg.ShowDialog())
             {
-                Stopwatch sw = Stopwatch.StartNew();
                 List<long> ellapsedms = new List<long>();
-                FileStream fs = new FileStream(dlg.FileName, FileMode.Open);
-                BinaryReader br = new BinaryReader(fs);
-                byte[] bindat = br.ReadBytes((int)fs.Length);
-                br.Close();
-                fs.Close();
-
-                Int16[] dat = new Int16[bindat.Length / 2];
-                for (var i = 0; i < bindat.Length; i += 2)
-                {
-                    dat[i/2] = BitConverter.ToInt16(bindat, i);
-                }
+                Stopwatch sw = Stopwatch.StartNew();
+                Int16[] dat = read_data_file(dlg.FileName);
                 sw.Stop();
                 ellapsedms.Add(sw.ElapsedMilliseconds);
                 am_demodulate(am_tune_freq, dat, dlg.FileName+".wav", sw, ellapsedms);
                 MessageBox.Show("file read="+ellapsedms[0]+"[ms], "+
                     "mixer="+ellapsedms[1]+"[ms], "+"cic="+ellapsedms[2]+"[ms], "+
                     "fir="+ellapsedms[3]+"[ms]");
+            }
+        }
+
+        private void button_fm_Click(object sender, EventArgs e)
+        {
+            double fm_tune_freq = Convert.ToDouble(textBox_fm_freq.Text) * 1.0e+6;
+            OpenFileDialog dlg = new OpenFileDialog();
+            if (DialogResult.OK == dlg.ShowDialog())
+            {
+                List<long> ellapsedms = new List<long>();
+                Stopwatch sw = Stopwatch.StartNew();
+                Int16[] dat = read_data_file(dlg.FileName);
+                sw.Stop();
+                ellapsedms.Add(sw.ElapsedMilliseconds);
+                fm_demodulate(fm_tune_freq, dat, dlg.FileName + ".wav", sw, ellapsedms);
+                MessageBox.Show("file read=" + ellapsedms[0] + "[ms], " +
+                    "mixer=" + ellapsedms[1] + "[ms], " + "cic=" + ellapsedms[2] + "[ms], " +
+                    "fir=" + ellapsedms[3] + "[ms]");
             }
         }
     }

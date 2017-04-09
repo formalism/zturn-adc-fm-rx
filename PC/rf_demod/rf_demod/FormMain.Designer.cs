@@ -31,6 +31,9 @@
             this.button_am = new System.Windows.Forms.Button();
             this.textBox_am_freq = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
+            this.button_fm = new System.Windows.Forms.Button();
+            this.label2 = new System.Windows.Forms.Label();
+            this.textBox_fm_freq = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // button_am
@@ -60,11 +63,41 @@
             this.label1.TabIndex = 2;
             this.label1.Text = "kHz";
             // 
+            // button_fm
+            // 
+            this.button_fm.Location = new System.Drawing.Point(12, 189);
+            this.button_fm.Name = "button_fm";
+            this.button_fm.Size = new System.Drawing.Size(258, 68);
+            this.button_fm.TabIndex = 3;
+            this.button_fm.Text = "FM";
+            this.button_fm.UseVisualStyleBackColor = true;
+            this.button_fm.Click += new System.EventHandler(this.button_fm_Click);
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(118, 153);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(35, 15);
+            this.label2.TabIndex = 5;
+            this.label2.Text = "MHz";
+            // 
+            // textBox_fm_freq
+            // 
+            this.textBox_fm_freq.Location = new System.Drawing.Point(12, 150);
+            this.textBox_fm_freq.Name = "textBox_fm_freq";
+            this.textBox_fm_freq.Size = new System.Drawing.Size(100, 22);
+            this.textBox_fm_freq.TabIndex = 4;
+            this.textBox_fm_freq.Text = "84.7";
+            // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(282, 253);
+            this.ClientSize = new System.Drawing.Size(282, 275);
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.textBox_fm_freq);
+            this.Controls.Add(this.button_fm);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.textBox_am_freq);
             this.Controls.Add(this.button_am);
@@ -80,6 +113,9 @@
         private System.Windows.Forms.Button button_am;
         private System.Windows.Forms.TextBox textBox_am_freq;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Button button_fm;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.TextBox textBox_fm_freq;
     }
 }
 
