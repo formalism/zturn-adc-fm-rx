@@ -36,6 +36,7 @@
             this.radioButton_signed = new System.Windows.Forms.RadioButton();
             this.radioButton_offset = new System.Windows.Forms.RadioButton();
             this.button_capture_single = new System.Windows.Forms.Button();
+            this.checkBox_decode = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_size)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.chart)).BeginInit();
             this.SuspendLayout();
@@ -103,22 +104,22 @@
             // radioButton_signed
             // 
             this.radioButton_signed.AutoSize = true;
+            this.radioButton_signed.Checked = true;
             this.radioButton_signed.Location = new System.Drawing.Point(12, 151);
             this.radioButton_signed.Name = "radioButton_signed";
             this.radioButton_signed.Size = new System.Drawing.Size(68, 19);
             this.radioButton_signed.TabIndex = 6;
+            this.radioButton_signed.TabStop = true;
             this.radioButton_signed.Text = "signed";
             this.radioButton_signed.UseVisualStyleBackColor = true;
             // 
             // radioButton_offset
             // 
             this.radioButton_offset.AutoSize = true;
-            this.radioButton_offset.Checked = true;
             this.radioButton_offset.Location = new System.Drawing.Point(12, 176);
             this.radioButton_offset.Name = "radioButton_offset";
             this.radioButton_offset.Size = new System.Drawing.Size(66, 19);
             this.radioButton_offset.TabIndex = 7;
-            this.radioButton_offset.TabStop = true;
             this.radioButton_offset.Text = "offset";
             this.radioButton_offset.UseVisualStyleBackColor = true;
             // 
@@ -132,11 +133,22 @@
             this.button_capture_single.UseVisualStyleBackColor = true;
             this.button_capture_single.Click += new System.EventHandler(this.button_capture_single_Click);
             // 
+            // checkBox_decode
+            // 
+            this.checkBox_decode.AutoSize = true;
+            this.checkBox_decode.Location = new System.Drawing.Point(14, 272);
+            this.checkBox_decode.Name = "checkBox_decode";
+            this.checkBox_decode.Size = new System.Drawing.Size(129, 19);
+            this.checkBox_decode.TabIndex = 9;
+            this.checkBox_decode.Text = "raw adc decode";
+            this.checkBox_decode.UseVisualStyleBackColor = true;
+            // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(719, 496);
+            this.Controls.Add(this.checkBox_decode);
             this.Controls.Add(this.button_capture_single);
             this.Controls.Add(this.radioButton_offset);
             this.Controls.Add(this.radioButton_signed);
@@ -166,6 +178,7 @@
         private System.Windows.Forms.RadioButton radioButton_signed;
         private System.Windows.Forms.RadioButton radioButton_offset;
         private System.Windows.Forms.Button button_capture_single;
+        private System.Windows.Forms.CheckBox checkBox_decode;
     }
 }
 

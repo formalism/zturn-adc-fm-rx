@@ -1,3 +1,4 @@
+#include <math.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/types.h>
@@ -120,6 +121,33 @@ void* thread_func(void* arg){
     pthread_exit(NULL);
 }
 
+// initialize DDS memory (currently fixed at 84.7MHz @ 40MHz sampling)
+void init_dds_frequency(){
+    int i;
+    int uiofd;
+    unsigned int* map_addr;
+    double ratio = 4.7e+6 / 40e+6;
+
+    uiofd = open("/dev/uio1", O_RDWR);
+    if (uiofd < 0){
+        perror("uio open:");
+        goto exit;
+    }
+    map_addr = (unsigned int*)mmap(NULL, 32*KB, PROT_READ | PROT_WRITE, MAP_SHARED, uiofd, 0);
+    if (!map_addr){
+        fprintf(stderr, "mmap failed\n");
+        goto exit;
+    }
+    for (i = 0; i < 400; i++){  /* 400 point is enough */
+        int s = sin((double)i*M_PI*2.0*ratio) * (1<<12);
+        int c = cos((double)i*M_PI*2.0*ratio) * (1<<12);
+        printf("[i=%08d] sin=%d, cos=%d\n", i, s, c);
+        map_addr[i] = (s<<16) | c;
+    }
+ exit:
+    return;
+}
+
 void dump_mem(unsigned char* buf, int sz){
     int i;
 
@@ -173,6 +201,8 @@ int main(int argc, char** argv)
         perror("mmap");
         exit(1);
     }
+
+    init_dds_frequency();
 
     bind_and_open(&sock0, &sock);
     while (i < 8){

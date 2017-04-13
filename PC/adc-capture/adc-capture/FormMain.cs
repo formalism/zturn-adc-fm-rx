@@ -234,18 +234,29 @@ namespace adc_capture
             int size = set_capture_size();
             byte[] buf = new byte[size];
             get_raw_values(buf);
-            int[] vals = decode_values(buf, size / 8 * 5);
             SaveFileDialog dlg = new SaveFileDialog();
             if (DialogResult.OK == dlg.ShowDialog())
             {
-                using (BinaryWriter writer = new BinaryWriter(File.OpenWrite(dlg.FileName)))
+                if (checkBox_decode.Checked)
                 {
-                    for (var i = 0; i < vals.Length; i++)
+                    int[] vals = decode_values(buf, size / 8 * 5);
+                    using (BinaryWriter writer = new BinaryWriter(File.OpenWrite(dlg.FileName)))
                     {
-                        writer.Write((UInt16)vals[i]);
+                        for (var i = 0; i < vals.Length; i++)
+                        {
+                            writer.Write((UInt16)vals[i]);
+                        }
                     }
+                    MessageBox.Show("written " + vals.Length.ToString() + " values");
                 }
-                MessageBox.Show("written "+ vals.Length.ToString() + " values");
+                else
+                {
+                    using (BinaryWriter writer = new BinaryWriter(File.OpenWrite(dlg.FileName)))
+                    {
+                        writer.Write(buf);
+                    }
+                    MessageBox.Show("written " + buf.Length.ToString() + " bytes");
+                }
             }
         }
     }

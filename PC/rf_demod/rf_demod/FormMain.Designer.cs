@@ -34,6 +34,7 @@
             this.button_fm = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
             this.textBox_fm_freq = new System.Windows.Forms.TextBox();
+            this.button_fm_demodulate2 = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // button_am
@@ -90,11 +91,22 @@
             this.textBox_fm_freq.TabIndex = 4;
             this.textBox_fm_freq.Text = "84.7";
             // 
+            // button_fm_demodulate2
+            // 
+            this.button_fm_demodulate2.Location = new System.Drawing.Point(12, 263);
+            this.button_fm_demodulate2.Name = "button_fm_demodulate2";
+            this.button_fm_demodulate2.Size = new System.Drawing.Size(258, 68);
+            this.button_fm_demodulate2.TabIndex = 6;
+            this.button_fm_demodulate2.Text = "FM (After CIC)";
+            this.button_fm_demodulate2.UseVisualStyleBackColor = true;
+            this.button_fm_demodulate2.Click += new System.EventHandler(this.button_fm_demodulate2_Click);
+            // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(282, 275);
+            this.ClientSize = new System.Drawing.Size(282, 344);
+            this.Controls.Add(this.button_fm_demodulate2);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.textBox_fm_freq);
             this.Controls.Add(this.button_fm);
@@ -116,6 +128,7 @@
         private System.Windows.Forms.Button button_fm;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox textBox_fm_freq;
+        private System.Windows.Forms.Button button_fm_demodulate2;
     }
 }
 

@@ -19,4 +19,4 @@ capture:
 	$(CROSS_COMPILE)gcc -o capture capture.c -pthread
 
 test:
-	gcc -O2 -o capture capture.c -pthread
+	gcc -O2 -o capture capture.c -pthread -lm

@@ -728,7 +728,7 @@ namespace rf_demod
             return result;
         }
 
-        private void fm_demodulate(double tune_freq, Int16[] dat, string wavefilename, Stopwatch sw, List<long> ellapsedms)
+        private void fm_demodulate(double tune_freq, Int16[] dat, string wavefilename, TimeStampLog log)
         {
             Int32[] i_dat = new Int32[dat.Length];
             Int32[] q_dat = new Int32[dat.Length];
@@ -736,20 +736,18 @@ namespace rf_demod
             int rem = (int)(tune_freq / SAMPLE_FREQ);
             tune_freq = tune_freq - SAMPLE_FREQ * rem;  // TODO: correctly calculate frequency aliasing
 
-            sw.Restart();
+            log.start();
             mixer((int)tune_freq, dat, i_dat, q_dat);
-            sw.Stop();
-            ellapsedms.Add(sw.ElapsedMilliseconds);
+            log.stop("mixer: ");
 
-            sw.Restart();
+            log.start();
             // 40MHz -> (CIC 1/32) -> 1.25MHz -> (FIR 2/5) -> 500kHz -> 
             // (FIR 2/5 cutoff 80kHz:0.08) -> 200kHz -> (FIR 3/5 cutoff 48kHz:0.08) -> 120kHz -> (FIR 2/5 cutoff 15kHz:0.0625) -> 48kHz
-            double[] i_cic = cic(i_dat, 4, 32);
-            double[] q_cic = cic(q_dat, 4, 32); // 1.25MHz
-            sw.Stop();
-            ellapsedms.Add(sw.ElapsedMilliseconds);
+            double[] i_cic = cic(i_dat, 3, 32);
+            double[] q_cic = cic(q_dat, 3, 32); // 1.25MHz
+            log.stop("cic: ");
 
-            sw.Restart();
+            log.start();
             double[] i_fir1 = fir(i_cic, 2, 5, fir_coef_255tap_008);    // 500kHz (cutoff 200kHz)
             double[] q_fir1 = fir(q_cic, 2, 5, fir_coef_255tap_008);
 
@@ -759,8 +757,50 @@ namespace rf_demod
             double[] arctans3 = fir(arctans2, 3, 5, fir_coef_255tap_008);  // 120kHz (cutoff 48kHz)
             double[] arctans4 = fir(arctans3, 2, 5, fir_coef_255tap_0625); // 48kHz (cutoff 15kHz)
             double[] arctans5 = de_emphasis(arctans4, 0.67523190665);   // fc = 3kHz/48kHz = 0.0625, e^(-2pi*0.0625)
-            sw.Stop();
-            ellapsedms.Add(sw.ElapsedMilliseconds);
+            log.stop("FIR: ");
+
+            FileStream fs = new FileStream(wavefilename, FileMode.CreateNew);
+            BinaryWriter bw = new BinaryWriter(fs, Encoding.ASCII);
+            write_wave_header(bw, (uint)arctans5.Length * 2);
+            double maxAmp = 0.0;
+            for (var i = 0; i < arctans5.Length; i++)
+            {
+                double val = Math.Abs(arctans5[i]);
+                if (maxAmp < val)
+                    maxAmp = val;
+            }
+            for (var i = 0; i < arctans5.Length; i++)
+            {
+                double v = arctans5[i];
+                short val = (short)((v / maxAmp) * (1 << 15) + (1 << 14));
+                bw.Write(val);
+            }
+            bw.Close();
+            fs.Close();
+        }
+
+        private void fm_demodulate2(Int32[] i_dat, Int32[] q_dat, string wavefilename, TimeStampLog log)
+        {
+            double[] i_cic = new double[i_dat.Length];
+            double[] q_cic = new double[q_dat.Length];
+
+            for (var i = 0; i < i_dat.Length; i++)
+            {
+                i_cic[i] = (double)i_dat[i];
+                q_cic[i] = (double)q_dat[i];        // 40/32 = 1.25MHz after CIC
+            }
+
+            log.start();
+            double[] i_fir1 = fir(i_cic, 2, 5, fir_coef_255tap_008);    // 500kHz (cutoff 200kHz)
+            double[] q_fir1 = fir(q_cic, 2, 5, fir_coef_255tap_008);
+
+            // FM demodulation
+            double[] arctans = fm_demodulate_sub(i_fir1, q_fir1);
+            double[] arctans2 = fir(arctans, 2, 5, fir_coef_255tap_008);  // 200kHz (cutoff 80kHz)
+            double[] arctans3 = fir(arctans2, 3, 5, fir_coef_255tap_008);  // 120kHz (cutoff 48kHz)
+            double[] arctans4 = fir(arctans3, 2, 5, fir_coef_255tap_0625); // 48kHz (cutoff 15kHz)
+            double[] arctans5 = de_emphasis(arctans4, 0.67523190665);   // fc = 3kHz/48kHz = 0.0625, e^(-2pi*0.0625)
+            log.stop("FIR: ");
 
             FileStream fs = new FileStream(wavefilename, FileMode.CreateNew);
             BinaryWriter bw = new BinaryWriter(fs, Encoding.ASCII);
@@ -798,6 +838,23 @@ namespace rf_demod
             return dat;
         }
 
+        private void read_cic_data_file(string fname, out Int32[] i_dat, out Int32[] q_dat)
+        {
+            FileStream fs = new FileStream(fname, FileMode.Open);
+            BinaryReader br = new BinaryReader(fs);
+            byte[] bindat = br.ReadBytes((int)fs.Length);
+            br.Close();
+            fs.Close();
+
+            i_dat = new Int32[bindat.Length / 8];
+            q_dat = new Int32[bindat.Length / 8];
+            for (var i = 0; i < bindat.Length; i += 8)
+            {
+                q_dat[i / 8] = BitConverter.ToInt32(bindat, i);
+                i_dat[i / 8] = BitConverter.ToInt32(bindat, i+4);
+            }
+        }
+
         private void button_am_Click(object sender, EventArgs e)
         {
             int am_tune_freq = Convert.ToInt32(textBox_am_freq.Text) * 1000;
@@ -818,19 +875,44 @@ namespace rf_demod
 
         private void button_fm_Click(object sender, EventArgs e)
         {
+            string msg = "";
             double fm_tune_freq = Convert.ToDouble(textBox_fm_freq.Text) * 1.0e+6;
             OpenFileDialog dlg = new OpenFileDialog();
             if (DialogResult.OK == dlg.ShowDialog())
             {
-                List<long> ellapsedms = new List<long>();
-                Stopwatch sw = Stopwatch.StartNew();
+                TimeStampLog log = new TimeStampLog();
+                log.start();
                 Int16[] dat = read_data_file(dlg.FileName);
-                sw.Stop();
-                ellapsedms.Add(sw.ElapsedMilliseconds);
-                fm_demodulate(fm_tune_freq, dat, dlg.FileName + ".wav", sw, ellapsedms);
-                MessageBox.Show("file read=" + ellapsedms[0] + "[ms], " +
-                    "mixer=" + ellapsedms[1] + "[ms], " + "cic=" + ellapsedms[2] + "[ms], " +
-                    "fir=" + ellapsedms[3] + "[ms]");
+                log.stop("Read File: ");
+                fm_demodulate(fm_tune_freq, dat, dlg.FileName + ".wav", log);
+                string[] buf = log.getLog();
+                for (var i = 0; i < buf.Length; i++)
+                {
+                    msg += buf[i] + "\n";
+                }
+                MessageBox.Show(msg);
+            }
+        }
+
+        private void button_fm_demodulate2_Click(object sender, EventArgs e)
+        {
+            string msg = "";
+            double fm_tune_freq = Convert.ToDouble(textBox_fm_freq.Text) * 1.0e+6;
+            OpenFileDialog dlg = new OpenFileDialog();
+            if (DialogResult.OK == dlg.ShowDialog())
+            {
+                TimeStampLog log = new TimeStampLog();
+                log.start();
+                Int32[] i_dat, q_dat;
+                read_cic_data_file(dlg.FileName, out i_dat, out q_dat);
+                log.stop("Read File: ");
+                fm_demodulate2(i_dat, q_dat, dlg.FileName + ".wav", log);
+                string[] buf = log.getLog();
+                for (var i = 0; i < buf.Length; i++)
+                {
+                    msg += buf[i] + "\n";
+                }
+                MessageBox.Show(msg);
             }
         }
     }
