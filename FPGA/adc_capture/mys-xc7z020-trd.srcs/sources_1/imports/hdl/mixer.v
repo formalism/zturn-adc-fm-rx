@@ -2,7 +2,7 @@
 module mixer
 	#(
 		parameter RESET_CNT			=	400,
-		parameter SINUSOIDAL_WIDTH	=	14,		// 1Q12
+		parameter SINUSOIDAL_WIDTH	=	13,		// 1Q11
 		parameter DATA_WIDTH		=	12	
 	)
 (
@@ -35,5 +35,9 @@ reg signed [SINUSOIDAL_WIDTH+DATA_WIDTH-2:0]	r_i, r_q;
 		r_q		<=	data * w_cos;
 	end
 
-endmodule
+   initial begin
+	  r_i		<=		0;
+	  r_q		<=		0;
+   end
 
+endmodule

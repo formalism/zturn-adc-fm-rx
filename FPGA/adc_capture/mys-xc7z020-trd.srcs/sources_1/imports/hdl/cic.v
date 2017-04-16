@@ -40,15 +40,26 @@ reg [7:0]	r_cnt = 8'd0;
 		if (r_cnt >= RATE_CHANGE-1) begin
 			r_dif1	<=	r_tmp;
 			r_dif2	<=	r_tmp - r_dif1;
-			r_dif3	<=	r_tmp - r_dif2 - r_dif1;
-			r_out	<=	r_dif3;
+			r_dif3	<=	r_tmp - r_dif1 - r_dif2;
+			r_out	<=	r_tmp - r_dif1 - r_dif2 - r_dif3;
 		end else begin
 			r_dif1	<=	r_dif1;
 			r_dif2	<=	r_dif2;
 			r_dif3	<=	r_dif3;
 			r_out	<=	r_out;
 		end
-	end
+	end // always @ (posedge clk)
+
+   initial begin
+	  r_sum1	<=		0;
+	  r_sum2	<=		0;
+	  r_sum3	<=		0;
+	  r_dif1	<=		0;
+	  r_dif2	<=		0;
+	  r_dif3	<=		0;
+	  r_out		<=		0;
+	  r_tmp		<=		0;
+   end
 
 endmodule
 

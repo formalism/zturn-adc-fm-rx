@@ -141,8 +141,9 @@ void init_dds_frequency(){
     for (i = 0; i < 400; i++){  /* 400 point is enough */
         int s = sin((double)i*M_PI*2.0*ratio) * (1<<12);
         int c = cos((double)i*M_PI*2.0*ratio) * (1<<12);
-        printf("[i=%08d] sin=%d, cos=%d\n", i, s, c);
-        map_addr[i] = (s<<16) | c;
+        int sc = (s<<16) | (c & 0xFFFF);
+        printf("[i=%08d] sin=%d, cos=%d, sincos=%08X\n", i, s, c, sc);
+        map_addr[i] = sc;
     }
  exit:
     return;
