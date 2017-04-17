@@ -52,10 +52,10 @@ module design_1_wrapper (
 	reg[63:0]	r_axis_data;
 	reg[2:0]	r_cnt5;
 	reg[2:0]	r_sw0;
-	wire signed[11:0]	w_ad, w_ad2;
+(* keep = "true" *)	wire signed[11:0]	w_ad, w_ad2;
 	wire		w_ofa, w_ofa2;
 	wire		w_adck;
-	wire signed[13:0]	w_i, w_q;
+(* keep = "true" *)	wire signed[13:0]	w_i, w_q;
 
 	wire w_i_cic_en, w_q_cic_en;
 	wire signed [28:0]	w_i_cic, w_q_cic;
@@ -135,7 +135,7 @@ module design_1_wrapper (
 		.s_axis_aresetn				(1'b1),
 		.S_AXIS_tdata				(r_axis_data),
 		.S_AXIS_tready				(w_tready),
-		.S_AXIS_tvalid				(r_cnt5 == 3'd0),	// each 5 clocks @ 40MHz
+		.S_AXIS_tvalid				(r_axis_tvalid),
 
 		.M_AXIS_DATA_3MHZ_tdata		(w_sin3mhz),
 		.M_AXIS_DATA_3MHZ_tvalid	(),
@@ -181,9 +181,9 @@ module design_1_wrapper (
 		else
 			r_cnt5	<=	r_cnt5 + 3'd1;
 
-		if (r_sw0[2] && w_i_cic_en && w_q_cic_en)
+		if (r_sw0[2] && w_i_cic_en && w_q_cic_en)	//  when CIC output is prepared
 			r_axis_tvalid	<=	1'b1;
-		else if (!r_sw0[2] && r_cnt5 == 3'd4)
+		else if (!r_sw0[2] && r_cnt5 == 3'd4)		// each 5 clocks
 			r_axis_tvalid	<=	1'b1;
 		else
 			r_axis_tvalid	<=	1'b0;

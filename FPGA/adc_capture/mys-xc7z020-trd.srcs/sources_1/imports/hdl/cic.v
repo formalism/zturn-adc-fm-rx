@@ -7,7 +7,7 @@ module cic #(
 	input							clk,
 	input signed [INPUT_WIDTH-1:0]	d_in,		// continuous input
 	output							en,
-	input signed [OUTPUT_WIDTH-1:0] d_out		// intermittent output
+	output signed [OUTPUT_WIDTH-1:0] d_out		// intermittent output
 );
 
 // bit growth = N log2(RM), where N = # of stages, R = rate change, M = 1
