@@ -142,7 +142,7 @@ module design_1_wrapper (
 		.M_AXIS_DATA_11MHZ_tdata	(w_sin11mhz),
 		.M_AXIS_DATA_11MHZ_tvalid	(),
 
-		.BRAM_PORTB_addr			(w_bram_adr),
+		.BRAM_PORTB_addr			({w_bram_adr[29:0], 2'b00}),	// word aligned
 		.BRAM_PORTB_clk				(w_adck),
 		.BRAM_PORTB_din				(),
 		.BRAM_PORTB_dout			(w_bram_dout),
