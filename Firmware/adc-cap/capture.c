@@ -121,12 +121,12 @@ void* thread_func(void* arg){
     pthread_exit(NULL);
 }
 
-// initialize DDS memory (currently fixed at 84.7MHz @ 40MHz sampling)
-void init_dds_frequency(){
+// initialize DDS memory (currently fixed 40MHz sampling)
+void init_dds_frequency(float freq){
     int i;
     int uiofd;
     unsigned int* map_addr;
-    double ratio = 4.7e+6 / 40e+6;
+    double ratio = freq / 40e+6;
 
     uiofd = open("/dev/uio1", O_RDWR);
     if (uiofd < 0){
@@ -188,6 +188,7 @@ int main(int argc, char** argv)
     unsigned char* mem;
     unsigned char buf[16];
     unsigned int capture_size;
+    float tune_freq = 4.7;
 
     if (init_semaphore())
         exit(1);
@@ -203,7 +204,13 @@ int main(int argc, char** argv)
         exit(1);
     }
 
-    init_dds_frequency();
+    if (argc == 2)              /* frequency is specified */
+        sscanf(argv[1], "%f", &tune_freq); /* eg. 4.7 */
+
+    tune_freq *= 1e+6;          /* to MHz */
+
+    init_dds_frequency(tune_freq);
+    printf("freq=%f\n", tune_freq);
 
     bind_and_open(&sock0, &sock);
     while (i < 8){
