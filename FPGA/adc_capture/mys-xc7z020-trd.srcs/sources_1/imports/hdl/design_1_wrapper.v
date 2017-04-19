@@ -55,10 +55,10 @@ module design_1_wrapper (
 (* keep = "true" *)	wire signed[11:0]	w_ad, w_ad2;
 	wire		w_ofa, w_ofa2;
 	wire		w_adck;
-(* keep = "true" *)	wire signed[13:0]	w_i, w_q;
+(* keep = "true" *)	wire signed[16:0]	w_i, w_q;
 
 	wire w_i_cic_en, w_q_cic_en;
-	wire signed [28:0]	w_i_cic, w_q_cic;
+	wire signed [31:0]	w_i_cic, w_q_cic;
 
 	wire[31:0]	w_bram_adr, w_bram_dout;
 	reg			r_axis_tvalid;
@@ -156,7 +156,7 @@ module design_1_wrapper (
 		.bram_adr					(w_bram_adr),
 		.bram_data					(w_bram_dout),
 		.data						(w_ad),
-		.i_out						(w_i),		// 14bit
+		.i_out						(w_i),		// 17bit
 		.q_out						(w_q)
 	);
 
@@ -189,7 +189,7 @@ module design_1_wrapper (
 			r_axis_tvalid	<=	1'b0;
 
 		if (r_sw0[2])
-			r_axis_data		<=	{{3{w_i_cic[28]}}, w_i_cic, {3{w_q_cic[28]}}, w_q_cic};
+			r_axis_data		<=	{w_i_cic, w_q_cic};
 		else
 			case (r_cnt5)
 				3'd0:

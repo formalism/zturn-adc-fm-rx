@@ -1,6 +1,6 @@
 module cic #(
-	parameter	INPUT_WIDTH		=	14,
-	parameter	OUTPUT_WIDTH	=	29,
+	parameter	INPUT_WIDTH		=	17,
+	parameter	OUTPUT_WIDTH	=	32,
 	parameter	RATE_CHANGE		=	32
 	)
 (

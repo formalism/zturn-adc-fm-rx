@@ -13,11 +13,11 @@ architecture SIM of tb is
 	signal	w_adck		:	std_logic;
 	signal	w_i_cic_en	:	std_logic;
 	signal	w_q_cic_en	:	std_logic;
-	signal	w_i_cic		:	std_logic_vector(28 downto 0);
-	signal	w_q_cic		:	std_logic_vector(28 downto 0);
+	signal	w_i_cic		:	std_logic_vector(31 downto 0);
+	signal	w_q_cic		:	std_logic_vector(31 downto 0);
 	signal	w_ad		:	std_logic_vector(11 downto 0);
-	signal	w_i			:	std_logic_vector(13 downto 0);
-	signal	w_q			:	std_logic_vector(13 downto 0);
+	signal	w_i			:	std_logic_vector(16 downto 0);
+	signal	w_q			:	std_logic_vector(16 downto 0);
 
 	signal	w_bram_adr	:	std_logic_vector(31 downto 0);
 	signal	w_bram_dout	:	std_logic_vector(31 downto 0);

@@ -897,7 +897,6 @@ namespace rf_demod
         private void button_fm_demodulate2_Click(object sender, EventArgs e)
         {
             string msg = "";
-            double fm_tune_freq = Convert.ToDouble(textBox_fm_freq.Text) * 1.0e+6;
             OpenFileDialog dlg = new OpenFileDialog();
             if (DialogResult.OK == dlg.ShowDialog())
             {
