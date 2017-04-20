@@ -705,13 +705,23 @@ namespace rf_demod
         private double[] fm_demodulate_sub(double[] i, double[] q)
         {
             double[] result = new double[i.Length];
-            double i_prev = 0.0, q_prev = 0.0;
+            double prev = 0.0, tmp;
 
             for (int x = 0; x < i.Length; x++)
             {
-                result[x] = Math.Atan2(i_prev * q[x] - q_prev * i[x], i_prev * i[x] + q_prev * q[x]);
-                i_prev = i[x];
-                q_prev = q[x];
+                tmp = Math.Atan2(i[x], q[x]);
+                if (tmp - prev > Math.PI)
+                {
+                    result[x] = tmp - prev - Math.PI * 2.0;
+                }else if (tmp - prev < -Math.PI)
+                {
+                    result[x] = tmp - prev + Math.PI * 2.0;
+                }
+                else
+                {
+                    result[x] = tmp - prev;
+                }
+                prev = tmp;
             }
             return result;
         }
