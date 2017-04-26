@@ -97,7 +97,7 @@
             this.button_fm_demodulate2.Name = "button_fm_demodulate2";
             this.button_fm_demodulate2.Size = new System.Drawing.Size(258, 68);
             this.button_fm_demodulate2.TabIndex = 6;
-            this.button_fm_demodulate2.Text = "FM (After CIC)";
+            this.button_fm_demodulate2.Text = "FM (After Atan)";
             this.button_fm_demodulate2.UseVisualStyleBackColor = true;
             this.button_fm_demodulate2.Click += new System.EventHandler(this.button_fm_demodulate2_Click);
             // 

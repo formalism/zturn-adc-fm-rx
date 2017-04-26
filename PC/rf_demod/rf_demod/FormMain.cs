@@ -726,6 +726,29 @@ namespace rf_demod
             return result;
         }
 
+        // calculate differentiation of atan
+        private void fm_demodulate_sub2(double[] atan)
+        {
+            double prev = atan[0];
+
+            for (int x = 1; x < atan.Length; x++)
+            {
+                if (atan[x] - prev > Math.PI)
+                {
+                    atan[x-1] = atan[x] - prev - Math.PI * 2.0;
+                }
+                else if (atan[x] - prev < -Math.PI)
+                {
+                    atan[x-1] = atan[x] - prev + Math.PI * 2.0;
+                }
+                else
+                {
+                    atan[x-1] = atan[x] - prev;
+                }
+                prev = atan[x];
+            }
+        }
+
         // https://tomroelandts.com/articles/low-pass-single-pole-iir-filter
         private double[] de_emphasis(double[] vals, double decay)
         {
@@ -789,23 +812,19 @@ namespace rf_demod
             fs.Close();
         }
 
-        private void fm_demodulate2(Int32[] i_dat, Int32[] q_dat, string wavefilename, TimeStampLog log)
+        private void fm_demodulate2(Int32[] dat, string wavefilename, TimeStampLog log)
         {
-            double[] i_cic = new double[i_dat.Length];
-            double[] q_cic = new double[q_dat.Length];
+            double[] arctans = new double[dat.Length];
 
-            for (var i = 0; i < i_dat.Length; i++)
+            for (var i = 0; i < dat.Length; i++)
             {
-                i_cic[i] = (double)i_dat[i];
-                q_cic[i] = (double)q_dat[i];        // 40/32 = 1.25MHz after CIC
+                arctans[i] = (double)dat[i] / (double) (1<<29);        // 500kHz (cutoff 200kHz)
             }
 
-            log.start();
-            double[] i_fir1 = fir(i_cic, 2, 5, fir_coef_255tap_008);    // 500kHz (cutoff 200kHz)
-            double[] q_fir1 = fir(q_cic, 2, 5, fir_coef_255tap_008);
+            fm_demodulate_sub2(arctans);    // differentiation of angles
 
-            // FM demodulation
-            double[] arctans = fm_demodulate_sub(i_fir1, q_fir1);
+            log.start();
+
             double[] arctans2 = fir(arctans, 2, 5, fir_coef_255tap_008);  // 200kHz (cutoff 80kHz)
             double[] arctans3 = fir(arctans2, 3, 5, fir_coef_255tap_008);  // 120kHz (cutoff 48kHz)
             double[] arctans4 = fir(arctans3, 2, 5, fir_coef_255tap_0625); // 48kHz (cutoff 15kHz)
@@ -867,6 +886,21 @@ namespace rf_demod
             }
         }
 
+        private void read_atan_data_file(string fname, out Int32[] dat)
+        {
+            FileStream fs = new FileStream(fname, FileMode.Open);
+            BinaryReader br = new BinaryReader(fs);
+            byte[] bindat = br.ReadBytes((int)fs.Length);
+            br.Close();
+            fs.Close();
+
+            dat = new Int32[bindat.Length / 8];
+            for (var i = 0; i < bindat.Length; i += 8)
+            {
+                dat[i / 8] = BitConverter.ToInt32(bindat, i);
+            }
+        }
+
         private void button_am_Click(object sender, EventArgs e)
         {
             int am_tune_freq = Convert.ToInt32(textBox_am_freq.Text) * 1000;
@@ -914,10 +948,10 @@ namespace rf_demod
             {
                 TimeStampLog log = new TimeStampLog();
                 log.start();
-                Int32[] i_dat, q_dat;
-                read_cic_data_file(dlg.FileName, out i_dat, out q_dat);
+                Int32[] dat;
+                read_atan_data_file(dlg.FileName, out dat);
                 log.stop("Read File: ");
-                fm_demodulate2(i_dat, q_dat, dlg.FileName + ".wav", log);
+                fm_demodulate2(dat, dlg.FileName + ".wav", log);
                 string[] buf = log.getLog();
                 for (var i = 0; i < buf.Length; i++)
                 {

@@ -50,11 +50,11 @@ module design_1_wrapper (
 	wire		w_tready, w_tvalid;
 	wire[15:0]	w_sin3mhz, w_sin11mhz;
 	reg[63:0]	r_axis_data;
-	reg[2:0]	r_cnt5;
+	reg[7:0]	r_cnt;
 	reg[2:0]	r_sw0;
 (* keep = "true" *)	wire signed[11:0]	w_ad, w_ad2;
 	wire		w_ofa, w_ofa2;
-	wire		w_adck;
+	wire		w_adck, w_fir_ck;
 (* keep = "true" *)	wire signed[16:0]	w_i, w_q;
 
 	wire w_i_cic_en, w_q_cic_en;
@@ -62,6 +62,13 @@ module design_1_wrapper (
 
 	wire[31:0]	w_bram_adr, w_bram_dout;
 	reg			r_axis_tvalid;
+
+	reg			r_i_cic_en, r_q_cic_en;
+	wire		w_i_fir1_en, w_q_fir1_en;
+	wire[55:0]	w_i_fir1, w_q_fir1;
+
+	wire		w_atan_tvalid;
+	wire[31:0]	w_atan_tdata;
 
 	assign	LEDS[2:2]	=	1'b1;
 	assign	BP			=	1'b0;
@@ -131,7 +138,7 @@ module design_1_wrapper (
         .IIC_0_sda_o			(iic_0_sda_o),
         .IIC_0_sda_t			(iic_0_sda_t),
 
-		.s_axis_aclk				(w_adck),
+		.s_axis_aclk				(w_fir_ck),
 		.s_axis_aresetn				(1'b1),
 		.S_AXIS_tdata				(r_axis_data),
 		.S_AXIS_tready				(w_tready),
@@ -173,34 +180,72 @@ module design_1_wrapper (
 		.d_out						(w_q_cic)
 	);
 
-	always @(posedge w_adck) begin
+	gen_dsp_clk	gen_dsp_clk_i (
+		.clk_in1					(w_adck),
+		.clk_out1					(w_fir_ck),
+		.reset						(1'b0),
+		.locked						()
+	);
+
+	fir_2_over_5_008 fir_i1 (
+		.aclk						(w_fir_ck),			// 160MHz
+		.s_axis_data_tvalid			(!r_i_cic_en && w_i_cic_en),
+		.s_axis_data_tready			(),
+		.s_axis_data_tdata			(w_i_cic),
+		.m_axis_data_tvalid			(w_i_fir1_en),
+		.m_axis_data_tdata			(w_i_fir1)
+	);
+	fir_2_over_5_008 fir_q1 (
+		.aclk						(w_fir_ck),
+		.s_axis_data_tvalid			(!r_q_cic_en && w_q_cic_en),
+		.s_axis_data_tready			(),
+		.s_axis_data_tdata			(w_q_cic),
+		.m_axis_data_tvalid			(w_q_fir1_en),
+		.m_axis_data_tdata			(w_q_fir1)
+	);
+
+	always @(posedge w_fir_ck) begin
+		r_i_cic_en	<=	w_i_cic_en;
+		r_q_cic_en	<=	w_q_cic_en;
+	end
+
+	atan	atan_i (
+		.aclk						(w_fir_ck),
+		.s_axis_cartesian_tvalid	(w_i_fir1_en && w_q_fir1_en),
+		.s_axis_cartesian_tdata		({w_i_fir1[49:2], w_q_fir1[49:2]}),		// imaginary 48bit, real 48bit
+		.m_axis_dout_tvalid			(w_atan_tvalid),
+		.m_axis_dout_tdata			(w_atan_tdata)
+	);
+
+	// input to DMA FIFO
+	always @(posedge w_fir_ck) begin
 		r_sw0	<=	{r_sw0[1:0], SW[0]};		// sync
 
-		if (r_cnt5 >= 3'd4)		// 0-4
-			r_cnt5	<=	3'd0;
+		if (r_cnt >= 8'd19)		// 0-19
+			r_cnt	<=	8'd0;
 		else
-			r_cnt5	<=	r_cnt5 + 3'd1;
+			r_cnt	<=	r_cnt + 8'd1;
 
-		if (r_sw0[2] && w_i_cic_en && w_q_cic_en)	//  when CIC output is prepared
+		if (r_sw0[2] && w_atan_tvalid)	//  when ATAN output is prepared
 			r_axis_tvalid	<=	1'b1;
-		else if (!r_sw0[2] && r_cnt5 == 3'd4)		// each 5 clocks
+		else if (!r_sw0[2] && r_cnt == 8'd19)		// each 20 clocks (160/20=8MHz)
 			r_axis_tvalid	<=	1'b1;
 		else
 			r_axis_tvalid	<=	1'b0;
 
 		if (r_sw0[2])
-			r_axis_data		<=	{w_i_cic, w_q_cic};
+			r_axis_data		<=	{32'b0, w_atan_tdata};
 		else
-			case (r_cnt5)
-				3'd0:
+			case (r_cnt)
+				8'd0:		// sample every 5 clocks (= 40MHz)
 					r_axis_data	<=	{4'd0, r_axis_data[59:12], w_ad[11:0]};
-				3'd1:
+				8'd4:
 					r_axis_data	<=	{4'd0, r_axis_data[59:24], w_ad[11:0], r_axis_data[11:0]};
-				3'd2:
+				8'd8:
 					r_axis_data	<=	{4'd0, r_axis_data[59:36], w_ad[11:0], r_axis_data[23:0]};
-				3'd3:
+				8'd12:
 					r_axis_data	<=	{4'd0, r_axis_data[59:48], w_ad[11:0], r_axis_data[35:0]};
-				3'd4:
+				8'd16:
 					r_axis_data	<=	{4'd0, w_ad[11:0], r_axis_data[47:0]};
 				default:
 					r_axis_data	<=	r_axis_data;
