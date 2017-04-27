@@ -727,23 +727,24 @@ namespace rf_demod
         }
 
         // calculate differentiation of atan
-        private void fm_demodulate_sub2(double[] atan)
+        private void fm_demodulate_sub2(Int32[] atan)
         {
-            double prev = atan[0];
+            Int64 prev = atan[0];
+            Int64 PI = (Int64)(Math.PI * (1 << 29));
 
             for (int x = 1; x < atan.Length; x++)
             {
-                if (atan[x] - prev > Math.PI)
+                if ((Int64)atan[x] - prev > PI)
                 {
-                    atan[x-1] = atan[x] - prev - Math.PI * 2.0;
+                    atan[x-1] = (Int32)((Int64)atan[x] - prev - PI * 2);
                 }
-                else if (atan[x] - prev < -Math.PI)
+                else if ((Int64)atan[x] - prev < -PI)
                 {
-                    atan[x-1] = atan[x] - prev + Math.PI * 2.0;
+                    atan[x-1] = (Int32)((Int64)atan[x] - prev + PI * 2);
                 }
                 else
                 {
-                    atan[x-1] = atan[x] - prev;
+                    atan[x-1] = (Int32)((Int64)atan[x] - prev);
                 }
                 prev = atan[x];
             }
@@ -816,12 +817,11 @@ namespace rf_demod
         {
             double[] arctans = new double[dat.Length];
 
+            fm_demodulate_sub2(dat);    // differentiation of angles
             for (var i = 0; i < dat.Length; i++)
             {
-                arctans[i] = (double)dat[i] / (double) (1<<29);        // 500kHz (cutoff 200kHz)
+                arctans[i] = (double)dat[i] / (double)(1 << 29);        // 500kHz (cutoff 200kHz)
             }
-
-            fm_demodulate_sub2(arctans);    // differentiation of angles
 
             log.start();
 
