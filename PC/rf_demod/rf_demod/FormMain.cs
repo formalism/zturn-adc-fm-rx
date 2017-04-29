@@ -817,7 +817,6 @@ namespace rf_demod
         {
             double[] arctans = new double[dat.Length];
 
-            fm_demodulate_sub2(dat);    // differentiation of angles
             for (var i = 0; i < dat.Length; i++)
             {
                 arctans[i] = (double)dat[i] / (double)(1 << 29);        // 500kHz (cutoff 200kHz)

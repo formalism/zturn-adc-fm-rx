@@ -44,6 +44,9 @@ module design_1_wrapper (
 	output				BP
 );
 
+	parameter signed[33:0] PI = (2.0 ** 29.0) * 3.1415926535897932384626433832795;
+	parameter signed[33:0] PI2 = (2.0 ** 30.0) * 3.1415926535897932384626433832795;
+
 	wire[63:0]	w_gpio_tri_t;
 	wire[63:0]	w_gpio_tri_o;
 	wire		w_clk40m;
@@ -67,8 +70,11 @@ module design_1_wrapper (
 	wire		w_i_fir1_en, w_q_fir1_en;
 	wire[55:0]	w_i_fir1, w_q_fir1;
 
-	wire		w_atan_tvalid;
-	wire[31:0]	w_atan_tdata;
+	wire				w_atan_tvalid;
+	wire signed[31:0]	w_atan_tdata;
+	reg signed[31:0]	r_atan_tdata;
+	reg signed[31:0]	r_atan_diff;
+	wire signed[33:0]	w_atan_tdata2, r_atan_tdata2;
 
 	assign	LEDS[2:2]	=	1'b1;
 	assign	BP			=	1'b0;
@@ -217,6 +223,23 @@ module design_1_wrapper (
 		.m_axis_dout_tdata			(w_atan_tdata)
 	);
 
+	assign	w_atan_tdata2	=	{w_atan_tdata[31], w_atan_tdata[31], w_atan_tdata};
+	assign	r_atan_tdata2	=	{r_atan_tdata[31], r_atan_tdata[31], r_atan_tdata};
+
+	// differentiate neighboring angles
+	always @(posedge w_fir_ck) begin
+		if (w_atan_tvalid) begin
+			r_atan_tdata	<=	w_atan_tdata;
+
+			if (w_atan_tdata2 - r_atan_tdata2 > PI)
+				r_atan_diff	<=	w_atan_tdata2 - r_atan_tdata2 - PI2;
+			else if (w_atan_tdata2 - r_atan_tdata2 < -PI)
+				r_atan_diff	<=	w_atan_tdata2 - r_atan_tdata2 + PI2;
+			else
+				r_atan_diff	<=	w_atan_tdata2 - r_atan_tdata2;
+		end
+	end
+
 	// input to DMA FIFO
 	always @(posedge w_fir_ck) begin
 		r_sw0	<=	{r_sw0[1:0], SW[0]};		// sync
@@ -234,7 +257,7 @@ module design_1_wrapper (
 			r_axis_tvalid	<=	1'b0;
 
 		if (r_sw0[2])
-			r_axis_data		<=	{32'b0, w_atan_tdata};
+			r_axis_data		<=	{32'b0, r_atan_diff};
 		else
 			case (r_cnt)
 				8'd0:		// sample every 5 clocks (= 40MHz)
