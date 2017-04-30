@@ -76,6 +76,18 @@ module design_1_wrapper (
 	reg signed[31:0]	r_atan_diff;
 	wire signed[33:0]	w_atan_tdata2, r_atan_tdata2;
 
+	wire signed[31:0]	w_fifo1_tdata, w_fifo2_tdata, w_fifo3_tdata;
+	wire				w_fifo1_tvalid, w_fifo2_tvalid, w_fifo3_tvalid;
+
+	wire signed[31:0]	w_fir2_tdata;
+	wire				w_fir2_tvalid, w_fir2_tready;
+
+	wire signed[31:0]	w_fir3_tdata;
+	wire				w_fir3_tvalid, w_fir3_tready;
+
+	wire signed[31:0]	w_fir4_tdata;
+	wire				w_fir4_tvalid, w_fir4_tready;
+
 	assign	LEDS[2:2]	=	1'b1;
 	assign	BP			=	1'b0;
 
@@ -240,6 +252,69 @@ module design_1_wrapper (
 		end
 	end
 
+	axis_data_fifo fifo1 (
+		.s_axis_aresetn		(1'b1),
+		.s_axis_aclk		(w_fir_ck),
+		.s_axis_tvalid		(w_atan_tvalid),
+		.s_axis_tready		(),
+		.s_axis_tdata		(r_atan_diff),
+		.m_axis_tvalid		(w_fifo1_tvalid),
+		.m_axis_tready		(w_fir2_tready),
+		.m_axis_tdata		(w_fifo1_tdata)
+	);
+
+	// fs(in) = 500kHz, fs(out) = 200kHz, fc = 80kHz
+	fir_2_over_5_008_2 fir2 (
+		.aclk					(w_fir_ck),
+		.s_axis_data_tvalid		(w_fifo1_tvalid),
+		.s_axis_data_tready		(w_fir2_tready),
+		.s_axis_data_tdata		(w_fifo1_tdata),
+		.m_axis_data_tvalid		(w_fir2_tvalid),
+		.m_axis_data_tdata		(w_fir2_tdata)
+	);
+
+	axis_data_fifo fifo2 (
+		.s_axis_aresetn		(1'b1),
+		.s_axis_aclk		(w_fir_ck),
+		.s_axis_tvalid		(w_fir2_tvalid),
+		.s_axis_tready		(),
+		.s_axis_tdata		(w_fir2_tdata),
+		.m_axis_tvalid		(w_fifo2_tvalid),
+		.m_axis_tready		(w_fir3_tready),
+		.m_axis_tdata		(w_fifo2_tdata)
+	);
+
+// fs(in) = 200kHz, fs(out) = 120kHz, fc = 48kHz
+	fir_3_over_5_008 fir3 (
+		.aclk					(w_fir_ck),
+		.s_axis_data_tvalid		(w_fifo2_tvalid),
+		.s_axis_data_tready		(w_fir3_tready),
+		.s_axis_data_tdata		(w_fifo2_tdata),
+		.m_axis_data_tvalid		(w_fir3_tvalid),
+		.m_axis_data_tdata		(w_fir3_tdata)
+	);
+
+	axis_data_fifo fifo3 (
+		.s_axis_aresetn		(1'b1),
+		.s_axis_aclk		(w_fir_ck),
+		.s_axis_tvalid		(w_fir3_tvalid),
+		.s_axis_tready		(),
+		.s_axis_tdata		(w_fir3_tdata),
+		.m_axis_tvalid		(w_fifo3_tvalid),
+		.m_axis_tready		(w_fir4_tready),
+		.m_axis_tdata		(w_fifo3_tdata)
+	);
+
+	// fs(in) = 120kHz, fs(out) = 48kHz, fc = 15kHz
+	fir_2_over_5_0625 fir4 (
+		.aclk					(w_fir_ck),
+		.s_axis_data_tvalid		(w_fifo3_tvalid),
+		.s_axis_data_tready		(w_fir4_tready),
+		.s_axis_data_tdata		(w_fifo3_tdata),
+		.m_axis_data_tvalid		(w_fir4_tvalid),
+		.m_axis_data_tdata		(w_fir4_tdata)
+	);
+
 	// input to DMA FIFO
 	always @(posedge w_fir_ck) begin
 		r_sw0	<=	{r_sw0[1:0], SW[0]};		// sync
@@ -249,7 +324,7 @@ module design_1_wrapper (
 		else
 			r_cnt	<=	r_cnt + 8'd1;
 
-		if (r_sw0[2] && w_atan_tvalid)	//  when ATAN output is prepared
+		if (r_sw0[2] && w_fir4_tvalid)
 			r_axis_tvalid	<=	1'b1;
 		else if (!r_sw0[2] && r_cnt == 8'd19)		// each 20 clocks (160/20=8MHz)
 			r_axis_tvalid	<=	1'b1;
@@ -257,7 +332,7 @@ module design_1_wrapper (
 			r_axis_tvalid	<=	1'b0;
 
 		if (r_sw0[2])
-			r_axis_data		<=	{32'b0, r_atan_diff};
+			r_axis_data		<=	{32'b0, w_fir4_tdata};
 		else
 			case (r_cnt)
 				8'd0:		// sample every 5 clocks (= 40MHz)

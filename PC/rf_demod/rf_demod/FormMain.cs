@@ -819,15 +819,12 @@ namespace rf_demod
 
             for (var i = 0; i < dat.Length; i++)
             {
-                arctans[i] = (double)dat[i] / (double)(1 << 29);        // 500kHz (cutoff 200kHz)
+                arctans[i] = (double)dat[i] / (double)(1 << 29);        // 48kHz (cutoff 15kHz)
             }
 
             log.start();
 
-            double[] arctans2 = fir(arctans, 2, 5, fir_coef_255tap_008);  // 200kHz (cutoff 80kHz)
-            double[] arctans3 = fir(arctans2, 3, 5, fir_coef_255tap_008);  // 120kHz (cutoff 48kHz)
-            double[] arctans4 = fir(arctans3, 2, 5, fir_coef_255tap_0625); // 48kHz (cutoff 15kHz)
-            double[] arctans5 = de_emphasis(arctans4, 0.67523190665);   // fc = 3kHz/48kHz = 0.0625, e^(-2pi*0.0625)
+            double[] arctans5 = de_emphasis(arctans, 0.67523190665);   // fc = 3kHz/48kHz = 0.0625, e^(-2pi*0.0625)
             log.stop("FIR: ");
 
             FileStream fs = new FileStream(wavefilename, FileMode.CreateNew);

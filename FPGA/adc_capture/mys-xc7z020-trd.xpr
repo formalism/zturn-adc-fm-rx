@@ -35,13 +35,13 @@
     <Option Name="WTVcsLaunchSim" Val="0"/>
     <Option Name="WTRivieraLaunchSim" Val="0"/>
     <Option Name="WTActivehdlLaunchSim" Val="0"/>
-    <Option Name="WTXSimExportSim" Val="11"/>
-    <Option Name="WTModelSimExportSim" Val="11"/>
-    <Option Name="WTQuestaExportSim" Val="11"/>
-    <Option Name="WTIesExportSim" Val="11"/>
-    <Option Name="WTVcsExportSim" Val="11"/>
-    <Option Name="WTRivieraExportSim" Val="11"/>
-    <Option Name="WTActivehdlExportSim" Val="11"/>
+    <Option Name="WTXSimExportSim" Val="15"/>
+    <Option Name="WTModelSimExportSim" Val="15"/>
+    <Option Name="WTQuestaExportSim" Val="15"/>
+    <Option Name="WTIesExportSim" Val="15"/>
+    <Option Name="WTVcsExportSim" Val="15"/>
+    <Option Name="WTRivieraExportSim" Val="15"/>
+    <Option Name="WTActivehdlExportSim" Val="15"/>
   </Configuration>
   <FileSets Version="1" Minor="31">
     <FileSet Name="sources_1" Type="DesignSrcs" RelSrcDir="$PSRCDIR/sources_1">
@@ -59,6 +59,27 @@
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
+        <CompFileExtendedInfo CompFileName="design_1.bd" FileRelPathName="ip/design_1_processing_system7_0_axi_periph_0/design_1_processing_system7_0_axi_periph_0.xci"/>
+        <CompFileExtendedInfo CompFileName="design_1.bd" FileRelPathName="ip/design_1_axis_data_fifo_0_0/design_1_axis_data_fifo_0_0.xci">
+          <Proxy FileSetName="design_1_axis_data_fifo_0_0"/>
+        </CompFileExtendedInfo>
+        <CompFileExtendedInfo CompFileName="design_1.bd" FileRelPathName="ip/design_1_rst_processing_system7_0_100M_0/design_1_rst_processing_system7_0_100M_0.xci">
+          <Proxy FileSetName="design_1_rst_processing_system7_0_100M_0"/>
+        </CompFileExtendedInfo>
+        <CompFileExtendedInfo CompFileName="design_1.bd" FileRelPathName="ip/design_1_axi_mem_intercon_0/design_1_axi_mem_intercon_0.xci"/>
+        <CompFileExtendedInfo CompFileName="design_1.bd" FileRelPathName="ip/design_1_axi_dma_0_0_1/design_1_axi_dma_0_0.xci">
+          <Proxy FileSetName="design_1_axi_dma_0_0"/>
+        </CompFileExtendedInfo>
+        <CompFileExtendedInfo CompFileName="design_1.bd" FileRelPathName="hdl/design_1.v"/>
+        <CompFileExtendedInfo CompFileName="design_1.bd" FileRelPathName="ip/design_1_xlconcat_0_0/design_1_xlconcat_0_0.xci">
+          <Proxy FileSetName="design_1_xlconcat_0_0"/>
+        </CompFileExtendedInfo>
+        <CompFileExtendedInfo CompFileName="design_1.bd" FileRelPathName="ip/design_1_processing_system7_0_0/design_1_processing_system7_0_0.xci">
+          <Proxy FileSetName="design_1_processing_system7_0_0"/>
+        </CompFileExtendedInfo>
+        <CompFileExtendedInfo CompFileName="design_1.bd" FileRelPathName="ip/design_1_xbar_0/design_1_xbar_0.xci">
+          <Proxy FileSetName="design_1_xbar_0"/>
+        </CompFileExtendedInfo>
         <CompFileExtendedInfo CompFileName="design_1.bd" FileRelPathName="ip/design_1_axi_bram_ctrl_0_0/design_1_axi_bram_ctrl_0_0.xci">
           <Proxy FileSetName="design_1_axi_bram_ctrl_0_0"/>
         </CompFileExtendedInfo>
@@ -71,30 +92,20 @@
         <CompFileExtendedInfo CompFileName="design_1.bd" FileRelPathName="ip/design_1_xlconstant_0_2/design_1_xlconstant_0_2.xci">
           <Proxy FileSetName="design_1_xlconstant_0_2"/>
         </CompFileExtendedInfo>
+        <CompFileExtendedInfo CompFileName="design_1.bd" FileRelPathName="ip/design_1_blk_mem_gen_0_1/design_1_blk_mem_gen_0_1.xci">
+          <Proxy FileSetName="design_1_blk_mem_gen_0_1"/>
+        </CompFileExtendedInfo>
         <CompFileExtendedInfo CompFileName="design_1.bd" FileRelPathName="ip/design_1_xlconstant_0_1/design_1_xlconstant_0_1.xci">
           <Proxy FileSetName="design_1_xlconstant_0_1"/>
         </CompFileExtendedInfo>
         <CompFileExtendedInfo CompFileName="design_1.bd" FileRelPathName="ip/design_1_xlconstant_0_0/design_1_xlconstant_0_0.xci">
           <Proxy FileSetName="design_1_xlconstant_0_0"/>
         </CompFileExtendedInfo>
-        <CompFileExtendedInfo CompFileName="design_1.bd" FileRelPathName="ip/design_1_axis_data_fifo_0_0/design_1_axis_data_fifo_0_0.xci">
-          <Proxy FileSetName="design_1_axis_data_fifo_0_0"/>
-        </CompFileExtendedInfo>
-        <CompFileExtendedInfo CompFileName="design_1.bd" FileRelPathName="ip/design_1_rst_processing_system7_0_100M_0/design_1_rst_processing_system7_0_100M_0.xci">
-          <Proxy FileSetName="design_1_rst_processing_system7_0_100M_0"/>
-        </CompFileExtendedInfo>
-        <CompFileExtendedInfo CompFileName="design_1.bd" FileRelPathName="ip/design_1_axi_dma_0_0_1/design_1_axi_dma_0_0.xci">
-          <Proxy FileSetName="design_1_axi_dma_0_0"/>
-        </CompFileExtendedInfo>
-        <CompFileExtendedInfo CompFileName="design_1.bd" FileRelPathName="ip/design_1_xlconcat_0_0/design_1_xlconcat_0_0.xci">
-          <Proxy FileSetName="design_1_xlconcat_0_0"/>
-        </CompFileExtendedInfo>
-        <CompFileExtendedInfo CompFileName="design_1.bd" FileRelPathName="ip/design_1_processing_system7_0_0/design_1_processing_system7_0_0.xci">
-          <Proxy FileSetName="design_1_processing_system7_0_0"/>
-        </CompFileExtendedInfo>
-        <CompFileExtendedInfo CompFileName="design_1.bd" FileRelPathName="ip/design_1_blk_mem_gen_0_1/design_1_blk_mem_gen_0_1.xci">
-          <Proxy FileSetName="design_1_blk_mem_gen_0_1"/>
-        </CompFileExtendedInfo>
+        <CompFileExtendedInfo CompFileName="design_1.bd" FileRelPathName="hdl/design_1.hwdef"/>
+        <CompFileExtendedInfo CompFileName="design_1.bd" FileRelPathName="hw_handoff/design_1_bd.tcl"/>
+        <CompFileExtendedInfo CompFileName="design_1.bd" FileRelPathName="hw_handoff/design_1.hwh"/>
+        <CompFileExtendedInfo CompFileName="design_1.bd" FileRelPathName="design_1_ooc.xdc"/>
+        <CompFileExtendedInfo CompFileName="design_1.bd" FileRelPathName="design_1.bmm"/>
         <CompFileExtendedInfo CompFileName="design_1.bd" FileRelPathName="ip/design_1_auto_pc_1/design_1_auto_pc_1.xci">
           <Proxy FileSetName="design_1_auto_pc_1"/>
         </CompFileExtendedInfo>
@@ -103,9 +114,6 @@
         </CompFileExtendedInfo>
         <CompFileExtendedInfo CompFileName="design_1.bd" FileRelPathName="ip/design_1_s00_data_fifo_0/design_1_s00_data_fifo_0.xci">
           <Proxy FileSetName="design_1_s00_data_fifo_0"/>
-        </CompFileExtendedInfo>
-        <CompFileExtendedInfo CompFileName="design_1.bd" FileRelPathName="ip/design_1_xbar_0/design_1_xbar_0.xci">
-          <Proxy FileSetName="design_1_xbar_0"/>
         </CompFileExtendedInfo>
       </File>
       <File Path="$PSRCDIR/sources_1/imports/hdl/mixer.v">
@@ -123,6 +131,12 @@
         </FileInfo>
       </File>
       <File Path="$PSRCDIR/sources_1/imports/hdl/coef255_008.coe">
+        <FileInfo>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PSRCDIR/sources_1/imports/hdl/coef255_0625.coe">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="simulation"/>
@@ -353,6 +367,58 @@
         <Option Name="UseBlackboxStub" Val="1"/>
       </Config>
     </FileSet>
+    <FileSet Name="fir_2_over_5_008_2" Type="BlockSrcs" RelSrcDir="$PSRCDIR/fir_2_over_5_008_2">
+      <File Path="$PSRCDIR/sources_1/ip/fir_2_over_5_008_2/fir_2_over_5_008_2.xci">
+        <FileInfo>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <Config>
+        <Option Name="TopModule" Val="fir_2_over_5_008_2"/>
+        <Option Name="UseBlackboxStub" Val="1"/>
+      </Config>
+    </FileSet>
+    <FileSet Name="fir_3_over_5_008" Type="BlockSrcs" RelSrcDir="$PSRCDIR/fir_3_over_5_008">
+      <File Path="$PSRCDIR/sources_1/ip/fir_3_over_5_008/fir_3_over_5_008.xci">
+        <FileInfo>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <Config>
+        <Option Name="TopModule" Val="fir_3_over_5_008"/>
+        <Option Name="UseBlackboxStub" Val="1"/>
+      </Config>
+    </FileSet>
+    <FileSet Name="fir_2_over_5_0625" Type="BlockSrcs" RelSrcDir="$PSRCDIR/fir_2_over_5_0625">
+      <File Path="$PSRCDIR/sources_1/ip/fir_2_over_5_0625/fir_2_over_5_0625.xci">
+        <FileInfo>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <Config>
+        <Option Name="TopModule" Val="fir_2_over_5_0625"/>
+        <Option Name="UseBlackboxStub" Val="1"/>
+      </Config>
+    </FileSet>
+    <FileSet Name="axis_data_fifo" Type="BlockSrcs" RelSrcDir="$PSRCDIR/axis_data_fifo">
+      <File Path="$PSRCDIR/sources_1/ip/axis_data_fifo/axis_data_fifo.xci">
+        <FileInfo>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <Config>
+        <Option Name="TopModule" Val="axis_data_fifo"/>
+        <Option Name="UseBlackboxStub" Val="1"/>
+      </Config>
+    </FileSet>
   </FileSets>
   <Simulators>
     <Simulator Name="XSim">
@@ -513,6 +579,34 @@
       <GeneratedRun Dir="$PRUNDIR" File="gen_run.xml"/>
     </Run>
     <Run Id="gen_dsp_clk_synth_1" Type="Ft3:Synth" SrcSet="gen_dsp_clk" Part="xc7z020clg400-1" ConstrsSet="gen_dsp_clk" Description="Vivado Synthesis Defaults" Dir="$PRUNDIR/gen_dsp_clk_synth_1" IncludeInArchive="true">
+      <Strategy Version="1" Minor="2">
+        <StratHandle Name="Vivado Synthesis Defaults" Flow="Vivado Synthesis 2016"/>
+        <Step Id="synth_design"/>
+      </Strategy>
+      <GeneratedRun Dir="$PRUNDIR" File="gen_run.xml"/>
+    </Run>
+    <Run Id="fir_2_over_5_008_2_synth_1" Type="Ft3:Synth" SrcSet="fir_2_over_5_008_2" Part="xc7z020clg400-1" ConstrsSet="fir_2_over_5_008_2" Description="Vivado Synthesis Defaults" Dir="$PRUNDIR/fir_2_over_5_008_2_synth_1" IncludeInArchive="true">
+      <Strategy Version="1" Minor="2">
+        <StratHandle Name="Vivado Synthesis Defaults" Flow="Vivado Synthesis 2016"/>
+        <Step Id="synth_design"/>
+      </Strategy>
+      <GeneratedRun Dir="$PRUNDIR" File="gen_run.xml"/>
+    </Run>
+    <Run Id="fir_3_over_5_008_synth_1" Type="Ft3:Synth" SrcSet="fir_3_over_5_008" Part="xc7z020clg400-1" ConstrsSet="fir_3_over_5_008" Description="Vivado Synthesis Defaults" Dir="$PRUNDIR/fir_3_over_5_008_synth_1" IncludeInArchive="true">
+      <Strategy Version="1" Minor="2">
+        <StratHandle Name="Vivado Synthesis Defaults" Flow="Vivado Synthesis 2016"/>
+        <Step Id="synth_design"/>
+      </Strategy>
+      <GeneratedRun Dir="$PRUNDIR" File="gen_run.xml"/>
+    </Run>
+    <Run Id="fir_2_over_5_0625_synth_1" Type="Ft3:Synth" SrcSet="fir_2_over_5_0625" Part="xc7z020clg400-1" ConstrsSet="fir_2_over_5_0625" Description="Vivado Synthesis Defaults" Dir="$PRUNDIR/fir_2_over_5_0625_synth_1" IncludeInArchive="true">
+      <Strategy Version="1" Minor="2">
+        <StratHandle Name="Vivado Synthesis Defaults" Flow="Vivado Synthesis 2016"/>
+        <Step Id="synth_design"/>
+      </Strategy>
+      <GeneratedRun Dir="$PRUNDIR" File="gen_run.xml"/>
+    </Run>
+    <Run Id="axis_data_fifo_synth_1" Type="Ft3:Synth" SrcSet="axis_data_fifo" Part="xc7z020clg400-1" ConstrsSet="axis_data_fifo" Description="Vivado Synthesis Defaults" Dir="$PRUNDIR/axis_data_fifo_synth_1" IncludeInArchive="true">
       <Strategy Version="1" Minor="2">
         <StratHandle Name="Vivado Synthesis Defaults" Flow="Vivado Synthesis 2016"/>
         <Step Id="synth_design"/>
@@ -787,6 +881,62 @@
       </Strategy>
     </Run>
     <Run Id="gen_dsp_clk_impl_1" Type="Ft2:EntireDesign" Part="xc7z020clg400-1" ConstrsSet="gen_dsp_clk" Description="Default settings for Implementation." SynthRun="gen_dsp_clk_synth_1" IncludeInArchive="false">
+      <Strategy Version="1" Minor="2">
+        <StratHandle Name="Vivado Implementation Defaults" Flow="Vivado Implementation 2016"/>
+        <Step Id="init_design"/>
+        <Step Id="opt_design"/>
+        <Step Id="power_opt_design"/>
+        <Step Id="place_design"/>
+        <Step Id="post_place_power_opt_design"/>
+        <Step Id="phys_opt_design"/>
+        <Step Id="route_design"/>
+        <Step Id="post_route_phys_opt_design"/>
+        <Step Id="write_bitstream"/>
+      </Strategy>
+    </Run>
+    <Run Id="fir_2_over_5_008_2_impl_1" Type="Ft2:EntireDesign" Part="xc7z020clg400-1" ConstrsSet="fir_2_over_5_008_2" Description="Default settings for Implementation." SynthRun="fir_2_over_5_008_2_synth_1" IncludeInArchive="false">
+      <Strategy Version="1" Minor="2">
+        <StratHandle Name="Vivado Implementation Defaults" Flow="Vivado Implementation 2016"/>
+        <Step Id="init_design"/>
+        <Step Id="opt_design"/>
+        <Step Id="power_opt_design"/>
+        <Step Id="place_design"/>
+        <Step Id="post_place_power_opt_design"/>
+        <Step Id="phys_opt_design"/>
+        <Step Id="route_design"/>
+        <Step Id="post_route_phys_opt_design"/>
+        <Step Id="write_bitstream"/>
+      </Strategy>
+    </Run>
+    <Run Id="fir_3_over_5_008_impl_1" Type="Ft2:EntireDesign" Part="xc7z020clg400-1" ConstrsSet="fir_3_over_5_008" Description="Default settings for Implementation." SynthRun="fir_3_over_5_008_synth_1" IncludeInArchive="false">
+      <Strategy Version="1" Minor="2">
+        <StratHandle Name="Vivado Implementation Defaults" Flow="Vivado Implementation 2016"/>
+        <Step Id="init_design"/>
+        <Step Id="opt_design"/>
+        <Step Id="power_opt_design"/>
+        <Step Id="place_design"/>
+        <Step Id="post_place_power_opt_design"/>
+        <Step Id="phys_opt_design"/>
+        <Step Id="route_design"/>
+        <Step Id="post_route_phys_opt_design"/>
+        <Step Id="write_bitstream"/>
+      </Strategy>
+    </Run>
+    <Run Id="fir_2_over_5_0625_impl_1" Type="Ft2:EntireDesign" Part="xc7z020clg400-1" ConstrsSet="fir_2_over_5_0625" Description="Default settings for Implementation." SynthRun="fir_2_over_5_0625_synth_1" IncludeInArchive="false">
+      <Strategy Version="1" Minor="2">
+        <StratHandle Name="Vivado Implementation Defaults" Flow="Vivado Implementation 2016"/>
+        <Step Id="init_design"/>
+        <Step Id="opt_design"/>
+        <Step Id="power_opt_design"/>
+        <Step Id="place_design"/>
+        <Step Id="post_place_power_opt_design"/>
+        <Step Id="phys_opt_design"/>
+        <Step Id="route_design"/>
+        <Step Id="post_route_phys_opt_design"/>
+        <Step Id="write_bitstream"/>
+      </Strategy>
+    </Run>
+    <Run Id="axis_data_fifo_impl_1" Type="Ft2:EntireDesign" Part="xc7z020clg400-1" ConstrsSet="axis_data_fifo" Description="Default settings for Implementation." SynthRun="axis_data_fifo_synth_1" IncludeInArchive="false">
       <Strategy Version="1" Minor="2">
         <StratHandle Name="Vivado Implementation Defaults" Flow="Vivado Implementation 2016"/>
         <Step Id="init_design"/>
