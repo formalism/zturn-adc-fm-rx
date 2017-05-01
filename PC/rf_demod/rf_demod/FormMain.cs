@@ -824,7 +824,8 @@ namespace rf_demod
 
             log.start();
 
-            double[] arctans5 = de_emphasis(arctans, 0.67523190665);   // fc = 3kHz/48kHz = 0.0625, e^(-2pi*0.0625)
+            double[] arctans5 = arctans;
+//            double[] arctans5 = de_emphasis(arctans, 0.67523190665);   // fc = 3kHz/48kHz = 0.0625, e^(-2pi*0.0625)
             log.stop("FIR: ");
 
             FileStream fs = new FileStream(wavefilename, FileMode.CreateNew);

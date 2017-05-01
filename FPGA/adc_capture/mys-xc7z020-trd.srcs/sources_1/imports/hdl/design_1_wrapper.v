@@ -55,10 +55,10 @@ module design_1_wrapper (
 	reg[63:0]	r_axis_data;
 	reg[7:0]	r_cnt;
 	reg[2:0]	r_sw0;
-(* keep = "true" *)	wire signed[11:0]	w_ad, w_ad2;
+	wire signed[11:0]	w_ad, w_ad2;
 	wire		w_ofa, w_ofa2;
-	wire		w_adck, w_fir_ck;
-(* keep = "true" *)	wire signed[16:0]	w_i, w_q;
+	wire		w_adck, w_fir_ck, w_locked;
+	wire signed[16:0]	w_i, w_q;
 
 	wire w_i_cic_en, w_q_cic_en;
 	wire signed [31:0]	w_i_cic, w_q_cic;
@@ -76,8 +76,8 @@ module design_1_wrapper (
 	reg signed[31:0]	r_atan_diff;
 	wire signed[33:0]	w_atan_tdata2, r_atan_tdata2;
 
-	wire signed[31:0]	w_fifo1_tdata, w_fifo2_tdata, w_fifo3_tdata;
-	wire				w_fifo1_tvalid, w_fifo2_tvalid, w_fifo3_tvalid;
+	wire signed[31:0]	w_fifo1_tdata, w_fifo2_tdata, w_fifo3_tdata, w_fifo4_tdata;
+	wire				w_fifo1_tvalid, w_fifo2_tvalid, w_fifo3_tvalid, w_fifo4_tvalid;
 
 	wire signed[31:0]	w_fir2_tdata;
 	wire				w_fir2_tvalid, w_fir2_tready;
@@ -87,6 +87,9 @@ module design_1_wrapper (
 
 	wire signed[31:0]	w_fir4_tdata;
 	wire				w_fir4_tvalid, w_fir4_tready;
+
+	wire signed[31:0]	w_result_data;
+	wire				w_result_valid;
 
 	assign	LEDS[2:2]	=	1'b1;
 	assign	BP			=	1'b0;
@@ -156,7 +159,7 @@ module design_1_wrapper (
         .IIC_0_sda_o			(iic_0_sda_o),
         .IIC_0_sda_t			(iic_0_sda_t),
 
-		.s_axis_aclk				(w_fir_ck),
+		.s_axis_aclk				(w_adck),
 		.s_axis_aresetn				(1'b1),
 		.S_AXIS_tdata				(r_axis_data),
 		.S_AXIS_tready				(w_tready),
@@ -202,7 +205,7 @@ module design_1_wrapper (
 		.clk_in1					(w_adck),
 		.clk_out1					(w_fir_ck),
 		.reset						(1'b0),
-		.locked						()
+		.locked						(w_locked)
 	);
 
 	fir_2_over_5_008 fir_i1 (
@@ -315,35 +318,56 @@ module design_1_wrapper (
 		.m_axis_data_tdata		(w_fir4_tdata)
 	);
 
+	axis_data_fifo_async fifo4 (
+		.s_axis_aresetn			(w_locked),
+		.m_axis_aresetn			(w_locked),
+		.s_axis_aclk			(w_fir_ck),
+		.s_axis_tvalid			(w_fir4_tvalid),
+		.s_axis_tready			(),
+		.s_axis_tdata			(w_fir4_tdata),
+		.m_axis_aclk			(w_adck),
+		.m_axis_tvalid			(w_fifo4_tvalid),
+		.m_axis_tready			(1'b1),
+		.m_axis_tdata			(w_fifo4_tdata)
+	);
+
+	de_emphasis de_emphasis_i (
+		.clk					(w_adck),
+		.d_in					(w_fifo4_tdata),
+		.d_in_valid				(w_fifo4_tvalid),
+		.d_out					(w_result_data),
+		.d_out_valid			(w_result_valid)
+	);
+
 	// input to DMA FIFO
-	always @(posedge w_fir_ck) begin
+	always @(posedge w_adck) begin
 		r_sw0	<=	{r_sw0[1:0], SW[0]};		// sync
 
-		if (r_cnt >= 8'd19)		// 0-19
+		if (r_cnt >= 8'd4)		// 0-4
 			r_cnt	<=	8'd0;
 		else
 			r_cnt	<=	r_cnt + 8'd1;
 
-		if (r_sw0[2] && w_fir4_tvalid)
+		if (r_sw0[2] && w_result_valid)
 			r_axis_tvalid	<=	1'b1;
-		else if (!r_sw0[2] && r_cnt == 8'd19)		// each 20 clocks (160/20=8MHz)
+		else if (!r_sw0[2] && r_cnt == 8'd4)		// each 5 clocks (40/5=8MHz)
 			r_axis_tvalid	<=	1'b1;
 		else
 			r_axis_tvalid	<=	1'b0;
 
 		if (r_sw0[2])
-			r_axis_data		<=	{32'b0, w_fir4_tdata};
+			r_axis_data		<=	{32'b0, w_result_data};
 		else
 			case (r_cnt)
 				8'd0:		// sample every 5 clocks (= 40MHz)
 					r_axis_data	<=	{4'd0, r_axis_data[59:12], w_ad[11:0]};
-				8'd4:
+				8'd1:
 					r_axis_data	<=	{4'd0, r_axis_data[59:24], w_ad[11:0], r_axis_data[11:0]};
-				8'd8:
+				8'd2:
 					r_axis_data	<=	{4'd0, r_axis_data[59:36], w_ad[11:0], r_axis_data[23:0]};
-				8'd12:
+				8'd3:
 					r_axis_data	<=	{4'd0, r_axis_data[59:48], w_ad[11:0], r_axis_data[35:0]};
-				8'd16:
+				8'd4:
 					r_axis_data	<=	{4'd0, w_ad[11:0], r_axis_data[47:0]};
 				default:
 					r_axis_data	<=	r_axis_data;
