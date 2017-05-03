@@ -227,9 +227,3 @@ create_clock -period 25.000 -name adck [get_ports ADC_CK]
 
 set_property CFGBVS VCCO [current_design]
 set_property CONFIG_VOLTAGE 3.3 [current_design]
-
-
-
-
-
-

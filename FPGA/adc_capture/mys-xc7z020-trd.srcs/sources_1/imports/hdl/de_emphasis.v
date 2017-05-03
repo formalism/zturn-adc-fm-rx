@@ -11,7 +11,7 @@ module de_emphasis #(
 
 reg					r_d_in_valid, r_d_in_valid2, r_d_in_valid3;
 reg signed[48:0]	r_tmp, r_term1, r_term2;		// 31+18 = 49bit
-reg signed[31:0]	r_sum;
+reg signed[31:0]	r_sum = 32'h0000_0000;
 
 assign	d_out_valid		=	r_d_in_valid3;
 assign	d_out			=	r_sum;
@@ -35,7 +35,12 @@ always @(posedge clk) begin
 		r_tmp			<=	r_tmp;
 
 	if (r_d_in_valid2)
-		r_sum			<=	r_tmp[48:17];
+		if (r_tmp[48:47] == 2'b10)
+			r_sum		<=	32'h8000_0000;
+		else if (r_tmp[48:47] == 2'b01)
+			r_sum		<=	32'h7FFF_FFFF;
+		else
+			r_sum			<=	r_tmp[46:15];
 	else
 		r_sum			<=	r_sum;
 end
