@@ -33,6 +33,8 @@ module design_1_wrapper (
     inout				FIXED_IO_ps_srstb,
     inout				I2C0_SCL,
     inout				I2C0_SDA,
+	inout				I2C1_SCL,
+	inout				I2C1_SDA,
 	input				ADC_CK,
 	input signed[11:0]	AD,
 	input				OFA,
@@ -66,7 +68,6 @@ module design_1_wrapper (
 	wire[31:0]	w_bram_adr, w_bram_dout;
 	reg			r_axis_tvalid;
 
-	reg			r_i_cic_en, r_q_cic_en;
 	wire		w_i_fir1_en, w_q_fir1_en;
 	wire[55:0]	w_i_fir1, w_q_fir1;
 
@@ -159,6 +160,13 @@ module design_1_wrapper (
         .IIC_0_sda_o			(iic_0_sda_o),
         .IIC_0_sda_t			(iic_0_sda_t),
 
+        .IIC_1_scl_i			(iic_1_scl_i),
+        .IIC_1_scl_o			(iic_1_scl_o),
+        .IIC_1_scl_t			(iic_1_scl_t),
+        .IIC_1_sda_i			(iic_1_sda_i),
+        .IIC_1_sda_o			(iic_1_sda_o),
+        .IIC_1_sda_t			(iic_1_sda_t),
+
 		.s_axis_aclk				(w_adck),
 		.s_axis_aresetn				(1'b1),
 		.S_AXIS_tdata				(r_axis_data),
@@ -209,29 +217,24 @@ module design_1_wrapper (
 	);
 
 	fir_2_over_5_008 fir_i1 (
-		.aclk						(w_fir_ck),			// 160MHz
-		.s_axis_data_tvalid			(!r_i_cic_en && w_i_cic_en),
+		.aclk						(w_adck),
+		.s_axis_data_tvalid			(w_i_cic_en),
 		.s_axis_data_tready			(),
 		.s_axis_data_tdata			(w_i_cic),
 		.m_axis_data_tvalid			(w_i_fir1_en),
 		.m_axis_data_tdata			(w_i_fir1)
 	);
 	fir_2_over_5_008 fir_q1 (
-		.aclk						(w_fir_ck),
-		.s_axis_data_tvalid			(!r_q_cic_en && w_q_cic_en),
+		.aclk						(w_adck),
+		.s_axis_data_tvalid			(w_q_cic_en),
 		.s_axis_data_tready			(),
 		.s_axis_data_tdata			(w_q_cic),
 		.m_axis_data_tvalid			(w_q_fir1_en),
 		.m_axis_data_tdata			(w_q_fir1)
 	);
 
-	always @(posedge w_fir_ck) begin
-		r_i_cic_en	<=	w_i_cic_en;
-		r_q_cic_en	<=	w_q_cic_en;
-	end
-
 	atan	atan_i (
-		.aclk						(w_fir_ck),
+		.aclk						(w_adck),
 		.s_axis_cartesian_tvalid	(w_i_fir1_en && w_q_fir1_en),
 		.s_axis_cartesian_tdata		({w_i_fir1[49:2], w_q_fir1[49:2]}),		// imaginary 48bit, real 48bit
 		.m_axis_dout_tvalid			(w_atan_tvalid),
@@ -242,7 +245,7 @@ module design_1_wrapper (
 	assign	r_atan_tdata2	=	{r_atan_tdata[31], r_atan_tdata[31], r_atan_tdata};
 
 	// differentiate neighboring angles
-	always @(posedge w_fir_ck) begin
+	always @(posedge w_adck) begin
 		if (w_atan_tvalid) begin
 			r_atan_tdata	<=	w_atan_tdata;
 
@@ -255,12 +258,15 @@ module design_1_wrapper (
 		end
 	end
 
-	axis_data_fifo fifo1 (
-		.s_axis_aresetn		(1'b1),
-		.s_axis_aclk		(w_fir_ck),
+	// 40MHz -> 160MHz
+	axis_data_fifo_async fifo1 (
+		.s_axis_aresetn		(w_locked),
+		.m_axis_aresetn		(w_locked),
+		.s_axis_aclk		(w_adck),
 		.s_axis_tvalid		(w_atan_tvalid),
 		.s_axis_tready		(),
 		.s_axis_tdata		(r_atan_diff),
+		.m_axis_aclk		(w_fir_ck),
 		.m_axis_tvalid		(w_fifo1_tvalid),
 		.m_axis_tready		(w_fir2_tready),
 		.m_axis_tdata		(w_fifo1_tdata)
@@ -277,7 +283,7 @@ module design_1_wrapper (
 	);
 
 	axis_data_fifo fifo2 (
-		.s_axis_aresetn		(1'b1),
+		.s_axis_aresetn		(w_locked),
 		.s_axis_aclk		(w_fir_ck),
 		.s_axis_tvalid		(w_fir2_tvalid),
 		.s_axis_tready		(),
@@ -298,7 +304,7 @@ module design_1_wrapper (
 	);
 
 	axis_data_fifo fifo3 (
-		.s_axis_aresetn		(1'b1),
+		.s_axis_aresetn		(w_locked),
 		.s_axis_aclk		(w_fir_ck),
 		.s_axis_tvalid		(w_fir3_tvalid),
 		.s_axis_tready		(),
@@ -384,5 +390,17 @@ module design_1_wrapper (
         .IO	(I2C0_SDA),
         .O	(iic_0_sda_i),
         .T	(iic_0_sda_t));
+
+  IOBUF iic_1_scl_iobuf
+       (.I	(iic_1_scl_o),
+        .IO	(I2C1_SCL),
+        .O	(iic_1_scl_i),
+        .T	(iic_1_scl_t));
+  IOBUF iic_1_sda_iobuf
+       (.I	(iic_1_sda_o),
+        .IO	(I2C1_SDA),
+        .O	(iic_1_sda_i),
+        .T	(iic_1_sda_t));
+
 endmodule
 
