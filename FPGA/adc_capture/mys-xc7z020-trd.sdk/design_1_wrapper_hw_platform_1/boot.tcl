@@ -1,3 +1,4 @@
+connect
 connect -url tcp:localhost:3121
 targets 2
 rst -cores

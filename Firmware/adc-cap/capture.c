@@ -193,16 +193,22 @@ void init_dac(){
         perror("ioctl");
         return;
     }
-    write_reg(fd, 0x00, 0x00);  /* software reset */
+    write_reg(fd, 0x00, 0x000);  /* software reset */
+    write_reg(fd, 0x01, 0x00F);  /* internal tie-off buffer enabled */
     write_reg(fd, 0x02, 0x180); /* Power management for the left and right headphone amplifier, R(L)HPEN=1 */
-    write_reg(fd, 0x03, 0x003); /* Power management enable/disable, R(L)DACEN=1 */
+    write_reg(fd, 0x03, 0x00F); /* Power management enable/disable, L(R)Mixer, R(L)DACEN=1 */
     printf("%03X=%03X\n", 0x04, read_reg(fd, 0x04)); /* should be 0x050 */
+    printf("%03X=%03X\n", 0x06, read_reg(fd, 0x06)); /* should be 0x140 */
+    write_reg(fd, 0x06, 0x000); /* MCLK used as master clock, divide by 1 */
+    printf("%03X=%03X\n", 0x06, read_reg(fd, 0x06)); /* should be 0x000 */
     //    write_reg(0x05, );          /* Digital passthrough of ADC output data into DAC input */
     //    write_reg(0x07, );          /* Sample rate indication bits */
-    //    write_reg(0x0a, );          /* softmute, automute, oversampling options, polarity control */
-    write_reg(fd, 0x0b, 0x080);  /* left ch DAC digital volume */
-    write_reg(fd, 0x0c, 0x180);  /* right ch DAC digital volume, update */
-    printf("%03X=%03X\n", 0x34, read_reg(fd, 0x34)); /* should be 0x039 */
+    write_reg(fd, 0x0a, 0x080); /* softmute, automute, 128k oversampling, polarity control */
+    write_reg(fd, 0x0b, 0x0C0);  /* left ch DAC digital volume */
+    write_reg(fd, 0x0c, 0x1C0);  /* right ch DAC digital volume, update */
+    //    write_reg(fd, 0x32, 0x000);
+    printf("%03X=%03X\n", 0x32, read_reg(fd, 0x32)); /* should be 0x001 */
+    printf("%03X=%03X\n", 0x34, read_reg(fd, 0x34)); /* should be 0x039(LHPGAIN=0.0dB) */
     //    write_reg(52, );            /* volume, mute, update, zero crossing controls for left headphone driver */
     //    write_reg(53, );            /* volume, mute, update, zero crossing controls for right headphone driver */
 }

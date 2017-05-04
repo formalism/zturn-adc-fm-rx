@@ -1,0 +1,9 @@
+timeout=15
+sendln 'setenv ipaddr 192.168.0.90'
+sendln 'setenv serverip 192.168.0.100'
+sendln 'tftpboot 0x2a00000 zynq-zturn.dtb'
+wait 'Bytes transferred'
+sendln 'tftpboot 0x3000000 uImage'
+wait 'Bytes transferred'
+sendln 'setenv bootargs mem=512M console=ttyPS0,115200 root=/dev/nfs rw nfsroot=192.168.0.100:/srv,v3,tcp rootwait ip=192.168.0.90:192.168.0.100:192.168.0.100'
+sendln 'bootm 0x3000000 - 0x2a00000'

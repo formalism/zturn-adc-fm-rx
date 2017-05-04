@@ -846,6 +846,7 @@ namespace rf_demod
                             (val < -0x8000) ? (short)-0x8000 : (short)val;
                 bw.Write(vv);
             }
+//            MessageBox.Show("maxAmp = " + maxAmp);
             bw.Close();
             fs.Close();
         }

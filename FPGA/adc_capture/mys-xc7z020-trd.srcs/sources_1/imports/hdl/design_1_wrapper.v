@@ -43,7 +43,13 @@ module design_1_wrapper (
 	output				SHDNB,
 	output[2:2]			LEDS,
 	input[3:0]			SW,
-	output				BP
+	output				BP,
+
+	// I2S
+	output				I2S_FS,
+	output				I2S_BCLK,
+	output				I2S_DAT,
+	output				DAC_MCLK
 );
 
 	parameter signed[33:0] PI = (2.0 ** 29.0) * 3.1415926535897932384626433832795;
@@ -51,7 +57,7 @@ module design_1_wrapper (
 
 	wire[63:0]	w_gpio_tri_t;
 	wire[63:0]	w_gpio_tri_o;
-	wire		w_clk40m;
+	wire		w_clk40m, w_mclk, w_locked2;
 	wire		w_tready, w_tvalid;
 	wire[15:0]	w_sin3mhz, w_sin11mhz;
 	reg[63:0]	r_axis_data;
@@ -92,6 +98,9 @@ module design_1_wrapper (
 	wire signed[31:0]	w_result_data;
 	wire				w_result_valid;
 
+	wire[31:0]			w_i2s_data;
+	wire				w_i2s_tready;
+
 	assign	LEDS[2:2]	=	1'b1;
 	assign	BP			=	1'b0;
 
@@ -102,6 +111,25 @@ module design_1_wrapper (
 	BUFG bufg_inst (
 		.I		(ADC_CK),
 		.O		(w_adck)
+	);
+
+	// 12.288MHz (=256*48kHz)
+	gen_dac_mclk gen_dac_mclk_i (
+		.reset			(1'b0),
+		.clk_in1		(w_adck),
+		.clk_out1		(w_mclk),
+		.locked			(w_locked2)
+	);
+	assign		DAC_MCLK		=	w_mclk;
+
+	i2s_tx i2s_tx_i (
+		.mclk			(w_mclk),
+		.bclk			(I2S_BCLK),
+		.d_ready		(w_i2s_tready),
+		.l_in			(w_i2s_data[25:2]),
+		.r_in			(w_i2s_data[25:2]),
+		.fs				(I2S_FS),
+		.dat			(I2S_DAT)
 	);
 
 	generate
@@ -343,6 +371,19 @@ module design_1_wrapper (
 		.d_in_valid				(w_fifo4_tvalid),
 		.d_out					(w_result_data),
 		.d_out_valid			(w_result_valid)
+	);
+
+	axis_data_fifo_async fifo_dac (
+		.s_axis_aresetn			(w_locked),
+		.m_axis_aresetn			(w_locked2),
+		.s_axis_aclk			(w_adck),
+		.s_axis_tvalid			(w_result_valid),
+		.s_axis_tready			(),
+		.s_axis_tdata			(w_result_data),
+		.m_axis_aclk			(w_mclk),
+		.m_axis_tvalid			(),
+		.m_axis_tready			(w_i2s_tready),
+		.m_axis_tdata			(w_i2s_data)
 	);
 
 	// input to DMA FIFO
