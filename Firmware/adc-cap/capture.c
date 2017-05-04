@@ -12,11 +12,15 @@
 #include <pthread.h>
 #include <semaphore.h>
 #include <errno.h>
+#include <linux/i2c-dev.h>
 
 #define SERVER_PORT (12345)
 
 #define KB ((1024))
 #define MB ((1024*1024))
+
+/* 1bit shift-left */
+#define NAU_DEVADR      (0x34)
 
 static sem_t sem_cap_a, sem_cap_b, sem_xfer_a, sem_xfer_b;
 
@@ -149,6 +153,60 @@ void init_dds_frequency(float freq){
     return;
 }
 
+int write_reg(int fd, int adr, int data){
+    char buf[3];
+
+    buf[0] = (adr<<1) | ((data&0x100)>>8);
+    buf[1] = data & 0xFF;
+    if (write(fd, buf, 2) < 0){
+        return -1;
+    }
+    return 0;
+}
+
+int read_reg(int fd, int adr){
+    char buf[3];
+
+    buf[0] = (adr<<1);
+    if (write(fd, buf, 1) < 0){
+        perror("write");
+        return -1;
+    }
+    if (read(fd, buf, 2) < 0){
+        perror("read");
+        return -1;
+    }
+    return (buf[0]<<8) | buf[1];
+}
+
+void init_dac(){
+    int fd = open("/dev/i2c-1", O_RDWR);
+    int ret, adr;
+
+    if (fd < 0){
+        perror("/dev/i2c-1");
+        return;
+    }
+    adr = NAU_DEVADR >> 1;
+    ret = ioctl(fd, I2C_SLAVE, adr);
+    if (ret < 0){
+        perror("ioctl");
+        return;
+    }
+    write_reg(fd, 0x00, 0x00);  /* software reset */
+    write_reg(fd, 0x02, 0x180); /* Power management for the left and right headphone amplifier, R(L)HPEN=1 */
+    write_reg(fd, 0x03, 0x003); /* Power management enable/disable, R(L)DACEN=1 */
+    printf("%03X=%03X\n", 0x04, read_reg(fd, 0x04)); /* should be 0x050 */
+    //    write_reg(0x05, );          /* Digital passthrough of ADC output data into DAC input */
+    //    write_reg(0x07, );          /* Sample rate indication bits */
+    //    write_reg(0x0a, );          /* softmute, automute, oversampling options, polarity control */
+    write_reg(fd, 0x0b, 0x080);  /* left ch DAC digital volume */
+    write_reg(fd, 0x0c, 0x180);  /* right ch DAC digital volume, update */
+    printf("%03X=%03X\n", 0x34, read_reg(fd, 0x34)); /* should be 0x039 */
+    //    write_reg(52, );            /* volume, mute, update, zero crossing controls for left headphone driver */
+    //    write_reg(53, );            /* volume, mute, update, zero crossing controls for right headphone driver */
+}
+
 void dump_mem(unsigned char* buf, int sz){
     int i;
 
@@ -211,6 +269,8 @@ int main(int argc, char** argv)
 
     init_dds_frequency(tune_freq);
     printf("freq=%f\n", tune_freq);
+
+    init_dac();
 
     bind_and_open(&sock0, &sock);
     while (i < 8){
