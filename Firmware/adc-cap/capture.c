@@ -23,8 +23,9 @@
 #define NAU_DEVADR      (0x34)
 
 static sem_t sem_cap_a, sem_cap_b, sem_xfer_a, sem_xfer_b;
+static int running;
 
-void bind_and_open(int* sock0, int* sock)
+void socket_bind(int* sock0)
 {
     struct sockaddr_in addr;
     struct sockaddr_in client;
@@ -35,6 +36,12 @@ void bind_and_open(int* sock0, int* sock)
     addr.sin_port = htons(SERVER_PORT);
     addr.sin_addr.s_addr = INADDR_ANY;
     bind(*sock0, (struct sockaddr*)&addr, sizeof(addr));
+}
+
+void listen_and_accept(int* sock0, int* sock)
+{
+    struct sockaddr_in client;
+    int len;
 
     listen(*sock0, 5);
     len = sizeof(client);
@@ -86,9 +93,9 @@ void* thread_func(void* arg){
 
     printf("size=%08X\n", size);
 
-    while (1){
+    while (running){
         //        printf("Write DMA registers\n");
-        if (EINVAL == sem_wait(&sem_cap_a)){
+        if (sem_wait(&sem_cap_a) < 0){
             break;
         }
         set_axi_dma_reg(map_addr, size, (512*MB));
@@ -101,11 +108,11 @@ void* thread_func(void* arg){
         
         //        printf("DMA Done\n");
         clear_interrupt(map_addr);
-        if (EINVAL == sem_post(&sem_xfer_a)){
+        if (sem_post(&sem_xfer_a) < 0){
             break;
         }
 
-        if (EINVAL == sem_wait(&sem_cap_b)){
+        if (sem_wait(&sem_cap_b) < 0){
             break;
         }
         set_axi_dma_reg(map_addr, size, ((512+256)*MB));
@@ -116,12 +123,13 @@ void* thread_func(void* arg){
         if (4 != read(uiofd, &i, 4)) /* wait interrupt */
             perror("uio read:");
         clear_interrupt(map_addr);
-        if (EINVAL == sem_post(&sem_xfer_b)){
+        if (sem_post(&sem_xfer_b) < 0){
             break;
         }
     }
 
  thread_exit:
+    close(uiofd);
     pthread_exit(NULL);
 }
 
@@ -243,19 +251,68 @@ int init_semaphore(){
     return 0;
 }
 
-int main(int argc, char** argv)
-{
-    int sock0, sock;
-    int i=0;
-	pthread_t th;
-    int memfd;
-    unsigned char* mem;
-    unsigned char buf[16];
+void run(int sock0, unsigned char* mem){
     unsigned int capture_size;
-    float tune_freq = 4.7;
+    int sock;
+	pthread_t th;
+    int i=0;
+    unsigned char buf[16];
 
     if (init_semaphore())
         exit(1);
+
+    listen_and_accept(&sock0, &sock);
+    while (i < 8){
+        i += read(sock, buf, 8-i);
+    }
+    sscanf(buf, "%x", &capture_size);
+    printf("capture_size=%08X\n", capture_size);
+
+    running = 1;
+	if (pthread_create(&th, NULL, &thread_func, &capture_size)){
+        perror("pthread_create");
+        exit(1);
+    }
+
+    while (running){
+        sem_wait(&sem_xfer_a);
+        //        printf("Start transfer A\n");
+        if (-1 == write(sock, mem, capture_size)){
+            running = 0;
+            break;
+        }
+        sem_post(&sem_cap_a);
+
+        sem_wait(&sem_xfer_b);
+        //        printf("Start transfer B\n");
+        if (-1 == write(sock, &mem[256*MB], capture_size)){
+            running = 0;
+            break;
+        }
+        sem_post(&sem_cap_b);
+    }
+    //    dump_mem(mem, 256);
+
+    sem_post(&sem_cap_a);
+    sem_post(&sem_cap_b);
+
+    sem_destroy(&sem_cap_a);
+    sem_destroy(&sem_xfer_a);
+    sem_destroy(&sem_cap_b);
+    sem_destroy(&sem_xfer_b);
+    
+    //    printf("destroyed semaphores\n");
+    pthread_join(th, NULL);
+}
+
+int main(int argc, char** argv)
+{
+    int sock0;
+    int memfd;
+    unsigned char* mem;
+    float tune_freq = 4.7;
+
+    init_dac();
    
     memfd = open("/dev/mem", O_RDWR|O_SYNC);
     if (memfd < 0){
@@ -270,48 +327,15 @@ int main(int argc, char** argv)
 
     if (argc == 2)              /* frequency is specified */
         sscanf(argv[1], "%f", &tune_freq); /* eg. 4.7 */
-
     tune_freq *= 1e+6;          /* to MHz */
 
     init_dds_frequency(tune_freq);
     printf("freq=%f\n", tune_freq);
 
-    init_dac();
-
-    bind_and_open(&sock0, &sock);
-    while (i < 8){
-        i += read(sock, buf, 8-i);
-    }
-    sscanf(buf, "%x", &capture_size);
-    printf("capture_size=%08X\n", capture_size);
-
-	if (pthread_create(&th, NULL, &thread_func, &capture_size)){
-        perror("pthread_create");
-        exit(1);
-    }
-
+    socket_bind(&sock0);
     while (1){
-        sem_wait(&sem_xfer_a);
-        //        printf("Start transfer A\n");
-        if (-1 == write(sock, mem, capture_size))
-            break;
-        sem_post(&sem_cap_a);
-
-        sem_wait(&sem_xfer_b);
-        //        printf("Start transfer B\n");
-        if (-1 == write(sock, &mem[256*MB], capture_size))
-            break;
-        sem_post(&sem_cap_b);
+        run(sock0, mem);
     }
-
-    dump_mem(mem, 256);
-
-    sem_destroy(&sem_cap_a);
-    sem_destroy(&sem_xfer_a);
-    sem_destroy(&sem_cap_b);
-    sem_destroy(&sem_xfer_b);
-
-    pthread_join(th, NULL);
 
  _exit:
     printf("closed file descriptor\n");
