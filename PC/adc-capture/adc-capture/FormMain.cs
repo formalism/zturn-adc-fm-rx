@@ -38,6 +38,7 @@ namespace adc_capture
         }
 
         static UInt32 MB = 1024 * 1024;
+        static UInt32 KB = 1024;
         private NetworkStream ns = null;
         private TcpClient tcp = null;
 
@@ -53,7 +54,9 @@ namespace adc_capture
 
         private int set_capture_size()
         {
-            int size = (int)(numericUpDown_size.Value * MB);
+            UInt32 sz = (radioButton_MB.Checked ? MB : 
+                          (radioButton_KB.Checked ? KB : KB));
+            int size = (int)(numericUpDown_size.Value * sz);
             if (tcp == null)
                 open_connection();
 
@@ -141,6 +144,42 @@ namespace adc_capture
         private static float SAMPLE_FREQ = 40.0f;
         private static int ADC_WIDTH = 12;
 
+        private void draw_chart(int[] data, Complex[] data2, float sample_freq)
+        {
+            chart.Invoke(new Action(() =>
+            {
+                chart.Series.Clear();
+
+                Series dat = new Series();
+                dat.ChartType = SeriesChartType.Line;
+                dat.Color = Color.Aqua;
+                dat.BorderWidth = 1;
+                dat.LegendText = "data";
+                chart.ChartAreas["data"].RecalculateAxesScale();
+
+                for (int i = 1024; i < 1024 + 1024; i++)
+                {
+                    dat.Points.AddXY(i, data[i]);
+                }
+                dat.ChartArea = "data";
+                chart.Series.Add(dat);
+
+                dat = new Series();
+                dat.ChartType = SeriesChartType.Line;
+                dat.Color = Color.Green;
+                dat.BorderWidth = 1;
+                dat.LegendText = "FFT";
+                float s = sample_freq / (float)FFT_POINTS;
+                for (int i = 0; i < FFT_POINTS / 2; i++)
+                {
+                    double val = Complex.Abs(data2[i]);
+                    dat.Points.AddXY((float)i * s, 20.0 * Math.Log10(val * 0.54));
+                }
+                dat.ChartArea = "FFT";
+                chart.Series.Add(dat);
+            }));
+        }
+
         private void capture_and_display()
         {
             int size = set_capture_size();
@@ -164,38 +203,7 @@ namespace adc_capture
                 }
                 Fourier.Radix2Forward(data2, FourierOptions.Default);
 
-                chart.Invoke(new Action(() =>
-                {
-                    chart.Series.Clear();
-
-                    Series dat = new Series();
-                    dat.ChartType = SeriesChartType.Line;
-                    dat.Color = Color.Aqua;
-                    dat.BorderWidth = 1;
-                    dat.LegendText = "data";
-                    chart.ChartAreas["data"].RecalculateAxesScale();
-
-                    for (int i = 4096; i < 4096+512; i++)
-                    {
-                        dat.Points.AddXY(i, data[i]);
-                    }
-                    dat.ChartArea = "data";
-                    chart.Series.Add(dat);
-
-                    dat = new Series();
-                    dat.ChartType = SeriesChartType.Line;
-                    dat.Color = Color.Green;
-                    dat.BorderWidth = 1;
-                    dat.LegendText = "FFT";
-                    float s = SAMPLE_FREQ / (float)FFT_POINTS;
-                    for (int i = 0; i < FFT_POINTS / 2; i++)
-                    {
-                        double val = Complex.Abs(data2[i]);
-                        dat.Points.AddXY((float)i * s, 20.0 * Math.Log10(val * 0.54));
-                    }
-                    dat.ChartArea = "FFT";
-                    chart.Series.Add(dat);
-                }));
+                draw_chart(data, data2, SAMPLE_FREQ);
             }
         }
 
