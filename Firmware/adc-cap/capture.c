@@ -73,6 +73,68 @@ void clear_interrupt(unsigned int* reg_addr){
     reg_addr[3] = 1;                /* clear ap_done */
 }
 
+// initialize DDS memory (currently fixed 40MHz sampling)
+void init_dds_frequency(float freq){
+    int i;
+    int uiofd;
+    unsigned int* map_addr;
+    double ratio = freq / 40e+6;
+
+    uiofd = open("/dev/uio1", O_RDWR);
+    if (uiofd < 0){
+        perror("uio open:");
+        goto exit;
+    }
+    map_addr = (unsigned int*)mmap(NULL, 32*KB, PROT_READ | PROT_WRITE, MAP_SHARED, uiofd, 0);
+    if (!map_addr){
+        fprintf(stderr, "mmap failed\n");
+        goto exit;
+    }
+    for (i = 0; i < 400; i++){  /* 400 point is enough */
+        int s = sin((double)i*M_PI*2.0*ratio) * (1<<12);
+        int c = cos((double)i*M_PI*2.0*ratio) * (1<<12);
+        int sc = (s<<16) | (c & 0xFFFF);
+        printf("[i=%08d] sin=%d, cos=%d, sincos=%08X\n", i, s, c, sc);
+        map_addr[i] = sc;
+    }
+ exit:
+    return;
+}
+
+void parse_frequency(int fd){
+    int len = 0;
+    char buf[8];
+    float freq;
+    
+    do{
+        len += read(fd, &buf[len], 4-len);
+    }while (len < 4);
+    sscanf(buf, "%f", &freq);
+    freq *= 1e+6;               /* to MHz */
+    init_dds_frequency(freq);
+}
+
+void* cmd_thread_func(void* arg){
+    int fd = *(int*)arg;
+    char buf[16];
+    int len;
+
+    while (1){
+        len = read(fd, buf, 1); /* read a byte */
+        if (len < 1){           /* EOF or closed */
+            running = 0;
+            break;
+        }
+        switch (buf[0]){
+        case 'F':                    /* set frequency: XX.X MHz */
+            parse_frequency(fd);
+            break;
+        default:
+            break;
+        }
+    }
+}
+
 void* thread_func(void* arg){
     int uiofd;
     unsigned int* map_addr;
@@ -131,34 +193,6 @@ void* thread_func(void* arg){
  thread_exit:
     close(uiofd);
     pthread_exit(NULL);
-}
-
-// initialize DDS memory (currently fixed 40MHz sampling)
-void init_dds_frequency(float freq){
-    int i;
-    int uiofd;
-    unsigned int* map_addr;
-    double ratio = freq / 40e+6;
-
-    uiofd = open("/dev/uio1", O_RDWR);
-    if (uiofd < 0){
-        perror("uio open:");
-        goto exit;
-    }
-    map_addr = (unsigned int*)mmap(NULL, 32*KB, PROT_READ | PROT_WRITE, MAP_SHARED, uiofd, 0);
-    if (!map_addr){
-        fprintf(stderr, "mmap failed\n");
-        goto exit;
-    }
-    for (i = 0; i < 400; i++){  /* 400 point is enough */
-        int s = sin((double)i*M_PI*2.0*ratio) * (1<<12);
-        int c = cos((double)i*M_PI*2.0*ratio) * (1<<12);
-        int sc = (s<<16) | (c & 0xFFFF);
-        printf("[i=%08d] sin=%d, cos=%d, sincos=%08X\n", i, s, c, sc);
-        map_addr[i] = sc;
-    }
- exit:
-    return;
 }
 
 int write_reg(int fd, int adr, int data){
@@ -254,7 +288,7 @@ int init_semaphore(){
 void run(int sock0, unsigned char* mem){
     unsigned int capture_size;
     int sock;
-	pthread_t th;
+	pthread_t th, th_cmd;
     int i=0;
     unsigned char buf[16];
 
@@ -270,6 +304,10 @@ void run(int sock0, unsigned char* mem){
 
     running = 1;
 	if (pthread_create(&th, NULL, &thread_func, &capture_size)){
+        perror("pthread_create");
+        exit(1);
+    }
+    if (pthread_create(&th_cmd, NULL, &cmd_thread_func, &sock)){
         perror("pthread_create");
         exit(1);
     }

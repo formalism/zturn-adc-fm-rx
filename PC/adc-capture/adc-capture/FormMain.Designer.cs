@@ -37,6 +37,9 @@
             this.radioButton_offset = new System.Windows.Forms.RadioButton();
             this.button_capture_single = new System.Windows.Forms.Button();
             this.checkBox_decode = new System.Windows.Forms.CheckBox();
+            this.textBox_tune_freq = new System.Windows.Forms.TextBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.button_tune_freq = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_size)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.chart)).BeginInit();
             this.SuspendLayout();
@@ -143,11 +146,41 @@
             this.checkBox_decode.Text = "raw adc decode";
             this.checkBox_decode.UseVisualStyleBackColor = true;
             // 
+            // textBox_tune_freq
+            // 
+            this.textBox_tune_freq.Location = new System.Drawing.Point(14, 364);
+            this.textBox_tune_freq.Name = "textBox_tune_freq";
+            this.textBox_tune_freq.Size = new System.Drawing.Size(64, 22);
+            this.textBox_tune_freq.TabIndex = 10;
+            this.textBox_tune_freq.Text = "81.3";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(84, 367);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(35, 15);
+            this.label2.TabIndex = 11;
+            this.label2.Text = "MHz";
+            // 
+            // button_tune_freq
+            // 
+            this.button_tune_freq.Location = new System.Drawing.Point(12, 392);
+            this.button_tune_freq.Name = "button_tune_freq";
+            this.button_tune_freq.Size = new System.Drawing.Size(118, 39);
+            this.button_tune_freq.TabIndex = 12;
+            this.button_tune_freq.Text = "Tune";
+            this.button_tune_freq.UseVisualStyleBackColor = true;
+            this.button_tune_freq.Click += new System.EventHandler(this.button_tune_freq_Click);
+            // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(719, 496);
+            this.Controls.Add(this.button_tune_freq);
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.textBox_tune_freq);
             this.Controls.Add(this.checkBox_decode);
             this.Controls.Add(this.button_capture_single);
             this.Controls.Add(this.radioButton_offset);
@@ -179,6 +212,9 @@
         private System.Windows.Forms.RadioButton radioButton_offset;
         private System.Windows.Forms.Button button_capture_single;
         private System.Windows.Forms.CheckBox checkBox_decode;
+        private System.Windows.Forms.TextBox textBox_tune_freq;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Button button_tune_freq;
     }
 }
 

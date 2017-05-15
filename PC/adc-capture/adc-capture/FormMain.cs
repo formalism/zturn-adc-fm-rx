@@ -259,5 +259,22 @@ namespace adc_capture
                 }
             }
         }
+
+        private void button_tune_freq_Click(object sender, EventArgs e)
+        {
+            double freq = Convert.ToDouble(textBox_tune_freq.Text);
+            int quot = (int)(freq / SAMPLE_FREQ);
+            freq -= quot * SAMPLE_FREQ;
+            if (freq > SAMPLE_FREQ / 2.0f)
+            {
+                freq = SAMPLE_FREQ - freq;   // alias
+            }
+
+            if (tcp == null)
+                open_connection();
+
+            byte[] str = System.Text.Encoding.ASCII.GetBytes("F"+freq.ToString("00.0"));   // send how many bytes to receive
+            ns.Write(str, 0, str.Length);
+        }
     }
 }
