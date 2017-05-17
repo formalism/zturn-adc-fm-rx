@@ -40,11 +40,19 @@
             this.label2 = new System.Windows.Forms.Label();
             this.button_tune_freq = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.radioButton_MB = new System.Windows.Forms.RadioButton();
             this.radioButton_KB = new System.Windows.Forms.RadioButton();
+            this.radioButton_MB = new System.Windows.Forms.RadioButton();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.radioButton_raw = new System.Windows.Forms.RadioButton();
+            this.radioButton_32bit = new System.Windows.Forms.RadioButton();
+            this.textBox_fs = new System.Windows.Forms.TextBox();
+            this.label1 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_size)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.chart)).BeginInit();
             this.groupBox1.SuspendLayout();
+            this.groupBox2.SuspendLayout();
+            this.groupBox3.SuspendLayout();
             this.SuspendLayout();
             // 
             // button_capture
@@ -94,7 +102,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.chart.Location = new System.Drawing.Point(160, 24);
             this.chart.Name = "chart";
-            this.chart.Size = new System.Drawing.Size(547, 460);
+            this.chart.Size = new System.Drawing.Size(547, 499);
             this.chart.TabIndex = 5;
             this.chart.Text = "chart1";
             // 
@@ -102,7 +110,7 @@
             // 
             this.radioButton_signed.AutoSize = true;
             this.radioButton_signed.Checked = true;
-            this.radioButton_signed.Location = new System.Drawing.Point(12, 164);
+            this.radioButton_signed.Location = new System.Drawing.Point(15, 21);
             this.radioButton_signed.Name = "radioButton_signed";
             this.radioButton_signed.Size = new System.Drawing.Size(68, 19);
             this.radioButton_signed.TabIndex = 6;
@@ -113,7 +121,7 @@
             // radioButton_offset
             // 
             this.radioButton_offset.AutoSize = true;
-            this.radioButton_offset.Location = new System.Drawing.Point(12, 189);
+            this.radioButton_offset.Location = new System.Drawing.Point(15, 46);
             this.radioButton_offset.Name = "radioButton_offset";
             this.radioButton_offset.Size = new System.Drawing.Size(66, 19);
             this.radioButton_offset.TabIndex = 7;
@@ -122,7 +130,7 @@
             // 
             // button_capture_single
             // 
-            this.button_capture_single.Location = new System.Drawing.Point(12, 247);
+            this.button_capture_single.Location = new System.Drawing.Point(12, 395);
             this.button_capture_single.Name = "button_capture_single";
             this.button_capture_single.Size = new System.Drawing.Size(118, 39);
             this.button_capture_single.TabIndex = 8;
@@ -133,7 +141,7 @@
             // checkBox_decode
             // 
             this.checkBox_decode.AutoSize = true;
-            this.checkBox_decode.Location = new System.Drawing.Point(12, 222);
+            this.checkBox_decode.Location = new System.Drawing.Point(12, 370);
             this.checkBox_decode.Name = "checkBox_decode";
             this.checkBox_decode.Size = new System.Drawing.Size(129, 19);
             this.checkBox_decode.TabIndex = 9;
@@ -142,7 +150,7 @@
             // 
             // textBox_tune_freq
             // 
-            this.textBox_tune_freq.Location = new System.Drawing.Point(12, 416);
+            this.textBox_tune_freq.Location = new System.Drawing.Point(12, 445);
             this.textBox_tune_freq.Name = "textBox_tune_freq";
             this.textBox_tune_freq.Size = new System.Drawing.Size(64, 22);
             this.textBox_tune_freq.TabIndex = 10;
@@ -151,7 +159,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(82, 419);
+            this.label2.Location = new System.Drawing.Point(82, 448);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(35, 15);
             this.label2.TabIndex = 11;
@@ -159,7 +167,7 @@
             // 
             // button_tune_freq
             // 
-            this.button_tune_freq.Location = new System.Drawing.Point(10, 444);
+            this.button_tune_freq.Location = new System.Drawing.Point(10, 473);
             this.button_tune_freq.Name = "button_tune_freq";
             this.button_tune_freq.Size = new System.Drawing.Size(118, 39);
             this.button_tune_freq.TabIndex = 12;
@@ -179,6 +187,16 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Capture Size";
             // 
+            // radioButton_KB
+            // 
+            this.radioButton_KB.AutoSize = true;
+            this.radioButton_KB.Location = new System.Drawing.Point(74, 46);
+            this.radioButton_KB.Name = "radioButton_KB";
+            this.radioButton_KB.Size = new System.Drawing.Size(47, 19);
+            this.radioButton_KB.TabIndex = 1;
+            this.radioButton_KB.Text = "KB";
+            this.radioButton_KB.UseVisualStyleBackColor = true;
+            // 
             // radioButton_MB
             // 
             this.radioButton_MB.AutoSize = true;
@@ -191,29 +209,82 @@
             this.radioButton_MB.Text = "MB";
             this.radioButton_MB.UseVisualStyleBackColor = true;
             // 
-            // radioButton_KB
+            // groupBox2
             // 
-            this.radioButton_KB.AutoSize = true;
-            this.radioButton_KB.Location = new System.Drawing.Point(74, 46);
-            this.radioButton_KB.Name = "radioButton_KB";
-            this.radioButton_KB.Size = new System.Drawing.Size(47, 19);
-            this.radioButton_KB.TabIndex = 1;
-            this.radioButton_KB.Text = "KB";
-            this.radioButton_KB.UseVisualStyleBackColor = true;
+            this.groupBox2.Controls.Add(this.radioButton_signed);
+            this.groupBox2.Controls.Add(this.radioButton_offset);
+            this.groupBox2.Location = new System.Drawing.Point(10, 164);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(123, 75);
+            this.groupBox2.TabIndex = 14;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "RAW format";
+            // 
+            // groupBox3
+            // 
+            this.groupBox3.Controls.Add(this.radioButton_raw);
+            this.groupBox3.Controls.Add(this.radioButton_32bit);
+            this.groupBox3.Location = new System.Drawing.Point(12, 245);
+            this.groupBox3.Name = "groupBox3";
+            this.groupBox3.Size = new System.Drawing.Size(123, 75);
+            this.groupBox3.TabIndex = 15;
+            this.groupBox3.TabStop = false;
+            this.groupBox3.Text = "Data Select";
+            // 
+            // radioButton_raw
+            // 
+            this.radioButton_raw.AutoSize = true;
+            this.radioButton_raw.Checked = true;
+            this.radioButton_raw.Location = new System.Drawing.Point(15, 21);
+            this.radioButton_raw.Name = "radioButton_raw";
+            this.radioButton_raw.Size = new System.Drawing.Size(54, 19);
+            this.radioButton_raw.TabIndex = 6;
+            this.radioButton_raw.TabStop = true;
+            this.radioButton_raw.Text = "Raw";
+            this.radioButton_raw.UseVisualStyleBackColor = true;
+            // 
+            // radioButton_32bit
+            // 
+            this.radioButton_32bit.AutoSize = true;
+            this.radioButton_32bit.Location = new System.Drawing.Point(15, 46);
+            this.radioButton_32bit.Name = "radioButton_32bit";
+            this.radioButton_32bit.Size = new System.Drawing.Size(59, 19);
+            this.radioButton_32bit.TabIndex = 7;
+            this.radioButton_32bit.Text = "32bit";
+            this.radioButton_32bit.UseVisualStyleBackColor = true;
+            // 
+            // textBox_fs
+            // 
+            this.textBox_fs.Location = new System.Drawing.Point(48, 326);
+            this.textBox_fs.Name = "textBox_fs";
+            this.textBox_fs.Size = new System.Drawing.Size(64, 22);
+            this.textBox_fs.TabIndex = 16;
+            this.textBox_fs.Text = "40.0";
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(20, 329);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(22, 15);
+            this.label1.TabIndex = 17;
+            this.label1.Text = "Fs";
             // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(719, 496);
+            this.ClientSize = new System.Drawing.Size(719, 535);
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this.textBox_fs);
+            this.Controls.Add(this.groupBox3);
+            this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.button_tune_freq);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.textBox_tune_freq);
             this.Controls.Add(this.checkBox_decode);
             this.Controls.Add(this.button_capture_single);
-            this.Controls.Add(this.radioButton_offset);
-            this.Controls.Add(this.radioButton_signed);
             this.Controls.Add(this.chart);
             this.Controls.Add(this.textBox_IP);
             this.Controls.Add(this.button_capture);
@@ -225,6 +296,10 @@
             ((System.ComponentModel.ISupportInitialize)(this.chart)).EndInit();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            this.groupBox2.ResumeLayout(false);
+            this.groupBox2.PerformLayout();
+            this.groupBox3.ResumeLayout(false);
+            this.groupBox3.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -246,6 +321,12 @@
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.RadioButton radioButton_KB;
         private System.Windows.Forms.RadioButton radioButton_MB;
+        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.GroupBox groupBox3;
+        private System.Windows.Forms.RadioButton radioButton_raw;
+        private System.Windows.Forms.RadioButton radioButton_32bit;
+        private System.Windows.Forms.TextBox textBox_fs;
+        private System.Windows.Forms.Label label1;
     }
 }
 

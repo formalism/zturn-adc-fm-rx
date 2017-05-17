@@ -117,15 +117,25 @@ namespace adc_capture
             return data;
         }
 
-        void init_chart()
+        int[] decode_32bit_values(byte[] buf, int len)
         {
-            chart.ChartAreas.Add(new ChartArea("data"));
+            int i;
+            int[] data = new int[len];
+
+            for (i = 0; i < len; i++)
+            {
+                data[i] = BitConverter.ToInt32(buf, i*8);
+            }
+            return data;
+        }
+
+        void init_chart(float freq)
+        {
             chart.ChartAreas["data"].CursorX.IsUserEnabled = true;
             chart.ChartAreas["data"].CursorX.IsUserSelectionEnabled = true;
             chart.ChartAreas["data"].AxisX.ScaleView.Zoomable = true;
             chart.ChartAreas["data"].AxisX.ScrollBar.IsPositionedInside = true;
 
-            chart.ChartAreas.Add(new ChartArea("FFT"));
             chart.ChartAreas["FFT"].AxisY.Title = "[dB]";
             chart.ChartAreas["FFT"].AxisX.Title = "MHz";
             chart.ChartAreas["FFT"].CursorX.IsUserEnabled = true;
@@ -133,7 +143,7 @@ namespace adc_capture
             chart.ChartAreas["FFT"].AxisX.ScaleView.Zoomable = true;
             chart.ChartAreas["FFT"].AxisX.ScrollBar.IsPositionedInside = true;
             chart.ChartAreas["FFT"].AxisX.Minimum = 0.0;
-            chart.ChartAreas["FFT"].AxisX.Maximum = SAMPLE_FREQ / 2.0;
+            chart.ChartAreas["FFT"].AxisX.Maximum = freq / 2.0;
                 //                    chart.ChartAreas["FFT"].AxisX.Interval = 0.25; // 0=Auto
             chart.ChartAreas["FFT"].AxisX.Interval = 0;
             chart.ChartAreas["FFT"].AxisX.IntervalAutoMode = IntervalAutoMode.VariableCount;
@@ -184,26 +194,36 @@ namespace adc_capture
         {
             int size = set_capture_size();
             byte[] buf = new byte[size];
-            var window_sum = 0.0;
+            int[] data;
+            Complex[] data2 = new Complex[FFT_POINTS];
             var window = Window.Hamming(FFT_POINTS);
-            foreach (var w in window)
-                window_sum += w;
-            window_sum /= 2;
+            float fs = (float)Convert.ToDouble(textBox_fs.Text);
+            init_chart(fs);
 
             while (running)
             {
                 get_raw_values(buf);
 
-                int[] data = decode_values(buf, FFT_POINTS);
-                Complex[] data2 = new Complex[FFT_POINTS];
-
-                for (int i = 0; i < FFT_POINTS; i++)
-                {       // normalize ADC value to [-1,1]
-                    data2[i] = new Complex(data[i] / (float)(1<<(ADC_WIDTH-1)) * (float)window[i], 0.0f);
+                if (radioButton_raw.Checked)
+                {
+                    data = decode_values(buf, FFT_POINTS);
+                    for (int i = 0; i < FFT_POINTS; i++)
+                    {       // normalize ADC value to [-1,1]
+                        data2[i] = new Complex(data[i] / (float)(1 << (ADC_WIDTH - 1)) * (float)window[i], 0.0f);
+                    }
                 }
+                else
+                { 
+                    data = decode_32bit_values(buf, FFT_POINTS);
+                    for (int i = 0; i < FFT_POINTS; i++)
+                    {
+                        data2[i] = new Complex(data[i] / (float)(0x7FFFFFFF) * (float)window[i], 0.0f);
+                    }
+                }
+
                 Fourier.Radix2Forward(data2, FourierOptions.Default);
 
-                draw_chart(data, data2, SAMPLE_FREQ);
+                draw_chart(data, data2, fs);
             }
         }
 
@@ -225,7 +245,9 @@ namespace adc_capture
 
         private void FormMain_Load(object sender, EventArgs e)
         {
-            init_chart();
+            chart.ChartAreas.Add(new ChartArea("data"));
+            chart.ChartAreas.Add(new ChartArea("FFT"));
+            init_chart(SAMPLE_FREQ);
         }
 
         private void FormMain_FormClosing(object sender, FormClosingEventArgs e)

@@ -62,7 +62,7 @@ module design_1_wrapper (
 	wire[15:0]	w_sin3mhz, w_sin11mhz;
 	reg[63:0]	r_axis_data;
 	reg[7:0]	r_cnt;
-	reg[2:0]	r_sw0;
+	reg[2:0]	r_sw0, r_sw3;
 	wire signed[11:0]	w_ad, w_ad2;
 	wire		w_ofa, w_ofa2;
 	wire		w_adck, w_fir_ck, w_locked;
@@ -389,21 +389,26 @@ module design_1_wrapper (
 	// input to DMA FIFO
 	always @(posedge w_adck) begin
 		r_sw0	<=	{r_sw0[1:0], SW[0]};		// sync
+		r_sw3	<=	{r_sw3[1:0], SW[3]};		// sync
 
 		if (r_cnt >= 8'd4)		// 0-4
 			r_cnt	<=	8'd0;
 		else
 			r_cnt	<=	r_cnt + 8'd1;
 
-		if (r_sw0[2] && w_result_valid)
+		if (r_sw0[2] && r_sw3[2] && w_result_valid)	// audio signal
+			r_axis_tvalid	<=	1'b1;
+		else if (!r_sw3[2] && w_atan_tvalid)		// FM demodulated signal
 			r_axis_tvalid	<=	1'b1;
 		else if (!r_sw0[2] && r_cnt == 8'd4)		// each 5 clocks (40/5=8MHz)
 			r_axis_tvalid	<=	1'b1;
 		else
 			r_axis_tvalid	<=	1'b0;
 
-		if (r_sw0[2])
+		if (r_sw0[2] && r_sw3[2])
 			r_axis_data		<=	{32'b0, w_result_data};
+		else if (!r_sw3[2])
+			r_axis_data		<=	{32'b0, r_atan_diff};
 		else
 			case (r_cnt)
 				8'd0:		// sample every 5 clocks (= 40MHz)
