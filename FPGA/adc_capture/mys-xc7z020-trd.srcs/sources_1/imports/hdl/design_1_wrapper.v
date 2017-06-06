@@ -101,7 +101,7 @@ module design_1_wrapper (
 	wire[31:0]			w_i2s_data;
 	wire				w_i2s_tready;
 
-	assign	LEDS[2:2]	=	1'b1;
+	assign	LEDS[2:2]	=	w_locked & w_locked2;
 	assign	BP			=	1'b0;
 
 	assign	SHDNA		=	1'b0;

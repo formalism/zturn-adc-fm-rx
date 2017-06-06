@@ -35,6 +35,7 @@
             this.label2 = new System.Windows.Forms.Label();
             this.textBox_fm_freq = new System.Windows.Forms.TextBox();
             this.button_fm_demodulate2 = new System.Windows.Forms.Button();
+            this.button_fm_after_demod = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // button_am
@@ -101,11 +102,22 @@
             this.button_fm_demodulate2.UseVisualStyleBackColor = true;
             this.button_fm_demodulate2.Click += new System.EventHandler(this.button_fm_demodulate2_Click);
             // 
+            // button_fm_after_demod
+            // 
+            this.button_fm_after_demod.Location = new System.Drawing.Point(12, 337);
+            this.button_fm_after_demod.Name = "button_fm_after_demod";
+            this.button_fm_after_demod.Size = new System.Drawing.Size(258, 68);
+            this.button_fm_after_demod.TabIndex = 7;
+            this.button_fm_after_demod.Text = "FM (after demod)";
+            this.button_fm_after_demod.UseVisualStyleBackColor = true;
+            this.button_fm_after_demod.Click += new System.EventHandler(this.button_fm_after_demod_Click);
+            // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(282, 344);
+            this.ClientSize = new System.Drawing.Size(282, 419);
+            this.Controls.Add(this.button_fm_after_demod);
             this.Controls.Add(this.button_fm_demodulate2);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.textBox_fm_freq);
@@ -129,6 +141,7 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox textBox_fm_freq;
         private System.Windows.Forms.Button button_fm_demodulate2;
+        private System.Windows.Forms.Button button_fm_after_demod;
     }
 }
 

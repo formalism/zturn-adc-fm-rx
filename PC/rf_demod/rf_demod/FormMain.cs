@@ -851,6 +851,39 @@ namespace rf_demod
             fs.Close();
         }
 
+        // dat: FM demodulated signal
+        private void fm_demodulate3(Int32[] dat, string wavefilename, TimeStampLog log)
+        {
+            double[] arctans = new double[dat.Length];
+            for (int i = 0; i < dat.Length; i++)
+                arctans[i] = dat[i];
+            double[] arctans2 = fir(arctans, 2, 5, fir_coef_255tap_008);  // 200kHz (cutoff 80kHz)
+            double[] arctans3 = fir(arctans2, 3, 5, fir_coef_255tap_008);  // 120kHz (cutoff 48kHz)
+            double[] arctans4 = fir(arctans3, 2, 5, fir_coef_255tap_0625); // 48kHz (cutoff 15kHz)
+            double[] arctans5 = de_emphasis(arctans4, 0.67523190665);   // fc = 3kHz/48kHz = 0.0625, e^(-2pi*0.0625)
+            log.stop("FIR: ");
+
+            FileStream fs = new FileStream(wavefilename, FileMode.CreateNew);
+            BinaryWriter bw = new BinaryWriter(fs, Encoding.ASCII);
+            write_wave_header(bw, (uint)arctans5.Length * 2);
+            double maxAmp = 0.0;
+            for (var i = 0; i < arctans5.Length; i++)
+            {
+                double val = Math.Abs(arctans5[i]);
+                if (maxAmp < val)
+                    maxAmp = val;
+            }
+            for (var i = 0; i < arctans5.Length; i++)
+            {
+                double v = arctans5[i];
+                short val = (short)((v / maxAmp) * (1 << 15) + (1 << 14));
+                bw.Write(val);
+            }
+            //            MessageBox.Show("maxAmp = " + maxAmp);
+            bw.Close();
+            fs.Close();
+        }
+
         private Int16[] read_data_file(string fname)
         {
             FileStream fs = new FileStream(fname, FileMode.Open);
@@ -950,6 +983,27 @@ namespace rf_demod
                 read_atan_data_file(dlg.FileName, out dat);
                 log.stop("Read File: ");
                 fm_demodulate2(dat, dlg.FileName + ".wav", log);
+                string[] buf = log.getLog();
+                for (var i = 0; i < buf.Length; i++)
+                {
+                    msg += buf[i] + "\n";
+                }
+                MessageBox.Show(msg);
+            }
+        }
+
+        private void button_fm_after_demod_Click(object sender, EventArgs e)
+        {
+            string msg = "";
+            OpenFileDialog dlg = new OpenFileDialog();
+            if (DialogResult.OK == dlg.ShowDialog())
+            {
+                TimeStampLog log = new TimeStampLog();
+                log.start();
+                Int32[] dat;
+                read_atan_data_file(dlg.FileName, out dat);
+                log.stop("Read File: ");
+                fm_demodulate3(dat, dlg.FileName + ".wav", log);
                 string[] buf = log.getLog();
                 for (var i = 0; i < buf.Length; i++)
                 {
