@@ -876,8 +876,10 @@ namespace rf_demod
             for (var i = 0; i < arctans5.Length; i++)
             {
                 double v = arctans5[i];
-                short val = (short)((v / maxAmp) * (1 << 15) + (1 << 14));
-                bw.Write(val);
+                int val = (int)((v / maxAmp) * (1 << 15) + (1 << 13));
+                short vv = (val > 0x7FFF) ? (short)0x7FFF :
+                            (val < -0x8000) ? (short)-0x8000 : (short)val;
+                bw.Write(vv);
             }
             //            MessageBox.Show("maxAmp = " + maxAmp);
             bw.Close();
