@@ -36,6 +36,8 @@
             this.textBox_fm_freq = new System.Windows.Forms.TextBox();
             this.button_fm_demodulate2 = new System.Windows.Forms.Button();
             this.button_fm_after_demod = new System.Windows.Forms.Button();
+            this.chart1 = new System.Windows.Forms.DataVisualization.Charting.Chart();
+            ((System.ComponentModel.ISupportInitialize)(this.chart1)).BeginInit();
             this.SuspendLayout();
             // 
             // button_am
@@ -112,11 +114,23 @@
             this.button_fm_after_demod.UseVisualStyleBackColor = true;
             this.button_fm_after_demod.Click += new System.EventHandler(this.button_fm_after_demod_Click);
             // 
+            // chart1
+            // 
+            this.chart1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.chart1.Location = new System.Drawing.Point(287, 12);
+            this.chart1.Name = "chart1";
+            this.chart1.Size = new System.Drawing.Size(808, 393);
+            this.chart1.TabIndex = 8;
+            this.chart1.Text = "chart1";
+            // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(282, 419);
+            this.ClientSize = new System.Drawing.Size(1116, 419);
+            this.Controls.Add(this.chart1);
             this.Controls.Add(this.button_fm_after_demod);
             this.Controls.Add(this.button_fm_demodulate2);
             this.Controls.Add(this.label2);
@@ -127,6 +141,8 @@
             this.Controls.Add(this.button_am);
             this.Name = "FormMain";
             this.Text = "RF Demodulate";
+            this.Load += new System.EventHandler(this.FormMain_Load);
+            ((System.ComponentModel.ISupportInitialize)(this.chart1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -142,6 +158,7 @@
         private System.Windows.Forms.TextBox textBox_fm_freq;
         private System.Windows.Forms.Button button_fm_demodulate2;
         private System.Windows.Forms.Button button_fm_after_demod;
+        private System.Windows.Forms.DataVisualization.Charting.Chart chart1;
     }
 }
 

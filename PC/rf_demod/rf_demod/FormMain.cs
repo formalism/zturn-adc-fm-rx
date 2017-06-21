@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows.Forms.DataVisualization.Charting;
 
 namespace rf_demod
 {
@@ -851,12 +852,77 @@ namespace rf_demod
             fs.Close();
         }
 
+        // dat: Fs=500kHz
+        private void fm_stereo_demodulate(double[] dat)
+        {
+            const double step_19kHz = 19.0 / 500.0 * 2.0 * Math.PI;
+            double arg_step = step_19kHz; // 19kHz
+            double arg = 0.0;
+            double z = dat[0] / 0x1000000;  // divide because the value is too large!!
+
+//            chart1.ChartAreas["FFT"].AxisY.Title = "[dB]";
+//            chart1.ChartAreas["FFT"].AxisX.Title = "MHz";
+            chart1.ChartAreas["sum"].CursorX.IsUserEnabled = true;
+            chart1.ChartAreas["sum"].CursorX.IsUserSelectionEnabled = true;
+            chart1.ChartAreas["sum"].AxisX.ScaleView.Zoomable = true;
+            chart1.ChartAreas["sum"].AxisX.ScrollBar.IsPositionedInside = true;
+//            chart1.ChartAreas["data"].AxisX.Minimum = 0.0;
+//            chart1.ChartAreas["data"].AxisX.Maximum = freq / 2.0;
+            //                    chart.ChartAreas["FFT"].AxisX.Interval = 0.25; // 0=Auto
+            chart1.ChartAreas["sum"].AxisX.Interval = 0;       // Auto
+            chart1.ChartAreas["sum"].AxisX.IntervalAutoMode = IntervalAutoMode.VariableCount;
+
+            chart1.ChartAreas["step"].CursorX.IsUserEnabled = true;
+            chart1.ChartAreas["step"].CursorX.IsUserSelectionEnabled = true;
+            chart1.ChartAreas["step"].AxisX.ScaleView.Zoomable = true;
+            chart1.ChartAreas["step"].AxisX.ScrollBar.IsPositionedInside = true;
+            chart1.ChartAreas["step"].AxisX.Interval = 0;       // Auto
+            chart1.ChartAreas["step"].AxisX.IntervalAutoMode = IntervalAutoMode.VariableCount;
+
+            Series sums = new Series();
+            Series steps = new Series();
+            sums.ChartType = SeriesChartType.Line;
+            steps.ChartType = SeriesChartType.Line;
+            chart1.Series.Clear();
+
+            // filter the value of (FM demodulated signal)*(19kHz sinusoid)
+            for (int i = 1; i < dat.Length; i++)
+            {
+                z = 0.9 * z + 0.1 * (dat[i] / 0x1000000) * Math.Sin(arg);         // single pole IIR with decay = 0.9
+                arg += arg_step;
+                /*
+                if (i % 10 == 0)   // adjust step
+                {
+                    if (sum > 1.0 && arg_step / step_19kHz < 1.1)
+                    {
+                        arg_step += step_19kHz * 0.01;
+                    }
+                    else if (sum < -1.0 && arg_step / step_19kHz > 0.9)
+                    {
+                        arg_step -= step_19kHz * 0.01;
+                    }
+                }*/
+
+                if (i < 1024 * 4)
+                {
+                    sums.Points.AddXY(i, z);
+                    steps.Points.AddXY(i, arg_step);
+                }
+            }
+
+            sums.ChartArea = "sum";
+            steps.ChartArea = "step";
+            chart1.Series.Add(sums);
+            chart1.Series.Add(steps);
+        }
+
         // dat: FM demodulated signal
         private void fm_demodulate3(Int32[] dat, string wavefilename, TimeStampLog log)
         {
             double[] arctans = new double[dat.Length];
             for (int i = 0; i < dat.Length; i++)
                 arctans[i] = dat[i];
+            fm_stereo_demodulate(arctans);
             double[] arctans2 = fir(arctans, 2, 5, fir_coef_255tap_008);  // 200kHz (cutoff 80kHz)
             double[] arctans3 = fir(arctans2, 3, 5, fir_coef_255tap_008);  // 120kHz (cutoff 48kHz)
             double[] arctans4 = fir(arctans3, 2, 5, fir_coef_255tap_0625); // 48kHz (cutoff 15kHz)
@@ -1013,6 +1079,12 @@ namespace rf_demod
                 }
                 MessageBox.Show(msg);
             }
+        }
+
+        private void FormMain_Load(object sender, EventArgs e)
+        {
+            chart1.ChartAreas.Add(new ChartArea("sum"));
+            chart1.ChartAreas.Add(new ChartArea("step"));
         }
     }
 }
