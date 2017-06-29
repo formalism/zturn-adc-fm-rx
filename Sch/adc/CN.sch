@@ -348,17 +348,6 @@ F 3 "" H 3150 6950 50  0000 C CNN
 	1    3150 6950
 	1    0    0    -1  
 $EndComp
-$Comp
-L JP4 J1
-U 1 1 58A5FE9F
-P 2550 6650
-F 0 "J1" H 2600 6350 60  0000 C CNN
-F 1 "JP4" H 2600 7000 60  0000 C CNN
-F 2 "adc_lib:M20-9980445" H 2550 6900 60  0001 C CNN
-F 3 "" H 2550 6900 60  0001 C CNN
-	1    2550 6650
-	1    0    0    -1  
-$EndComp
 Text Label 5800 2450 0    60   ~ 0
 VDDIO_13_PL
 Text Label 6000 1950 0    60   ~ 0
@@ -441,8 +430,8 @@ Text Notes 5700 3700 0    60   ~ 0
 LED
 NoConn ~ 5950 3650
 Text Notes 3700 7150 0    60   ~ 0
-MODE, Output Format, Clock Duty Cycle Stabilizer\n0, Offset Binary, Off\n1/3Vdd, Offset Binary, On\n2/3Vdd, 2's complement, On\nVdd, 2's complement, Off
-Text GLabel 1550 5700 0    60   Input ~ 0
+MODE, Output Format, Clock Duty Cycle Stabilizer\nVdd, 2's complement, Off\n2/3Vdd, 2's complement, On\n--N/A--\n0, Offset Binary, Off\n1/3Vdd, Offset Binary, On\n
+Text GLabel 1250 5950 0    60   Input ~ 0
 VDD3
 $Comp
 L GND #PWR010
@@ -484,7 +473,19 @@ Wire Wire Line
 Wire Wire Line
 	7150 1750 7600 1750
 Wire Wire Line
-	7600 1750 7600 5950
+	7600 1750 7600 1850
+Wire Wire Line
+	7600 1850 7600 2850
+Wire Wire Line
+	7600 2850 7600 3350
+Wire Wire Line
+	7600 3350 7600 3850
+Wire Wire Line
+	7600 3850 7600 4350
+Wire Wire Line
+	7600 4350 7600 5050
+Wire Wire Line
+	7600 5050 7600 5950
 Wire Wire Line
 	7150 1850 7600 1850
 Connection ~ 7600 1850
@@ -506,7 +507,11 @@ Connection ~ 7600 5050
 Wire Wire Line
 	6150 5050 6650 5050
 Wire Wire Line
-	6150 2950 6150 5950
+	6150 2950 6150 3450
+Wire Wire Line
+	6150 3450 6150 5050
+Wire Wire Line
+	6150 5050 6150 5950
 Wire Wire Line
 	6650 3450 6150 3450
 Connection ~ 6150 5050
@@ -602,64 +607,41 @@ Wire Wire Line
 Wire Wire Line
 	950  2600 2200 2600
 Wire Wire Line
-	1500 2800 2200 2800
+	1500 2800 1600 2800
+Wire Wire Line
+	1600 2800 2200 2800
 Wire Wire Line
 	2200 2450 1500 2450
 Wire Wire Line
-	1800 5700 1800 6000
+	1500 5950 1800 5950
 Wire Wire Line
-	1800 6300 1800 6400
+	1800 5950 1800 6000
+Wire Wire Line
+	1800 6300 1800 6350
+Wire Wire Line
+	1800 6350 1800 6400
 Wire Wire Line
 	1800 6700 1800 6800
 Wire Wire Line
 	1800 7100 3150 7100
 Wire Wire Line
-	3150 6800 2950 6800
+	3150 5450 3150 5950
 Wire Wire Line
-	3150 6700 2950 6700
+	3150 5950 3150 6050
 Wire Wire Line
-	3150 5450 3150 6800
-Wire Wire Line
-	2950 6600 3150 6600
-Connection ~ 3150 6700
-Wire Wire Line
-	2950 6500 3150 6500
-Connection ~ 3150 6600
+	3150 6050 3150 6800
 Wire Wire Line
 	1800 5950 2250 5950
-Wire Wire Line
-	2250 5950 2250 6500
 Connection ~ 1800 5950
 Wire Wire Line
 	1800 6350 2150 6350
-Wire Wire Line
-	2150 6350 2150 6600
-Wire Wire Line
-	2150 6600 2250 6600
 Connection ~ 1800 6350
-Wire Wire Line
-	1800 6750 2000 6750
-Wire Wire Line
-	2000 6750 2000 6700
-Wire Wire Line
-	2000 6700 2250 6700
-Connection ~ 1800 6750
-Wire Wire Line
-	2000 7100 2000 6950
-Wire Wire Line
-	2000 6950 2150 6950
-Wire Wire Line
-	2150 6950 2150 6800
-Wire Wire Line
-	2150 6800 2250 6800
-Connection ~ 2000 7100
 Wire Wire Line
 	2200 3500 1900 3500
 Wire Wire Line
 	1900 3500 1900 5450
 Wire Wire Line
 	1900 5450 3150 5450
-Connection ~ 3150 6500
 Wire Wire Line
 	6650 2450 5700 2450
 Wire Wire Line
@@ -675,11 +657,13 @@ Wire Wire Line
 Wire Wire Line
 	7150 2250 8150 2250
 Wire Wire Line
-	1500 2900 2200 2900
+	1500 2900 1750 2900
+Wire Wire Line
+	1750 2900 2200 2900
 Wire Wire Line
 	1150 2700 2200 2700
 Wire Wire Line
-	1550 5700 1800 5700
+	1250 5950 1500 5950
 Wire Wire Line
 	950  2600 950  2650
 $Comp
@@ -915,4 +899,27 @@ NoConn ~ 5950 2050
 NoConn ~ 8350 2550
 NoConn ~ 5950 2550
 NoConn ~ 7150 5650
+Text Notes 7750 4900 0    60   ~ 0
+Beep to GND
+$Comp
+L JP2 J?
+U 1 1 594BFF08
+P 2600 5950
+F 0 "J?" H 2600 5700 60  0000 C CNN
+F 1 "JP2" H 2600 6150 60  0000 C CNN
+F 2 "" H 2550 6050 60  0001 C CNN
+F 3 "" H 2550 6050 60  0001 C CNN
+	1    2600 5950
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	2150 6350 2150 6050
+Wire Wire Line
+	2150 6050 2250 6050
+Wire Wire Line
+	2950 5950 3150 5950
+Connection ~ 3150 5950
+Wire Wire Line
+	2950 6050 3150 6050
+Connection ~ 3150 6050
 $EndSCHEMATC
