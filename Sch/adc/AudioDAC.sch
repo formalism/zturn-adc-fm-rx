@@ -174,28 +174,6 @@ F 3 "" H 3900 4650 50  0000 C CNN
 	1    3900 4650
 	1    0    0    -1  
 $EndComp
-$Comp
-L +3V3 #PWR055
-U 1 1 58A98414
-P 4750 1750
-F 0 "#PWR055" H 4750 1600 50  0001 C CNN
-F 1 "+3V3" H 4750 1890 50  0000 C CNN
-F 2 "" H 4750 1750 50  0000 C CNN
-F 3 "" H 4750 1750 50  0000 C CNN
-	1    4750 1750
-	1    0    0    -1  
-$EndComp
-$Comp
-L L L8
-U 1 1 58A98450
-P 4900 1750
-F 0 "L8" V 4850 1750 50  0000 C CNN
-F 1 "L" V 4975 1750 50  0000 C CNN
-F 2 "adc_lib:FB0805" H 4900 1750 50  0001 C CNN
-F 3 "" H 4900 1750 50  0000 C CNN
-	1    4900 1750
-	0    1    1    0   
-$EndComp
 Text GLabel 4650 3800 0    60   Input ~ 0
 MCLK
 $Comp
@@ -398,23 +376,23 @@ $EndComp
 $Comp
 L +3V3 #PWR060
 U 1 1 58B42B1D
-P 5650 750
-F 0 "#PWR060" H 5650 600 50  0001 C CNN
-F 1 "+3V3" H 5650 890 50  0000 C CNN
-F 2 "" H 5650 750 50  0000 C CNN
-F 3 "" H 5650 750 50  0000 C CNN
-	1    5650 750 
+P 4500 750
+F 0 "#PWR060" H 4500 600 50  0001 C CNN
+F 1 "+3V3" H 4500 890 50  0000 C CNN
+F 2 "" H 4500 750 50  0000 C CNN
+F 3 "" H 4500 750 50  0000 C CNN
+	1    4500 750 
 	1    0    0    -1  
 $EndComp
 $Comp
 L L L7
 U 1 1 58B42B5D
-P 5800 750
-F 0 "L7" V 5750 750 50  0000 C CNN
-F 1 "L" V 5875 750 50  0000 C CNN
-F 2 "adc_lib:FB0805" H 5800 750 50  0001 C CNN
-F 3 "" H 5800 750 50  0000 C CNN
-	1    5800 750 
+P 4650 750
+F 0 "L7" V 4600 750 50  0000 C CNN
+F 1 "L" V 4725 750 50  0000 C CNN
+F 2 "adc_lib:FB0805" H 4650 750 50  0001 C CNN
+F 3 "" H 4650 750 50  0000 C CNN
+	1    4650 750 
 	0    1    1    0   
 $EndComp
 $Comp
@@ -472,6 +450,10 @@ F 3 "" H 7900 1150 50  0000 C CNN
 	1    7900 1150
 	0    1    1    0   
 $EndComp
+Text Label 8350 1150 0    60   ~ 0
+VDDC
+Text Notes 7300 1100 0    60   ~ 0
++3V
 Wire Wire Line
 	6250 3800 6450 3800
 Wire Wire Line
@@ -522,7 +504,7 @@ Wire Wire Line
 	3900 4800 3900 4950
 Connection ~ 5300 4950
 Wire Wire Line
-	5050 1750 5600 1750
+	3550 1750 5600 1750
 Wire Wire Line
 	5500 1750 5500 2450
 Wire Wire Line
@@ -576,8 +558,6 @@ Wire Wire Line
 Wire Wire Line
 	3050 4200 4650 4200
 Wire Wire Line
-	4750 1750 3550 1750
-Wire Wire Line
 	3550 1750 3550 3450
 Wire Wire Line
 	3550 3750 3550 4100
@@ -608,7 +588,7 @@ Wire Wire Line
 	7050 3750 7450 3750
 Connection ~ 7300 4000
 Wire Wire Line
-	5950 750  6400 750 
+	4800 750  6400 750 
 Wire Wire Line
 	6250 1350 6400 1350
 Wire Wire Line
@@ -641,9 +621,10 @@ Wire Wire Line
 	6250 750  6250 900 
 Wire Wire Line
 	6250 1350 6250 1200
-Text Label 8350 1150 0    60   ~ 0
-VDDC
-Text Notes 7300 1100 0    60   ~ 0
-+3V
 Connection ~ 5850 4950
+Connection ~ 5950 750 
+Wire Wire Line
+	5050 1750 5050 750 
+Connection ~ 5050 750 
+Connection ~ 5050 1750
 $EndSCHEMATC
