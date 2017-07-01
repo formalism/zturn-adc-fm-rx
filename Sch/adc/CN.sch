@@ -541,7 +541,7 @@ Wire Wire Line
 Wire Wire Line
 	6650 3950 5950 3950
 Wire Wire Line
-	6650 4050 5950 4050
+	5100 4050 6650 4050
 Wire Wire Line
 	7150 2450 7850 2450
 Wire Wire Line
@@ -666,38 +666,27 @@ Wire Wire Line
 Connection ~ 1600 2800
 Text Notes 750  3300 0    60   ~ 0
 High=nap mode
-Text GLabel 4700 3650 0    60   Output ~ 0
+Text GLabel 4700 3550 0    60   Output ~ 0
 FS
 Text GLabel 4700 3750 0    60   Output ~ 0
 BCLK
 Text GLabel 4700 3850 0    60   Output ~ 0
 DACIN
-Text GLabel 5650 4050 0    60   Output ~ 0
+Text GLabel 4700 4050 0    60   Output ~ 0
 MCLK
 Text GLabel 7850 3550 2    60   BiDi ~ 0
 SCL
 Text GLabel 7850 3450 2    60   BiDi ~ 0
 SDA
 $Comp
-L R_Pack04 RN5
-U 1 1 58A9A1DD
-P 4900 3850
-F 0 "RN5" V 4600 3850 50  0000 C CNN
-F 1 "22" V 5100 3850 50  0000 C CNN
-F 2 "adc_lib:EXB-38V220JV" V 5175 3850 50  0001 C CNN
-F 3 "" H 4900 3850 50  0000 C CNN
-	1    4900 3850
-	0    -1   1    0   
-$EndComp
-$Comp
 L R R12
 U 1 1 58A9A823
-P 5800 4050
-F 0 "R12" V 5880 4050 50  0000 C CNN
-F 1 "22" V 5800 4050 50  0000 C CNN
-F 2 "adc_lib:R0603" V 5730 4050 50  0001 C CNN
-F 3 "" H 5800 4050 50  0000 C CNN
-	1    5800 4050
+P 4950 4050
+F 0 "R12" V 5030 4050 50  0000 C CNN
+F 1 "22" V 4950 4050 50  0000 C CNN
+F 2 "adc_lib:R0603" V 4880 4050 50  0001 C CNN
+F 3 "" H 4950 4050 50  0000 C CNN
+	1    4950 4050
 	0    -1   -1   0   
 $EndComp
 $Comp
@@ -842,10 +831,6 @@ Wire Wire Line
 	7150 2750 8350 2750
 Wire Wire Line
 	7150 2550 8350 2550
-Wire Wire Line
-	5100 3550 5100 3650
-NoConn ~ 4700 3950
-NoConn ~ 5100 3950
 NoConn ~ 5950 2250
 NoConn ~ 5950 2150
 $Comp
@@ -868,7 +853,6 @@ MUX
 NoConn ~ 5950 2050
 NoConn ~ 8350 2550
 NoConn ~ 5950 2550
-NoConn ~ 7150 5650
 Text Notes 7750 4900 0    60   ~ 0
 Beep to GND
 $Comp
@@ -892,4 +876,71 @@ Connection ~ 3150 5950
 Wire Wire Line
 	2950 6050 3150 6050
 Connection ~ 3150 6050
+$Comp
+L R R?
+U 1 1 59574E56
+P 4950 3750
+F 0 "R?" V 5030 3750 50  0000 C CNN
+F 1 "22" V 4950 3750 50  0000 C CNN
+F 2 "" V 4880 3750 50  0000 C CNN
+F 3 "" H 4950 3750 50  0000 C CNN
+	1    4950 3750
+	0    1    1    0   
+$EndComp
+$Comp
+L R R?
+U 1 1 59574F08
+P 4950 3550
+F 0 "R?" V 5030 3550 50  0000 C CNN
+F 1 "22" V 4950 3550 50  0000 C CNN
+F 2 "" V 4880 3550 50  0000 C CNN
+F 3 "" H 4950 3550 50  0000 C CNN
+	1    4950 3550
+	0    1    1    0   
+$EndComp
+$Comp
+L R R?
+U 1 1 59574F5D
+P 4950 3850
+F 0 "R?" V 5030 3850 50  0000 C CNN
+F 1 "22" V 4950 3850 50  0000 C CNN
+F 2 "" V 4880 3850 50  0000 C CNN
+F 3 "" H 4950 3850 50  0000 C CNN
+	1    4950 3850
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	4700 3550 4800 3550
+Wire Wire Line
+	4700 3750 4800 3750
+Wire Wire Line
+	4700 3850 4800 3850
+Wire Wire Line
+	4700 4050 4800 4050
+Wire Wire Line
+	7150 5650 8150 5650
+Text Label 7850 5650 0    60   ~ 0
+BP
+$Comp
+L R R?
+U 1 1 5957B758
+P 8150 5800
+F 0 "R?" V 8230 5800 50  0000 C CNN
+F 1 "10k" V 8150 5800 50  0000 C CNN
+F 2 "adc_lib:R0603" V 8080 5800 50  0001 C CNN
+F 3 "" H 8150 5800 50  0000 C CNN
+	1    8150 5800
+	1    0    0    -1  
+$EndComp
+$Comp
+L GND #PWR?
+U 1 1 5957B7EE
+P 8150 5950
+F 0 "#PWR?" H 8150 5700 50  0001 C CNN
+F 1 "GND" H 8150 5800 50  0000 C CNN
+F 2 "" H 8150 5950 50  0000 C CNN
+F 3 "" H 8150 5950 50  0000 C CNN
+	1    8150 5950
+	1    0    0    -1  
+$EndComp
 $EndSCHEMATC
