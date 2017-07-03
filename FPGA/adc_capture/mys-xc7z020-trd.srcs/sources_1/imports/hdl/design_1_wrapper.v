@@ -224,6 +224,7 @@ module design_1_wrapper (
 		.q_out						(w_q)
 	);
 
+	// Fs(in)=40MHz, Fs(out)=1.25MHz
 	cic cic_i (
 		.clk						(w_adck),
 		.d_in						(w_i),
@@ -244,6 +245,7 @@ module design_1_wrapper (
 		.locked						(w_locked)
 	);
 
+	// Fs(in)=1.25MHz, Fs(out)=500kHz, Fc=200kHz
 	fir_2_over_5_008 fir_i1 (
 		.aclk						(w_adck),
 		.s_axis_data_tvalid			(w_i_cic_en),
@@ -261,6 +263,7 @@ module design_1_wrapper (
 		.m_axis_data_tdata			(w_q_fir1)
 	);
 
+	// Fs=500kHz
 	atan	atan_i (
 		.aclk						(w_adck),
 		.s_axis_cartesian_tvalid	(w_i_fir1_en && w_q_fir1_en),
@@ -274,7 +277,7 @@ module design_1_wrapper (
 
 	// differentiate neighboring angles
 	always @(posedge w_adck) begin
-		if (w_atan_tvalid) begin
+		if (w_atan_tvalid) begin		// Fs=500kHz
 			r_atan_tdata	<=	w_atan_tdata;
 
 			if (w_atan_tdata2 - r_atan_tdata2 > PI)
