@@ -28,13 +28,16 @@ module fm_stereo_pll_tb();
 
 	reg[7:0]	cnt	=	8'h00;
 
+	int			dat [];
+	integer		i	=	0;
+
 	always #(CLK_PERIOD/2)
 		clk		<=	!clk;
 
 	fm_stereo_pll	dut (
 		.clk		(clk),
 		.en			(en),
-		.atan_diff	(32'h0000_0000),
+		.atan_diff	(dat[i]),
 		.sin38khz	()
 	);
 
@@ -45,7 +48,19 @@ module fm_stereo_pll_tb();
 			cnt	<=	8'h00;
 		else
 			cnt	<=	cnt + 8'd1;
+
+		if (en)
+			i	=	i + 1;
 	end
 
+	initial begin
+		$readmemh("data.dat", dat);
+	end
+
+/*
+	Reference:
+ https://sites.google.com/site/playsystemverilog/others/system_task
+ https://japan.xilinx.com/support/answers/51327.html	(SystemVerilog data type support in Vivado)
+  */
 endmodule
 
