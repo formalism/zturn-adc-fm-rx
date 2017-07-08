@@ -28,7 +28,7 @@ module fm_stereo_pll_tb();
 
 	reg[7:0]	cnt	=	8'h00;
 
-	int			dat [];
+	integer		dat [];
 	integer		i	=	0;
 
 	always #(CLK_PERIOD/2)
@@ -54,7 +54,7 @@ module fm_stereo_pll_tb();
 	end
 
 	initial begin
-		$readmemh("data.dat", dat);
+		$readmemh("fm_demod.txt", dat);
 	end
 
 /*
