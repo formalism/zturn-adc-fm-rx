@@ -16,6 +16,9 @@ entity fm_stereo_pll is
 end fm_stereo_pll;
 
 architecture STRUCTURE of fm_stereo_pll is
+	constant PINC_MAX		:	std_logic_vector(20 downto 0)	:=	'0' & X"14000";
+	constant PINC_MIN		:	std_logic_vector(20 downto 0)	:=	'0' & X"13000";
+
 	signal	r_pinc			:	std_logic_vector(20 downto 0)	:=	'0' & X"1374B";		-- nearly 19kHz
 	signal	r_config_tvalid	:	std_logic						:=	'0';
 	signal	w_data			:	std_logic_vector(31 downto 0);
@@ -24,9 +27,10 @@ architecture STRUCTURE of fm_stereo_pll is
 	signal	w_dds_tvalid	:	std_logic;
 	signal	w_fir_tready	:	std_logic;
 	signal	r_en			:	std_logic;
+	signal	r_en_cnt		:	std_logic_vector(7 downto 0)	:=	(others => '0');
 
-	signal	r_mul			:	std_logic_vector(41 downto 0);
-	signal	w_fir_tdata_in	:	std_logic_vector(23 downto 0);
+	signal	r_mul			:	std_logic_vector(33 downto 0);
+	signal	w_fir_tdata_in	:	std_logic_vector(31 downto 0);
 	signal	w_fir_tdata_out	:	std_logic_vector(31 downto 0);
 	signal	w_fir_tvalid	:	std_logic;
 
@@ -54,16 +58,46 @@ begin
 	process (clk) begin
 		if (rising_edge(clk)) then
 			if (en = '1') then
-				r_mul		<=	atan_diff * w_cos;
+				r_mul		<=	atan_diff(31 downto 8) * w_cos;			-- 24+10=34bits
 			else
 				r_mul		<=	r_mul;
 			end if;
 
 			r_en		<=	en;
+			if (en = '1' and r_en_cnt >= 99) then
+				r_en_cnt	<=	(others => '0');
+			elsif (en = '1') then
+				r_en_cnt	<=	r_en_cnt + 1;
+			else
+				r_en_cnt	<=	r_en_cnt;
+			end if;
+
+			if (en = '1' and r_en_cnt >= 99) then
+				r_config_tvalid	<=	'1';
+
+				-- pinc frequency resolution is 0.4Hz
+				if (r_sum < 0) then
+					if (r_pinc < PINC_MAX) then
+						r_pinc	<=	r_pinc + 20;
+					else
+						r_pinc	<=	r_pinc;
+					end if;
+				else
+					if (r_pinc > PINC_MIN) then
+						r_pinc	<=	r_pinc - 20;
+					else
+						r_pinc	<=	r_pinc;
+					end if;
+				end if;
+			else
+				r_config_tvalid	<=	'0';
+				r_pinc			<=	r_pinc;
+			end if;
+
 		end if;
 	end process;
 
-	w_fir_tdata_in		<=	r_mul(41 downto 18);		-- TODO
+	w_fir_tdata_in		<=	r_mul(33 downto 2);		-- TODO
 
 	-- 500kHz * 0.04 = 20kHz
 	fir_i	:	entity work.fir_lpf_20khz 
@@ -78,7 +112,9 @@ begin
 
 	process (clk) begin
 		if (rising_edge(clk)) then
-			if (w_fir_tvalid = '1') then
+			if (w_fir_tvalid = '1' and r_en_cnt = 0) then
+				r_sum	<=	w_fir_tdata_out;
+			elsif (w_fir_tvalid = '1') then
 				r_sum	<=	r_sum + w_fir_tdata_out;
 			else
 				r_sum	<=	r_sum;
