@@ -48,6 +48,7 @@
             this.radioButton_32bit = new System.Windows.Forms.RadioButton();
             this.textBox_fs = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
+            this.button_fft = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_size)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.chart)).BeginInit();
             this.groupBox1.SuspendLayout();
@@ -102,7 +103,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.chart.Location = new System.Drawing.Point(160, 24);
             this.chart.Name = "chart";
-            this.chart.Size = new System.Drawing.Size(547, 499);
+            this.chart.Size = new System.Drawing.Size(547, 566);
             this.chart.TabIndex = 5;
             this.chart.Text = "chart1";
             // 
@@ -270,11 +271,22 @@
             this.label1.TabIndex = 17;
             this.label1.Text = "Fs";
             // 
+            // button_fft
+            // 
+            this.button_fft.Location = new System.Drawing.Point(12, 518);
+            this.button_fft.Name = "button_fft";
+            this.button_fft.Size = new System.Drawing.Size(118, 39);
+            this.button_fft.TabIndex = 18;
+            this.button_fft.Text = "FFT";
+            this.button_fft.UseVisualStyleBackColor = true;
+            this.button_fft.Click += new System.EventHandler(this.button_fft_Click);
+            // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(719, 535);
+            this.ClientSize = new System.Drawing.Size(719, 602);
+            this.Controls.Add(this.button_fft);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.textBox_fs);
             this.Controls.Add(this.groupBox3);
@@ -327,6 +339,7 @@
         private System.Windows.Forms.RadioButton radioButton_32bit;
         private System.Windows.Forms.TextBox textBox_fs;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Button button_fft;
     }
 }
 

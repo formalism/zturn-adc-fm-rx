@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net.Sockets;
@@ -179,8 +180,8 @@ namespace adc_capture
                 dat.Color = Color.Green;
                 dat.BorderWidth = 1;
                 dat.LegendText = "FFT";
-                float s = sample_freq / (float)FFT_POINTS;
-                for (int i = 0; i < FFT_POINTS / 2; i++)
+                float s = sample_freq / (float)data.Length;
+                for (int i = 0; i < data.Length / 2; i++)
                 {
                     double val = Complex.Abs(data2[i]);
                     dat.Points.AddXY((float)i * s, 20.0 * Math.Log10(val * 0.54));
@@ -305,6 +306,37 @@ namespace adc_capture
 
             byte[] str = System.Text.Encoding.ASCII.GetBytes("F"+freq.ToString("00.0"));   // send how many bytes to receive
             ns.Write(str, 0, str.Length);
+        }
+
+        private void button_fft_Click(object sender, EventArgs e)
+        {
+            const int points = 8192;
+
+            string line;
+            int i;
+            int[] data = new int[points];
+            Complex[] data2 = new Complex[points];
+            var window = Window.Hamming(points);
+            float fs = (float)Convert.ToDouble(textBox_fs.Text);
+            init_chart(fs);
+
+            OpenFileDialog dlg = new OpenFileDialog();
+            if (DialogResult.OK == dlg.ShowDialog())
+            {
+                using (StreamReader sr = new StreamReader(dlg.FileName))
+                {
+                    for (i = 0; i < points; i++) {
+                        line = sr.ReadLine();
+                        if (line == null)
+                            break;
+                        data[i] = int.Parse(line, NumberStyles.HexNumber);  // hex string 32bit signed int
+                        data2[i] = new Complex(data[i] / (double)(0x80000000L) * window[i], 0.0f);
+                    }
+                    Fourier.Radix2Forward(data2, FourierOptions.Default);
+
+                    draw_chart(data, data2, fs);
+                }
+            }
         }
     }
 }

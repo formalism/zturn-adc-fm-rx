@@ -45,7 +45,7 @@ begin
 	port map (
 		aclk					=>		clk,
 		s_axis_config_tvalid	=>		r_config_tvalid,
-		s_axis_config_tdata		=>		"000" & r_pinc,
+		s_axis_config_tdata		=>		X"070000" & "000" & r_pinc,		-- [44:24] POFF, [20:0] PINC ufix21_21
 		m_axis_data_tvalid		=>		w_dds_tvalid,
 		m_axis_data_tready		=>		en,
 		m_axis_data_tdata		=>		w_data,
@@ -64,7 +64,7 @@ begin
 			end if;
 
 			r_en		<=	en;
-			if (en = '1' and r_en_cnt >= 99) then
+			if (en = '1' and r_en_cnt >= 4) then
 				r_en_cnt	<=	(others => '0');
 			elsif (en = '1') then
 				r_en_cnt	<=	r_en_cnt + 1;
@@ -72,19 +72,19 @@ begin
 				r_en_cnt	<=	r_en_cnt;
 			end if;
 
-			if (en = '1' and r_en_cnt >= 99) then
+			if (en = '1' and r_en_cnt >= 4) then
 				r_config_tvalid	<=	'1';
 
 				-- pinc frequency resolution is 0.4Hz
 				if (r_sum < 0) then
 					if (r_pinc < PINC_MAX) then
-						r_pinc	<=	r_pinc + 20;
+						r_pinc	<=	r_pinc + 1;
 					else
 						r_pinc	<=	r_pinc;
 					end if;
 				else
 					if (r_pinc > PINC_MIN) then
-						r_pinc	<=	r_pinc - 20;
+						r_pinc	<=	r_pinc - 1;
 					else
 						r_pinc	<=	r_pinc;
 					end if;
