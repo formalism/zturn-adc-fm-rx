@@ -160,23 +160,23 @@ XADC_VCC
 Text Label 6000 2050 0    60   ~ 0
 XADC_INN0
 Text Label 4250 3150 0    60   ~ 0
-IO_B35_LN7
+IO_B35_LN11
 Text Label 4250 3050 0    60   ~ 0
-IO_B35_LP10
+IO_B35_LP14
 Text Label 4250 2950 0    60   ~ 0
-IO_B35_LP9
+IO_B35_LP13(MRCC)
 Text Label 4250 2850 0    60   ~ 0
-IO_B35_LN9
+IO_B35_LN13
 Text Label 4250 2550 0    60   ~ 0
-IO_B35_LP7
+IO_B35_LN9
 Text Label 4250 2650 0    60   ~ 0
-IO_B35_LN5
+IO_B35_LP9
 Text Label 4200 2250 0    60   ~ 0
 IO_B35_LP5
 Text Label 4200 2350 0    60   ~ 0
 IO_B35_LP6
 Text Label 4250 2450 0    60   ~ 0
-IO_B35_LN8
+IO_B35_LN12
 Text Label 4200 2050 0    60   ~ 0
 IO_B35_LP8
 Text Label 4200 1850 0    60   ~ 0
@@ -700,7 +700,7 @@ Wire Wire Line
 Wire Wire Line
 	5650 3850 6650 3850
 Wire Wire Line
-	6650 3950 5950 3950
+	6650 3950 5650 3950
 Wire Wire Line
 	5650 4050 6650 4050
 Wire Wire Line
@@ -978,12 +978,8 @@ NoConn ~ 7850 4850
 NoConn ~ 7850 4950
 NoConn ~ 7850 5050
 NoConn ~ 7850 5250
-NoConn ~ 5950 4450
-NoConn ~ 5700 4350
 NoConn ~ 5650 4050
 NoConn ~ 5700 4250
-NoConn ~ 5950 4150
-NoConn ~ 7850 4050
 NoConn ~ 7850 3850
 NoConn ~ 5950 2350
 NoConn ~ 5950 2650
@@ -1081,9 +1077,7 @@ NoConn ~ 5950 4850
 NoConn ~ 5950 5050
 NoConn ~ 5950 5350
 NoConn ~ 5950 5550
-NoConn ~ 7850 4250
 NoConn ~ 7850 4350
-NoConn ~ 6750 3950
 $Comp
 L TEST_1P W1
 U 1 1 5981C0B7
@@ -1121,4 +1115,9 @@ Wire Wire Line
 	9800 2950 9950 2950
 Wire Wire Line
 	10250 2950 10400 2950
+NoConn ~ 7850 3750
+NoConn ~ 5950 3650
+NoConn ~ 7850 3550
+NoConn ~ 5650 3550
+NoConn ~ 5950 3450
 $EndSCHEMATC
