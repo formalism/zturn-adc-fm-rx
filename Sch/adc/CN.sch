@@ -307,39 +307,6 @@ PS_MIO11
 NoConn ~ 5950 1950
 Text GLabel 8150 3950 2    60   Input ~ 0
 ADC_CLK
-$Comp
-L R_Pack04 RN2
-U 1 1 58A5BFD7
-P 3950 2250
-F 0 "RN2" V 3650 2250 50  0000 C CNN
-F 1 "22" V 4150 2250 50  0000 C CNN
-F 2 "adc_lib:EXB-38V220JV" V 4225 2250 50  0001 C CNN
-F 3 "" H 3950 2250 50  0000 C CNN
-	1    3950 2250
-	0    1    1    0   
-$EndComp
-$Comp
-L R_Pack04 RN3
-U 1 1 58A5C027
-P 3950 2650
-F 0 "RN3" V 3650 2650 50  0000 C CNN
-F 1 "22" V 4150 2650 50  0000 C CNN
-F 2 "adc_lib:EXB-38V220JV" V 4225 2650 50  0001 C CNN
-F 3 "" H 3950 2650 50  0000 C CNN
-	1    3950 2650
-	0    1    1    0   
-$EndComp
-$Comp
-L R_Pack04 RN4
-U 1 1 58A5C02D
-P 3950 3050
-F 0 "RN4" V 3650 3050 50  0000 C CNN
-F 1 "22" V 4150 3050 50  0000 C CNN
-F 2 "adc_lib:EXB-38V220JV" V 4225 3050 50  0001 C CNN
-F 3 "" H 3950 3050 50  0000 C CNN
-	1    3950 3050
-	0    1    1    0   
-$EndComp
 Text Notes 3700 7150 0    60   ~ 0
 MODE, Output Format, Clock Duty Cycle Stabilizer\nVdd, 2's complement, Off\n2/3Vdd, 2's complement, On\n--N/A--\n0, Offset Binary, Off\n1/3Vdd, Offset Binary, On\n
 Text GLabel 1250 5950 0    60   Input ~ 0
@@ -457,8 +424,6 @@ F 3 "" H 1150 2700 50  0000 C CNN
 	1    1150 2700
 	1    0    0    -1  
 $EndComp
-NoConn ~ 3750 2750
-NoConn ~ 4150 2750
 NoConn ~ 5950 2150
 $Comp
 L R R1
@@ -606,28 +571,6 @@ F 3 "" H 7850 5550 50  0000 C CNN
 	1    7850 5550
 	0    1    1    0   
 $EndComp
-$Comp
-L R R35
-U 1 1 5980BD26
-P 3950 1950
-F 0 "R35" V 4030 1950 50  0000 C CNN
-F 1 "22" V 3950 1950 50  0000 C CNN
-F 2 "adc_lib:R0402" V 3880 1950 50  0001 C CNN
-F 3 "" H 3950 1950 50  0000 C CNN
-	1    3950 1950
-	0    1    1    0   
-$EndComp
-$Comp
-L R R36
-U 1 1 5980BD60
-P 3950 1850
-F 0 "R36" V 4030 1850 50  0000 C CNN
-F 1 "22" V 3950 1850 50  0000 C CNN
-F 2 "adc_lib:R0402" V 3880 1850 50  0001 C CNN
-F 3 "" H 3950 1850 50  0000 C CNN
-	1    3950 1850
-	0    1    1    0   
-$EndComp
 Text Label 7200 2550 0    60   ~ 0
 PS_MIO15
 Text Label 7200 2850 0    60   ~ 0
@@ -720,31 +663,31 @@ Wire Wire Line
 Wire Wire Line
 	7150 3750 7850 3750
 Wire Wire Line
-	4150 2850 4850 2850
+	3750 2850 4850 2850
 Wire Wire Line
-	4150 2950 4850 2950
+	3300 2950 4850 2950
 Wire Wire Line
-	4150 3050 4850 3050
+	3600 3050 4850 3050
 Wire Wire Line
-	4150 3150 4850 3150
+	3650 3150 4850 3150
 Wire Wire Line
-	4850 2350 4150 2350
+	3600 2350 4850 2350
 Wire Wire Line
-	4850 2450 4150 2450
+	3650 2450 4850 2450
 Wire Wire Line
-	4850 2650 4150 2650
+	3600 2650 4850 2650
 Wire Wire Line
-	4850 2550 4150 2550
+	3300 2550 4850 2550
 Wire Wire Line
-	4100 1950 4850 1950
+	3300 1950 4850 1950
 Wire Wire Line
-	4150 2050 4850 2050
+	3750 2050 4850 2050
 Wire Wire Line
-	4150 2150 4850 2150
+	3750 2150 4850 2150
 Wire Wire Line
-	4150 2250 4850 2250
+	3650 2250 4850 2250
 Wire Wire Line
-	4100 1850 4850 1850
+	3300 1850 4850 1850
 Wire Wire Line
 	950  2600 2200 2600
 Wire Wire Line
@@ -989,21 +932,13 @@ NoConn ~ 5600 2550
 NoConn ~ 7850 5350
 NoConn ~ 5450 2450
 Wire Wire Line
-	3300 1850 3800 1850
-Wire Wire Line
-	3300 1950 3800 1950
-Wire Wire Line
 	3300 2050 3600 2050
 Wire Wire Line
 	3600 2050 3600 2350
 Wire Wire Line
-	3600 2350 3750 2350
-Wire Wire Line
 	3300 2150 3650 2150
 Wire Wire Line
 	3650 2150 3650 2250
-Wire Wire Line
-	3650 2250 3750 2250
 Wire Wire Line
 	3300 2250 3500 2250
 Wire Wire Line
@@ -1025,10 +960,6 @@ Wire Wire Line
 Wire Wire Line
 	3600 2450 3600 2650
 Wire Wire Line
-	3600 2650 3750 2650
-Wire Wire Line
-	3300 2550 3750 2550
-Wire Wire Line
 	3300 2650 3400 2650
 Wire Wire Line
 	3400 2650 3400 2600
@@ -1037,21 +968,13 @@ Wire Wire Line
 Wire Wire Line
 	3650 2600 3650 2450
 Wire Wire Line
-	3650 2450 3750 2450
-Wire Wire Line
 	3300 2750 3650 2750
 Wire Wire Line
 	3650 2750 3650 3150
 Wire Wire Line
-	3650 3150 3750 3150
-Wire Wire Line
 	3300 2850 3600 2850
 Wire Wire Line
 	3600 2850 3600 3050
-Wire Wire Line
-	3600 3050 3750 3050
-Wire Wire Line
-	3300 2950 3750 2950
 Wire Wire Line
 	3300 3050 3500 3050
 Wire Wire Line
@@ -1120,4 +1043,6 @@ NoConn ~ 5950 3650
 NoConn ~ 7850 3550
 NoConn ~ 5650 3550
 NoConn ~ 5950 3450
+Text Notes 3200 1650 0    60   ~ 0
+Digital Out of ADC has internal 50 ohm.\nPreferably buffer these signals.
 $EndSCHEMATC
