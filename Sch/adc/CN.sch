@@ -563,12 +563,12 @@ NoConn ~ 8150 2350
 $Comp
 L TEST TP4
 U 1 1 5980E1B4
-P 7850 5550
-F 0 "TP4" H 7850 5850 50  0000 C BNN
-F 1 "TEST" H 7850 5800 50  0000 C CNN
-F 2 "adc_lib:TL" H 7850 5550 50  0001 C CNN
-F 3 "" H 7850 5550 50  0000 C CNN
-	1    7850 5550
+P 7850 4750
+F 0 "TP4" H 7850 5050 50  0000 C BNN
+F 1 "TEST" H 7850 5000 50  0000 C CNN
+F 2 "adc_lib:TL" H 7850 4750 50  0001 C CNN
+F 3 "" H 7850 4750 50  0000 C CNN
+	1    7850 4750
 	0    1    1    0   
 $EndComp
 Text Label 7200 2550 0    60   ~ 0
@@ -916,7 +916,6 @@ NoConn ~ 5950 4950
 NoConn ~ 5950 4650
 NoConn ~ 7850 4450
 NoConn ~ 7850 4550
-NoConn ~ 7850 4750
 NoConn ~ 7850 4850
 NoConn ~ 7850 4950
 NoConn ~ 7850 5050
@@ -1045,4 +1044,5 @@ NoConn ~ 5650 3550
 NoConn ~ 5950 3450
 Text Notes 3200 1650 0    60   ~ 0
 Digital Out of ADC has internal 50 ohm.\nPreferably buffer these signals.
+NoConn ~ 7850 5550
 $EndSCHEMATC
