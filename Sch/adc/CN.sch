@@ -136,7 +136,7 @@ IO_B35_LN9
 Text Label 6000 3850 0    60   ~ 0
 IO_B35_LP9
 Text Label 6000 3650 0    60   ~ 0
-IO_B35_LN7
+SHDNB
 Text Label 6000 3550 0    60   ~ 0
 IO_B35_LP7
 Text Label 6000 3350 0    60   ~ 0
@@ -251,21 +251,10 @@ L R R25
 U 1 1 58A5EA97
 P 1800 6550
 F 0 "R25" V 1880 6550 50  0000 C CNN
-F 1 "1k" V 1800 6550 50  0000 C CNN
+F 1 "2k" V 1800 6550 50  0000 C CNN
 F 2 "adc_lib:R0603" V 1730 6550 50  0001 C CNN
 F 3 "" H 1800 6550 50  0000 C CNN
 	1    1800 6550
-	1    0    0    -1  
-$EndComp
-$Comp
-L R R26
-U 1 1 58A5EADA
-P 1800 6950
-F 0 "R26" V 1880 6950 50  0000 C CNN
-F 1 "1k" V 1800 6950 50  0000 C CNN
-F 2 "adc_lib:R0603" V 1730 6950 50  0001 C CNN
-F 3 "" H 1800 6950 50  0000 C CNN
-	1    1800 6950
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -310,7 +299,7 @@ ADC_CLK
 Text Notes 3700 7150 0    60   ~ 0
 MODE, Output Format, Clock Duty Cycle Stabilizer\nVdd, 2's complement, Off\n2/3Vdd, 2's complement, On\n--N/A--\n0, Offset Binary, Off\n1/3Vdd, Offset Binary, On\n
 Text GLabel 1250 5950 0    60   Input ~ 0
-VDD3
+VDD3_2
 $Comp
 L GND #PWR010
 U 1 1 58A86709
@@ -701,7 +690,7 @@ Wire Wire Line
 Wire Wire Line
 	1800 6300 1800 6400
 Wire Wire Line
-	1800 6700 1800 6800
+	1800 6700 1800 7100
 Wire Wire Line
 	1800 7100 3150 7100
 Wire Wire Line
@@ -871,7 +860,7 @@ IO_B35_LP15
 Wire Wire Line
 	6650 4650 5950 4650
 Text Label 6000 4650 0    60   ~ 0
-IO_B35_LN15
+SHDNA
 Wire Wire Line
 	6650 4750 6150 4750
 Connection ~ 6150 4750
@@ -912,8 +901,6 @@ Text Label 6000 5150 0    60   ~ 0
 IO_B35_LN19
 NoConn ~ 5950 5450
 NoConn ~ 5950 5150
-NoConn ~ 5950 4950
-NoConn ~ 5950 4650
 NoConn ~ 7850 4450
 NoConn ~ 7850 4550
 NoConn ~ 7850 4850
@@ -995,7 +982,6 @@ NoConn ~ 3300 4250
 NoConn ~ 3300 4350
 NoConn ~ 3300 4450
 NoConn ~ 3300 4550
-NoConn ~ 5950 4850
 NoConn ~ 5950 5050
 NoConn ~ 5950 5350
 NoConn ~ 5950 5550
@@ -1038,11 +1024,12 @@ Wire Wire Line
 Wire Wire Line
 	10250 2950 10400 2950
 NoConn ~ 7850 3750
-NoConn ~ 5950 3650
 NoConn ~ 7850 3550
 NoConn ~ 5650 3550
 NoConn ~ 5950 3450
 Text Notes 3200 1650 0    60   ~ 0
 Digital Out of ADC has internal 50 ohm.\nPreferably buffer these signals.
 NoConn ~ 7850 5550
+NoConn ~ 5950 4850
+NoConn ~ 5950 4950
 $EndSCHEMATC

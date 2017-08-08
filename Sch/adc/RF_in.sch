@@ -1552,5 +1552,8 @@ F 3 "" H 1050 3950 50  0000 C CNN
 	0    1    1    0   
 $EndComp
 Wire Wire Line
-	1200 3950 4400 3950
+	1200 3950 4650 3950
+Text GLabel 4650 3950 2    60   Output ~ 0
+VDD3_2
+Connection ~ 4400 3950
 $EndSCHEMATC
