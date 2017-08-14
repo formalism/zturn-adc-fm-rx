@@ -675,17 +675,6 @@ F 3 "" H 4550 4950 50  0000 C CNN
 	1    4550 4950
 	0    1    1    0   
 $EndComp
-$Comp
-L R R14
-U 1 1 58A8597E
-P 4750 4500
-F 0 "R14" V 4830 4500 50  0000 C CNN
-F 1 "0" V 4750 4500 50  0000 C CNN
-F 2 "adc_lib:R0402" V 4680 4500 50  0001 C CNN
-F 3 "" H 4750 4500 50  0000 C CNN
-	1    4750 4500
-	0    1    1    0   
-$EndComp
 Text Label 4250 5650 0    60   ~ 0
 VDD3
 Text Label 1150 6100 0    60   ~ 0
@@ -1150,7 +1139,7 @@ Connection ~ 5650 3150
 Connection ~ 5650 3250
 Connection ~ 7150 2750
 Wire Wire Line
-	3450 4500 4600 4500
+	3450 4500 5350 4500
 Connection ~ 5650 3350
 Wire Wire Line
 	4700 4950 5100 4950
@@ -1219,8 +1208,6 @@ Connection ~ 3350 3950
 Wire Wire Line
 	4400 3950 4400 4750
 Connection ~ 4150 3950
-Wire Wire Line
-	4900 4500 5350 4500
 Connection ~ 3150 4850
 Wire Wire Line
 	6550 1650 6650 1650
