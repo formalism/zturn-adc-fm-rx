@@ -1,7 +1,7 @@
 (export (version D)
   (design
     (source V:/proj/zturn_adc/Sch/fm_bpf/fm_bpf.sch)
-    (date "2017/07/31 21:54:02")
+    (date "2017/08/14 17:26:02")
     (tool "Eeschema 4.0.5")
     (sheet (number 1) (name /) (tstamps /)
       (title_block
@@ -263,10 +263,10 @@
   (libraries
     (library (logical device)
       (uri "C:\\Program Files\\KiCad\\share\\kicad\\library\\device.lib"))
-    (library (logical conn)
-      (uri "C:\\Program Files\\KiCad\\share\\kicad\\library\\conn.lib"))
     (library (logical zturn_adc)
-      (uri V:\proj\zturn_adc\Sch\fm_bpf\zturn_adc.lib)))
+      (uri V:\proj\zturn_adc\Sch\fm_bpf\zturn_adc.lib))
+    (library (logical conn)
+      (uri "C:\\Program Files\\KiCad\\share\\kicad\\library\\conn.lib")))
   (nets
     (net (code 1) (name "Net-(C11-Pad2)")
       (node (ref C11) (pin 2))
