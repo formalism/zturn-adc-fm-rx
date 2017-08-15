@@ -1,4 +1,5 @@
 (module EXB-38V220JV (layer F.Cu) (tedit 58B07859)
+  (attr smd)
   (fp_text reference REF** (at 0.09 2.08) (layer F.SilkS)
     (effects (font (size 1 1) (thickness 0.15)))
   )
