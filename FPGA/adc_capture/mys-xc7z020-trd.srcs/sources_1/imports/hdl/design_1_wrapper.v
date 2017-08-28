@@ -31,25 +31,45 @@ module design_1_wrapper (
     inout				FIXED_IO_ps_clk,
     inout				FIXED_IO_ps_porb,
     inout				FIXED_IO_ps_srstb,
-    inout				I2C0_SCL,
-    inout				I2C0_SDA,
+	inout				I2C0_SCL,
+	inout				I2C0_SDA,
 	inout				I2C1_SCL,
 	inout				I2C1_SDA,
+	inout				I2C_SCL_B,			// rev0.2 board
+	inout				I2C_SDA_B,
+
+	// CN1
 	input				ADC_CK,
 	input signed[11:0]	AD,
 	input				OFA,
 	output				MUX,
 	output				SHDNA,
 	output				SHDNB,
-	output[2:2]			LEDS,
-	input[3:0]			SW,
-	output				BP,
 
-	// I2S
+	// CN2
+	input				ADC_CK_B,
+	input signed[11:0]	AD_B,
+	input				OFA_B,
+	output				MUX_B,
+	output				SHDNA_B,
+	output				SHDNB_B,
+
+	// I2S CN1
 	output				I2S_FS,
 	output				I2S_BCLK,
 	output				I2S_DAT,
-	output				DAC_MCLK
+	output				DAC_MCLK,
+
+	// I2S CN2
+	output				I2S_FS_B,
+	output				I2S_BCLK_B,
+	output				I2S_DAT_B,
+	output				DAC_MCLK_B,
+
+	// common
+	output[2:2]			LEDS,
+	input[3:0]			SW,
+	output				BP
 );
 
 	parameter signed[33:0] PI = (2.0 ** 29.0) * 3.1415926535897932384626433832795;
@@ -63,9 +83,12 @@ module design_1_wrapper (
 	reg[63:0]	r_axis_data;
 	reg[7:0]	r_cnt;
 	reg[2:0]	r_sw0, r_sw3;
-	wire signed[11:0]	w_ad, w_ad2;
-	wire		w_ofa, w_ofa2;
-	wire		w_adck, w_fir_ck, w_locked;
+	reg			r_changed = 1'b1;
+	reg[2:0]	r_sw2;
+	wire signed[11:0]	w_ad_a, w_ad_a2, w_ad_b, w_ad_b2, w_ad, w_ad2;
+	wire		w_ofa_a, w_ofa_a2, w_ofa_b, w_ofa_b2;
+	wire		w_adc_ck_bufg, w_adc_ck_b_bufg;
+	wire		w_adck, w_fir_ck, w_locked, w_i2s_bclk;
 	wire signed[16:0]	w_i, w_q;
 
 	wire w_i_cic_en, w_q_cic_en;
@@ -100,60 +123,114 @@ module design_1_wrapper (
 
 	wire[31:0]			w_i2s_data;
 	wire				w_i2s_tready;
+	wire				w_i2s_fs, w_i2s_dat;
+
+	wire				iic_1_scl_o, iic_1_scl_i, iic_1_scl_t, iic_1_sda_o, iic_1_sda_i, iic_1_sda_t;
+	wire				iic1_scl_i_a, iic1_sda_i_a, iic1_scl_i_b, iic1_sda_i_b;
 
 	assign	LEDS[2:2]	=	w_locked & w_locked2;
 	assign	BP			=	1'b0;
 
 	assign	SHDNA		=	1'b0;
 	assign	SHDNB		=	1'b0;
+	assign	SHDNA_B		=	1'b0;
+	assign	SHDNB_B		=	1'b0;
 	assign	MUX			=	SW[1];	// 2-7, High->Ch A, Low->Ch B
+	assign	MUX_B		=	SW[1];
 
-	BUFG bufg_inst (
+	BUFG bufg_inst_a (
 		.I		(ADC_CK),
-		.O		(w_adck)
+		.O		(w_adc_ck_bufg)
+	);
+	BUFG bufg_inst_b (
+		.I		(ADC_CK_B),
+		.O		(w_adc_ck_b_bufg)
+	);
+
+	BUFGCTRL bufg_inst (		// use as asynchronous MUX
+		.IGNORE0	(1'b1),
+		.IGNORE1	(1'b1),
+		.CE0		(1'b1),
+		.CE1		(1'b1),
+		.S0			(!SW[2]),
+		.S1			(SW[2]),
+		.I1			(w_adc_ck_bufg),
+		.I0			(w_adc_ck_b_bufg),
+		.O			(w_adck)
 	);
 
 	// 12.288MHz (=256*48kHz)
 	gen_dac_mclk gen_dac_mclk_i (
-		.reset			(1'b0),
+		.reset			(r_changed),
 		.clk_in1		(w_adck),
 		.clk_out1		(w_mclk),
 		.locked			(w_locked2)
 	);
 	assign		DAC_MCLK		=	w_mclk;
+	assign		DAC_MCLK_B		=	w_mclk;
+	assign		I2S_BCLK		=	w_i2s_bclk;
+	assign		I2S_BCLK_B		=	w_i2s_bclk;
+	assign		I2S_FS			=	w_i2s_fs;
+	assign		I2S_FS_B		=	w_i2s_fs;
+	assign		I2S_DAT			=	w_i2s_dat;
+	assign		I2S_DAT_B		=	w_i2s_dat;
 
 	i2s_tx i2s_tx_i (
 		.mclk			(w_mclk),
-		.bclk			(I2S_BCLK),
+		.bclk			(w_i2s_bclk),
 		.d_ready		(w_i2s_tready),
 		.l_in			(w_i2s_data[25:2]),
 		.r_in			(w_i2s_data[25:2]),
-		.fs				(I2S_FS),
-		.dat			(I2S_DAT)
+		.fs				(w_i2s_fs),
+		.dat			(w_i2s_dat)
 	);
 
 	generate
 		genvar i;
+
+		// CN1
 		for (i = 0; i < 12; i = i + 1) begin
 		IDDR #(.DDR_CLK_EDGE ("SAME_EDGE_PIPELINED")) iddr_inst 
 		(
 			.R		(1'b0),
-			.C		(w_adck),
+			.C		(w_adc_ck_bufg),
 			.CE		(1'b1),
 			.D		(AD[i]),
-			.Q1		(w_ad[i]),
-			.Q2		(w_ad2[i])
+			.Q1		(w_ad_a[i]),
+			.Q2		(w_ad_a2[i])
+		); end
+
+		// CN2
+		for (i = 0; i < 12; i = i + 1) begin
+		IDDR #(.DDR_CLK_EDGE ("SAME_EDGE_PIPELINED")) iddr_inst_b 
+		(
+			.R		(1'b0),
+			.C		(w_adc_ck_b_bufg),
+			.CE		(1'b1),
+			.D		(AD_B[i]),
+			.Q1		(w_ad_b[i]),
+			.Q2		(w_ad_b2[i])
 		); end
 	endgenerate;
 
 	IDDR #(.DDR_CLK_EDGE ("SAME_EDGE_PIPELINED")) iddr_ofa (
 		.R		(1'b0),
-		.C		(w_adck),
+		.C		(w_adc_ck_bufg),
 		.CE		(1'b1),
 		.D		(OFA),
-		.Q1		(w_ofa),
-		.Q2		(w_ofa2)
+		.Q1		(w_ofa_a),
+		.Q2		(w_ofa_a2)
 	);
+	IDDR #(.DDR_CLK_EDGE ("SAME_EDGE_PIPELINED")) iddr_ofa_b (
+		.R		(1'b0),
+		.C		(w_adc_ck_b_bufg),
+		.CE		(1'b1),
+		.D		(OFA_B),
+		.Q1		(w_ofa_b),
+		.Q2		(w_ofa_b2)
+	);
+	assign	w_ad	=	SW[2] ? w_ad_a : w_ad_b;
+	assign	w_ad2	=	SW[2] ? w_ad_a2 : w_ad_b2;
 
   design_1 design_1_i
        (.DDR_addr       		(DDR_addr),
@@ -241,7 +318,7 @@ module design_1_wrapper (
 	gen_dsp_clk	gen_dsp_clk_i (
 		.clk_in1					(w_adck),
 		.clk_out1					(w_fir_ck),
-		.reset						(1'b0),
+		.reset						(r_changed),
 		.locked						(w_locked)
 	);
 
@@ -389,6 +466,14 @@ module design_1_wrapper (
 		.m_axis_tdata			(w_i2s_data)
 	);
 
+	always @(posedge w_clk40m) begin
+		r_sw2	<=	{r_sw2[1:0], SW[2]};
+		if (r_sw2[2] != r_sw2[1])
+			r_changed	<=	1'b1;
+		else
+			r_changed	<=	1'b0;
+	end
+
 	// input to DMA FIFO
 	always @(posedge w_adck) begin
 		r_sw0	<=	{r_sw0[1:0], SW[0]};		// sync
@@ -443,13 +528,28 @@ module design_1_wrapper (
   IOBUF iic_1_scl_iobuf
        (.I	(iic_1_scl_o),
         .IO	(I2C1_SCL),
-        .O	(iic_1_scl_i),
+        .O	(iic1_scl_i_a),
         .T	(iic_1_scl_t));
   IOBUF iic_1_sda_iobuf
        (.I	(iic_1_sda_o),
         .IO	(I2C1_SDA),
-        .O	(iic_1_sda_i),
+        .O	(iic1_sda_i_a),
         .T	(iic_1_sda_t));
+
+	// CN2
+  IOBUF iic_1_scl_iobuf_b
+       (.I	(iic_1_scl_o),
+        .IO	(I2C_SCL_B),
+        .O	(iic1_scl_i_b),
+        .T	(iic_1_scl_t));
+  IOBUF iic_1_sda_iobuf_b
+       (.I	(iic_1_sda_o),
+        .IO	(I2C_SDA_B),
+        .O	(iic1_sda_i_b),
+        .T	(iic_1_sda_t));
+
+	assign	iic_1_scl_i	=	SW[2] ? iic1_scl_i_a : iic1_scl_i_b;
+	assign	iic_1_sda_i	=	SW[2] ? iic1_sda_i_a : iic1_sda_i_b;
 
 endmodule
 
