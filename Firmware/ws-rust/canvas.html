@@ -1,0 +1,68 @@
+<html>
+    <body>
+        <script
+            src="https://code.jquery.com/jquery-3.2.1.js"
+            integrity="sha256-DZAnKJ/6XZ9si04Hgrsxu/8s717jcIzLy3oi35EouyE="
+            crossorigin="anonymous"></script>
+        <p><div id="time">Time[ms]</div></p>
+        <canvas id="canvas" width="1920" height="1080"></canvas>
+        <script type="text/javascript">
+            $(window).on('load', function(){
+                var tm = 0;
+                var canvas = $('#canvas').get(0);
+                var width = canvas.width;
+                var height = canvas.height;
+                var ctx = canvas.getContext('2d');
+                var imageData = ctx.getImageData(0, 0, width, height);
+
+                var buf = new ArrayBuffer(imageData.data.length);
+                var buf8 = new Uint8ClampedArray(buf);
+                var data = new Uint32Array(buf);
+                var start_ms = performance.now();
+                var elapsed_ms;
+//                var cn = new WebSocket('ws://127.0.0.1:3012/');
+                var cn = new WebSocket('ws://192.168.0.90:3012/');
+//                cn.binaryType = "arraybuffer";
+
+                cn.addEventListener('message', function(ev){
+                    var reader = new FileReader();
+                    reader.addEventListener("loadend", function(){
+                        var ary = new Uint8Array(reader.result);
+                        console.log(ary[756]);
+                        for (var j = 0; j < height; j++){
+                            for (var i = 0; i < width; i++){
+                                var val = ary[j*width+i];
+                                data[j*width+i] = (255<<24)| (val<<16) | (val<<8) | val;
+                            }
+                        }
+                        imageData.data.set(buf8);
+                        ctx.putImageData(imageData, 0, 0);
+                        if (tm % 60 == 0){
+                            var current = performance.now();
+                            elapsed_ms = current - start_ms;
+                            $("#time").text(elapsed_ms/60.0 + "[ms]");
+                            start_ms = current;
+                        }
+                    });
+                    reader.readAsArrayBuffer(ev.data);
+                    //setTimeout(getData, 1);
+                    getData();
+                });
+                cn.addEventListener('error', function(ev){
+                    console.log(ev);
+                });
+
+                var getData = function(){
+                    var abuf = new ArrayBuffer(1);
+                    var view = new Uint8Array(abuf);
+                    view[0] = tm & 0xFF;
+                    cn.send(abuf);
+                    tm++;
+                }
+                cn.addEventListener('open', function(){
+                    getData();
+                });
+            });
+        </script>
+    </body>
+</html>
