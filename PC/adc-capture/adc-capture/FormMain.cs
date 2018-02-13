@@ -132,22 +132,25 @@ namespace adc_capture
 
         void init_chart(float freq)
         {
-            chart.ChartAreas["data"].CursorX.IsUserEnabled = true;
-            chart.ChartAreas["data"].CursorX.IsUserSelectionEnabled = true;
-            chart.ChartAreas["data"].AxisX.ScaleView.Zoomable = true;
-            chart.ChartAreas["data"].AxisX.ScrollBar.IsPositionedInside = true;
+            BeginInvoke((Action)(() =>
+            {
+                chart.ChartAreas["data"].CursorX.IsUserEnabled = true;
+                chart.ChartAreas["data"].CursorX.IsUserSelectionEnabled = true;
+                chart.ChartAreas["data"].AxisX.ScaleView.Zoomable = true;
+                chart.ChartAreas["data"].AxisX.ScrollBar.IsPositionedInside = true;
 
-            chart.ChartAreas["FFT"].AxisY.Title = "[dB]";
-            chart.ChartAreas["FFT"].AxisX.Title = "MHz";
-            chart.ChartAreas["FFT"].CursorX.IsUserEnabled = true;
-            chart.ChartAreas["FFT"].CursorX.IsUserSelectionEnabled = true;
-            chart.ChartAreas["FFT"].AxisX.ScaleView.Zoomable = true;
-            chart.ChartAreas["FFT"].AxisX.ScrollBar.IsPositionedInside = true;
-            chart.ChartAreas["FFT"].AxisX.Minimum = 0.0;
-            chart.ChartAreas["FFT"].AxisX.Maximum = freq / 2.0;
+                chart.ChartAreas["FFT"].AxisY.Title = "[dB]";
+                chart.ChartAreas["FFT"].AxisX.Title = "MHz";
+                chart.ChartAreas["FFT"].CursorX.IsUserEnabled = true;
+                chart.ChartAreas["FFT"].CursorX.IsUserSelectionEnabled = true;
+                chart.ChartAreas["FFT"].AxisX.ScaleView.Zoomable = true;
+                chart.ChartAreas["FFT"].AxisX.ScrollBar.IsPositionedInside = true;
+                chart.ChartAreas["FFT"].AxisX.Minimum = 0.0;
+                chart.ChartAreas["FFT"].AxisX.Maximum = freq / 2.0;
                 //                    chart.ChartAreas["FFT"].AxisX.Interval = 0.25; // 0=Auto
-            chart.ChartAreas["FFT"].AxisX.Interval = 0;
-            chart.ChartAreas["FFT"].AxisX.IntervalAutoMode = IntervalAutoMode.VariableCount;
+                chart.ChartAreas["FFT"].AxisX.Interval = 0;
+                chart.ChartAreas["FFT"].AxisX.IntervalAutoMode = IntervalAutoMode.VariableCount;
+            }));
         }
 
         private bool running = false;
