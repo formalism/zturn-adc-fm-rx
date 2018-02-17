@@ -5,4 +5,4 @@ authors = ["Tomoyuki Ueda <tueda@imagetech.co.jp>"]
 
 [dependencies]
 ws = "*"
-
+libc = "0.2"
