@@ -9,7 +9,7 @@ use std::fs::{OpenOptions, File};
 use std::os::unix::fs::OpenOptionsExt;
 use std::os::unix::io::{AsRawFd};
 use std::io;
-use std::io::{Write, Read};
+use std::io::{Write, Read, Cursor};
 use std::ptr::{self, read_volatile, write_volatile};
 use std::thread;
 use std::sync::mpsc::channel;
@@ -17,6 +17,8 @@ use std::sync::mpsc::{Sender, Receiver};
 use std::sync::Arc;
 use std::slice;
 use std::vec::Vec;
+use std::mem;
+use std::boxed::Box;
 
 struct Server {
     out: ws::Sender,
@@ -130,13 +132,19 @@ impl Handler for Server {
             },
             Binary(v) => {
                 let adr = self.rx.recv().unwrap();
-                unsafe {
-//                println!("send Binary");
-                    let ary : &[u8] = slice::from_raw_parts(adr as *const u8, 2*MB);
-                    let r = self.out.send(Binary(Vec::from(ary)));
-                    self.tx.send(1);
-                    r
-                }
+                println!("send Binary at address {}", adr);
+//                mem::forget(adr);
+                let mut vec : Vec<u8> = Vec::new();
+                let ary : &'static [u8] = unsafe { slice::from_raw_parts(adr as *const u8, 2*MB) };
+//                    let ary = Box::from_raw(adr as *mut u8);
+//                    let mut vec : Vec<u8> = Vec::from_raw_parts(adr as *mut u8, 2*MB, 2*MB);
+//                let mut cur = Cursor::new(vec);
+//                cur.write(ary).unwrap();
+//                let r = self.out.send(Binary(cur.into_inner()));
+                vec.write(ary).expect("unable to write");
+                let r = self.out.send(Binary(vec));
+                self.tx.send(1);
+                r
             }
         }
     }
@@ -166,7 +174,8 @@ fn main() {
         start_axi_dma(uio_ptr);
         wait_interrupt(&mut uio_file);
         clear_interrupt(uio_ptr);
-        tx_cap.send(512*MB as u32);    // send start address
+        tx_cap.send(mapped_ptr as u32);    // send start address
+        println!("send");
         let v = rx_cap.recv().unwrap();
    }
    //hdl.join().expect("join");
