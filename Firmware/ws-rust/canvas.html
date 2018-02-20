@@ -1,66 +1,126 @@
 <html>
-    <body>
+    <head>
         <script
             src="https://code.jquery.com/jquery-3.2.1.js"
             integrity="sha256-DZAnKJ/6XZ9si04Hgrsxu/8s717jcIzLy3oi35EouyE="
             crossorigin="anonymous"></script>
+        <script type="text/javascript" src="fft.js"></script>
+        <script type="text/javascript" src="windowing.js"></script>
+        <script src="https://d3js.org/d3.v3.min.js"></script>
+        <script src="https://cdn.rawgit.com/novus/nvd3/v1.8.1/build/nv.d3.js"></script>
+        <link rel="stylesheet" type="text/css" href="https://cdn.rawgit.com/novus/nvd3/v1.8.1/build/nv.d3.css" />
+    </head>
+    <body>
         <p><div id="time">Time[ms]</div></p>
-        <canvas id="canvas" width="1920" height="1080"></canvas>
+        <button id="start">Start</button>
+        <svg height="500"></svg>
         <script type="text/javascript">
-            $(window).on('load', function(){
-                var tm = 0;
-                var canvas = $('#canvas').get(0);
-                var width = canvas.width;
-                var height = canvas.height;
-                var ctx = canvas.getContext('2d');
-                var imageData = ctx.getImageData(0, 0, width, height);
+            $(function() {
+                function decode_values(buf, len){
+                    var i,j;
+                    var data = new Array(len+4);
 
-                var buf = new ArrayBuffer(imageData.data.length);
-                var buf8 = new Uint8ClampedArray(buf);
-                var data = new Uint32Array(buf);
-                var start_ms = performance.now();
-                var elapsed_ms;
-//                var cn = new WebSocket('ws://127.0.0.1:3012/');
-                var cn = new WebSocket('ws://192.168.0.90:3012/');
-//                cn.binaryType = "arraybuffer";
-
-                cn.addEventListener('message', function(ev){
-                    var reader = new FileReader();
-                    reader.addEventListener("loadend", function(){
-                        var ary = new Uint8Array(reader.result);
-                        console.log(ary[756]);
-                        for (var j = 0; j < height; j++){
-                            for (var i = 0; i < width; i++){
-                                var val = ary[j*width+i];
-                                data[j*width+i] = (255<<24)| (val<<16) | (val<<8) | val;
-                            }
+                    for (i = 0, j = 0; i < len; i += 5, j++){
+                        var b0 = buf[j*8+0];
+                        var b1 = buf[j*8+1];
+                        var b2 = buf[j*8+2];
+                        var b3 = buf[j*8+3];
+                        var b4 = buf[j*8+4];
+                        var b5 = buf[j*8+5];
+                        var b6 = buf[j*8+6];
+                        var b7 = buf[j*8+7];
+                        data[i] = (b0 | ((b1 & 0xF) << 8));
+                        data[i + 1] = (((b1 & 0xF0) >> 4) | (b2 << 4));
+                        data[i + 2] = (b3 | ((b4 & 0xF) << 8));
+                        data[i + 3] = (((b4 & 0xF0) >> 4) | (b5 << 4));
+                        data[i + 4] = (b6 | ((b7 & 0xF) << 8));
+                    }
+                    // convert to signed
+                    for (i = 0; i < len; i++){
+                        if ((data[i] & 0x800) != 0){    // negative
+                            data[i] = data[i] - 0x1000;
                         }
-                        imageData.data.set(buf8);
-                        ctx.putImageData(imageData, 0, 0);
-                        if (tm % 60 == 0){
-                            var current = performance.now();
-                            elapsed_ms = current - start_ms;
-                            $("#time").text(elapsed_ms/60.0 + "[ms]");
-                            start_ms = current;
-                        }
-                    });
-                    reader.readAsArrayBuffer(ev.data);
-                    //setTimeout(getData, 1);
-                    getData();
-                });
-                cn.addEventListener('error', function(ev){
-                    console.log(ev);
-                });
-
-                var getData = function(){
-                    var abuf = new ArrayBuffer(1);
-                    var view = new Uint8Array(abuf);
-                    view[0] = tm & 0xFF;
-                    cn.send(abuf);
-                    tm++;
+                    }
+                    return data;
                 }
-                cn.addEventListener('open', function(){
-                    getData();
+
+                function convert_to_complex(data, imag, window, len){
+                    for (var i = 0; i < 8192*2; i++){
+                        data[i] = data[i] / (1.0 * (1<<(12-1))); // ToDo: use window
+                        imag[i] = 0.0;
+                    }
+                    data.length = imag.length;  // drop trailing data
+                }
+
+                function draw_charts(real, imag, sample_freq){
+                    var dat = new Array(real.length/2);
+                    var s = sample_freq / real.length;
+                    for (var i = 0; i < real.length/2; i++){
+                        var val = Math.sqrt(real[i]*real[i]+imag[i]*imag[i]);
+                        dat[i] = {x: i*s, y: 20.0*Math.log10(val)};
+                    }
+                    var data = [{values: dat, key: 'FFT', color: '#77F00E'}];
+
+                    nv.addGraph(function() {
+                        var chart = nv.models.lineChart()
+    //                                    .margin({left: 100})
+                                        .showLegend(true)
+                                        .showYAxis(true)
+                                        .showXAxis(true);
+                        chart.xAxis.axisLabel("freq").tickFormat(d3.format(',r'));
+                        chart.yAxis.axisLabel("[db]").tickFormat(d3.format(',r'));
+                        d3.select('svg').datum(data).call(chart);
+                        nv.utils.windowResize(function() { chart.update() });
+                        return chart;
+                    });
+                }
+                
+                var fft = new FFTNayuki(8192*2);
+
+                $('#start').click(function(){
+                    var tm = 0;
+
+                    var start_ms = performance.now();
+                    var elapsed_ms;
+                    var imag = new Array(8192*2);
+    //                var cn = new WebSocket('ws://127.0.0.1:3012/');
+                    var cn = new WebSocket('ws://192.168.0.90:3012/');
+
+                    cn.addEventListener('message', function(ev){
+                        var reader = new FileReader();
+                        reader.addEventListener("loadend", function(){
+                            var ary = new Uint8Array(reader.result);
+    //                        console.log(ary[756]);
+                            var data = decode_values(ary, 8192*2);
+                            convert_to_complex(data, imag, null, 8192*2);
+                            fft.forward(data, imag);
+                            draw_charts(data, imag, 40.0);
+
+                            if (tm % 60 == 0){
+                                var current = performance.now();
+                                elapsed_ms = current - start_ms;
+                                $("#time").text(elapsed_ms/60.0 + "[ms]");
+                                start_ms = current;
+                            }
+                        });
+                        reader.readAsArrayBuffer(ev.data);
+                        //setTimeout(getData, 1);
+//                        getData();
+                    });
+                    cn.addEventListener('error', function(ev){
+                        console.log(ev);
+                    });
+
+                    var getData = function(){
+                        var abuf = new ArrayBuffer(1);
+                        var view = new Uint8Array(abuf);
+                        view[0] = tm & 0xFF;
+                        cn.send(abuf);
+                        tm++;
+                    }
+                    cn.addEventListener('open', function(){
+                        getData();
+                    });
                 });
             });
         </script>
