@@ -26,6 +26,7 @@ struct Server {
     rx: Arc<Receiver<u32>>
 }
 
+const KB : libc::size_t = 1024;
 const MB : libc::size_t = 1024*1024;
 const MEM_SIZE : libc::size_t = 512*MB;
 const MEM_OFFSET : libc::off_t = 512*MB as libc::off_t;
@@ -132,10 +133,10 @@ impl Handler for Server {
             },
             Binary(v) => {
                 let adr = self.rx.recv().unwrap();
-                println!("send Binary at address {}", adr);
+//                println!("send Binary at address {}", adr);
 //                mem::forget(adr);
                 let mut vec : Vec<u8> = Vec::new();
-                let ary : &'static [u8] = unsafe { slice::from_raw_parts(adr as *const u8, 2*MB) };
+                let ary : &'static [u8] = unsafe { slice::from_raw_parts(adr as *const u8, 256*KB) };
 //                    let ary = Box::from_raw(adr as *mut u8);
 //                    let mut vec : Vec<u8> = Vec::from_raw_parts(adr as *mut u8, 2*MB, 2*MB);
 //                let mut cur = Cursor::new(vec);
@@ -169,13 +170,13 @@ fn main() {
                 .unwrap();
    });
    loop {
-        set_axi_dma_reg(uio_ptr, 2*MB as u32, 512*MB as u32);   // capture 2MB (just for now)
+        set_axi_dma_reg(uio_ptr, 256*KB as u32, 512*MB as u32);   // capture 2MB (just for now)
         uio_file.write(&one).expect("write");            // enable interrupt
         start_axi_dma(uio_ptr);
         wait_interrupt(&mut uio_file);
         clear_interrupt(uio_ptr);
         tx_cap.send(mapped_ptr as u32);    // send start address
-        println!("send");
+//        println!("send");
         let v = rx_cap.recv().unwrap();
    }
    //hdl.join().expect("join");

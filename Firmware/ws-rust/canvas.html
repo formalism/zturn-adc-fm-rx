@@ -6,16 +6,25 @@
             crossorigin="anonymous"></script>
         <script type="text/javascript" src="fft.js"></script>
         <script type="text/javascript" src="windowing.js"></script>
-        <script src="https://d3js.org/d3.v3.min.js"></script>
-        <script src="https://cdn.rawgit.com/novus/nvd3/v1.8.1/build/nv.d3.js"></script>
-        <link rel="stylesheet" type="text/css" href="https://cdn.rawgit.com/novus/nvd3/v1.8.1/build/nv.d3.css" />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.bundle.js"></script>
+<!--        <style>
+            #chart {
+                margin-left: 20px;
+                margin-right: 20px;
+            }
+        </style> -->
     </head>
     <body>
         <p><div id="time">Time[ms]</div></p>
         <button id="start">Start</button>
-        <svg height="500"></svg>
+        <canvas id="chart" width="1280" height="600"></canvas>
         <script type="text/javascript">
             $(function() {
+                const FFT_POINTS = 8192*2;
+
+                var ctx = $('#chart')[0].getContext('2d');
+                var chart = null;
+
                 function decode_values(buf, len){
                     var i,j;
                     var data = new Array(len+4);
@@ -45,56 +54,113 @@
                 }
 
                 function convert_to_complex(data, imag, window, len){
-                    for (var i = 0; i < 8192*2; i++){
+                    for (var i = 0; i < FFT_POINTS; i++){
                         data[i] = data[i] / (1.0 * (1<<(12-1))); // ToDo: use window
                         imag[i] = 0.0;
                     }
                     data.length = imag.length;  // drop trailing data
                 }
 
-                function draw_charts(real, imag, sample_freq){
+                function draw_charts(real, imag, scale, sample_freq){
                     var dat = new Array(real.length/2);
                     var s = sample_freq / real.length;
+                    var labels = new Array(real.length/2);
                     for (var i = 0; i < real.length/2; i++){
+                        real[i] *= scale;
+                        imag[i] *= scale;
                         var val = Math.sqrt(real[i]*real[i]+imag[i]*imag[i]);
-                        dat[i] = {x: i*s, y: 20.0*Math.log10(val)};
+                        dat[i] = 20.0*Math.log10(val);
+                        labels[i] = i*s;
                     }
-                    var data = [{values: dat, key: 'FFT', color: '#77F00E'}];
 
-                    nv.addGraph(function() {
-                        var chart = nv.models.lineChart()
-    //                                    .margin({left: 100})
-                                        .showLegend(true)
-                                        .showYAxis(true)
-                                        .showXAxis(true);
-                        chart.xAxis.axisLabel("freq").tickFormat(d3.format(',r'));
-                        chart.yAxis.axisLabel("[db]").tickFormat(d3.format(',r'));
-                        d3.select('svg').datum(data).call(chart);
-                        nv.utils.windowResize(function() { chart.update() });
-                        return chart;
-                    });
+                    if (chart == null){
+                        chart = new Chart(ctx, {
+                            type: 'line',
+                            data: {
+                                labels: labels,
+                                datasets: [{
+                                    label: 'FFT',
+                                    data: dat,
+                                    pointRadius: 0.0,
+                                    fill: false,
+                                    borderColor: "rgba(153,255,51,0.8)",
+    //                                pointColor: "rgba(220,0,220,0.8)",
+    //                                backgroundColor: "rgba(153,255,51,0.4)"
+                                }]
+                            },
+                            options: {
+                                legend: {
+                                    display: false,
+                                },
+                                title: {
+                                    display: true,
+                                    text: 'FFT',
+                                },
+                                scales: {
+                                    yAxes: [
+                                        {
+                                            scaleLabel: {
+                                                display: true,
+                                                labelString: '[dB]'
+                                            }
+                                        }
+                                    ],
+                                    xAxes: [
+                                        {
+                                            scaleLabel: {
+                                                display: true,
+                                                labelString: 'freq'
+                                            }
+                                        }
+                                        ],
+                                },
+                                layout: {
+                                    padding: {
+                                        left: 20,
+                                        right: 20,
+                                    }
+                                },
+                                animation: {
+                                    duration: 0,
+                                },
+                                elements: {
+                                    line: {
+                                        tension: 0, // disable bezier curves
+                                    }
+                                }
+                            }
+                        });
+                    }else{  // already chart is populated
+                        chart.data.datasets[0].data = dat;
+                        chart.update();
+                    }
                 }
-                
-                var fft = new FFTNayuki(8192*2);
+
+                var fft = new FFTNayuki(FFT_POINTS);
+                var scale = 1.0 / Math.sqrt(FFT_POINTS);
 
                 $('#start').click(function(){
                     var tm = 0;
 
                     var start_ms = performance.now();
                     var elapsed_ms;
-                    var imag = new Array(8192*2);
-    //                var cn = new WebSocket('ws://127.0.0.1:3012/');
+                    var imag = new Array(FFT_POINTS);
                     var cn = new WebSocket('ws://192.168.0.90:3012/');
 
                     cn.addEventListener('message', function(ev){
                         var reader = new FileReader();
                         reader.addEventListener("loadend", function(){
                             var ary = new Uint8Array(reader.result);
-    //                        console.log(ary[756]);
-                            var data = decode_values(ary, 8192*2);
-                            convert_to_complex(data, imag, null, 8192*2);
+                            var current = performance.now();
+
+                            var data = decode_values(ary, FFT_POINTS);
+                            convert_to_complex(data, imag, null, FFT_POINTS);
                             fft.forward(data, imag);
-                            draw_charts(data, imag, 40.0);
+
+                            var current2 = performance.now();
+                            draw_charts(data, imag, scale, 40.0);
+
+                            var current3 = performance.now();
 
                             if (tm % 60 == 0){
                                 var current = performance.now();
@@ -102,6 +168,7 @@
                                 $("#time").text(elapsed_ms/60.0 + "[ms]");
                                 start_ms = current;
                             }
+                            getData();
                         });
                         reader.readAsArrayBuffer(ev.data);
                         //setTimeout(getData, 1);
