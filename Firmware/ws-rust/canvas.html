@@ -17,13 +17,20 @@
     <body>
         <p><div id="time">Time[ms]</div></p>
         <button id="start">Start</button>
-        <canvas id="chart" width="1280" height="600"></canvas>
+
+        <canvas id="raw" width="1280" height="400"></canvas>
+        <canvas id="chart" width="1280" height="450"></canvas>
+
         <script type="text/javascript">
             $(function() {
+                var SAMPLE_FREQ = 40.0;
                 const FFT_POINTS = 8192*2;
+                const ADC_BITS = 12;
 
                 var ctx = $('#chart')[0].getContext('2d');
+                var rawctx = $('#raw')[0].getContext('2d');
                 var chart = null;
+                var rawChart = null;
 
                 function decode_values(buf, len){
                     var i,j;
@@ -53,17 +60,70 @@
                     return data;
                 }
 
-                function convert_to_complex(data, imag, window, len){
-                    for (var i = 0; i < FFT_POINTS; i++){
-                        data[i] = data[i] / (1.0 * (1<<(12-1))); // ToDo: use window
-                        imag[i] = 0.0;
-                    }
-                    data.length = imag.length;  // drop trailing data
+                function hann(i){
+                    return 0.5 - 0.5*Math.cos(2*Math.PI*i/(FFT_POINTS-1));
                 }
 
-                function draw_charts(real, imag, scale, sample_freq){
+                function convert_to_complex(data, imag, len){
+                    var labels = new Array(1024);
+                    for (var i = 0; i < 1024; i++)
+                        labels[i] = i;
+
+                    data.length = imag.length;  // drop trailing data
+
+                    // update chart before windowing!
+                    if (rawChart == null){
+                        rawChart = new Chart(rawctx, {
+                            type: 'line',
+                            data: {
+                                labels: labels,
+                                datasets: [{
+                                    label: 'Raw',
+                                    data: data,
+                                    pointRadius: 0.0,
+                                    fill: false,
+                                    borderColor: "rgba(153,51,255,0.8)",
+                                    borderWidth: 1,
+                                }]
+                            },
+                            options: {
+                                legend: {
+                                    display: false,
+                                },
+                                title: {
+                                    display: true,
+                                    text: 'RAW',
+                                },
+                                layout: {
+                                    padding: {
+                                        left: 20,
+                                        right: 20,
+                                    }
+                                },
+                                animation: {
+                                    duration: 0,
+                                },
+                                elements: {
+                                    line: {
+                                        tension: 0, // disable bezier curves
+                                    }
+                                }
+                            }
+                        });
+                    }else{
+                        rawChart.data.datasets[0].data = data;
+                        rawChart.update();
+                    }
+
+                    for (var i = 0; i < FFT_POINTS; i++){
+                        data[i] = hann(i) * data[i] / (1.0 * (1<<(ADC_BITS-1)));
+                        imag[i] = 0.0;
+                    }
+                }
+
+                function draw_charts(real, imag, scale){
                     var dat = new Array(real.length/2);
-                    var s = sample_freq / real.length;
+                    var s = SAMPLE_FREQ / real.length;
                     var labels = new Array(real.length/2);
                     for (var i = 0; i < real.length/2; i++){
                         real[i] *= scale;
@@ -84,8 +144,7 @@
                                     pointRadius: 0.0,
                                     fill: false,
                                     borderColor: "rgba(153,255,51,0.8)",
-    //                                pointColor: "rgba(220,0,220,0.8)",
-    //                                backgroundColor: "rgba(153,255,51,0.4)"
+                                    borderWidth: 1,
                                 }]
                             },
                             options: {
@@ -97,22 +156,27 @@
                                     text: 'FFT',
                                 },
                                 scales: {
-                                    yAxes: [
-                                        {
-                                            scaleLabel: {
-                                                display: true,
-                                                labelString: '[dB]'
-                                            }
+                                    yAxes: [{
+                                        ticks: {
+                                            min: -110,
+                                            max: 0.0,
+                                            stepSize: 10.0,
+                                        },
+                                        scaleLabel: {
+                                            display: true,
+                                            labelString: '[dB]'
                                         }
-                                    ],
-                                    xAxes: [
-                                        {
-                                            scaleLabel: {
-                                                display: true,
-                                                labelString: 'freq'
-                                            }
+                                    }],
+                                    xAxes: [{
+                                        ticks: {
+                                            min: 0.0,
+                                            max: SAMPLE_FREQ / 2.0,
+                                        },
+                                        scaleLabel: {
+                                            display: true,
+                                            labelString: 'freq'
                                         }
-                                        ],
+                                    }],
                                 },
                                 layout: {
                                     padding: {
@@ -138,14 +202,21 @@
 
                 var fft = new FFTNayuki(FFT_POINTS);
                 var scale = 1.0 / Math.sqrt(FFT_POINTS);
+                var cn = null;
 
                 $('#start').click(function(){
                     var tm = 0;
 
+                    if (cn != null){
+                        cn.close();
+                        cn = null;
+                        return;
+                    }
+
                     var start_ms = performance.now();
                     var elapsed_ms;
                     var imag = new Array(FFT_POINTS);
-                    var cn = new WebSocket('ws://192.168.0.90:3012/');
+                    cn = new WebSocket('ws://192.168.0.90:3012/');
 
                     cn.addEventListener('message', function(ev){
                         var reader = new FileReader();
@@ -154,11 +225,11 @@
                             var current = performance.now();
 
                             var data = decode_values(ary, FFT_POINTS);
-                            convert_to_complex(data, imag, null, FFT_POINTS);
+                            convert_to_complex(data, imag, FFT_POINTS);
                             fft.forward(data, imag);
 
                             var current2 = performance.now();
-                            draw_charts(data, imag, scale, 40.0);
+                            draw_charts(data, imag, scale);
 
                             var current3 = performance.now();
 
@@ -172,7 +243,6 @@
                         });
                         reader.readAsArrayBuffer(ev.data);
                         //setTimeout(getData, 1);
-//                        getData();
                     });
                     cn.addEventListener('error', function(ev){
                         console.log(ev);
