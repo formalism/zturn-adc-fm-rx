@@ -127,8 +127,9 @@ impl Handler for Server {
     fn on_message(&mut self, msg: Message) -> Result<()> {
 //        println!("on_message");
         match msg {
-            Text(_) => {
-                let vec: Vec<u8> = vec![0; 1920*1080];
+            Text(t) => {
+                println!("{}", t);
+                let vec: Vec<u8> = vec![0; 1024];
                 self.out.send(vec)
             },
             Binary(v) => {
@@ -139,9 +140,6 @@ impl Handler for Server {
                 let ary : &'static [u8] = unsafe { slice::from_raw_parts(adr as *const u8, 256*KB) };
 //                    let ary = Box::from_raw(adr as *mut u8);
 //                    let mut vec : Vec<u8> = Vec::from_raw_parts(adr as *mut u8, 2*MB, 2*MB);
-//                let mut cur = Cursor::new(vec);
-//                cur.write(ary).unwrap();
-//                let r = self.out.send(Binary(cur.into_inner()));
                 vec.write(ary).expect("unable to write");
                 let r = self.out.send(Binary(vec));
                 self.tx.send(1);

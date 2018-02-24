@@ -15,8 +15,12 @@
         </style> -->
     </head>
     <body>
-        <p><div id="time">Time[ms]</div></p>
-        <button id="start">Start</button>
+        <p>
+            <button id="start">Start</button>
+            Tune Frequency: <input type="text" id="tune_freq" size="8" />
+            <button id="set_freq">Set</button>
+            <div id="time">Time[ms]</div>
+        </p>
 
         <canvas id="raw" width="1280" height="400"></canvas>
         <canvas id="chart" width="1280" height="450"></canvas>
@@ -26,11 +30,27 @@
                 var SAMPLE_FREQ = 40.0;
                 const FFT_POINTS = 8192*2;
                 const ADC_BITS = 12;
+                const SERVER_ADR = 'ws://192.168.0.90:3012/';
 
                 var ctx = $('#chart')[0].getContext('2d');
                 var rawctx = $('#raw')[0].getContext('2d');
                 var chart = null;
                 var rawChart = null;
+                var hann_window = new Array(FFT_POINTS);
+
+                for (var i = 0; i < FFT_POINTS; i++){
+                    hann_window[i] = 0.5 - 0.5*Math.cos(2*Math.PI*i/(FFT_POINTS-1));
+                }
+
+                $('#set_freq').click(function(){
+                    var cn = new WebSocket(SERVER_ADR);
+                    cn.addEventListener('open', function(ev){
+                        cn.send($('#tune_freq')[0].value);
+                    });
+                    cn.addEventListener('message', function(ev){
+                        cn.close();
+                    });
+                });
 
                 function decode_values(buf, len){
                     var i,j;
@@ -58,10 +78,6 @@
                         }
                     }
                     return data;
-                }
-
-                function hann(i){
-                    return 0.5 - 0.5*Math.cos(2*Math.PI*i/(FFT_POINTS-1));
                 }
 
                 function convert_to_complex(data, imag, len){
@@ -116,7 +132,7 @@
                     }
 
                     for (var i = 0; i < FFT_POINTS; i++){
-                        data[i] = hann(i) * data[i] / (1.0 * (1<<(ADC_BITS-1)));
+                        data[i] = hann_window[i] * data[i] / (1.0 * (1<<(ADC_BITS-1)));
                         imag[i] = 0.0;
                     }
                 }
@@ -216,7 +232,7 @@
                     var start_ms = performance.now();
                     var elapsed_ms;
                     var imag = new Array(FFT_POINTS);
-                    cn = new WebSocket('ws://192.168.0.90:3012/');
+                    cn = new WebSocket(SERVER_ADR);
 
                     cn.addEventListener('message', function(ev){
                         var reader = new FileReader();
