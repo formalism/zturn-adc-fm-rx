@@ -2,23 +2,22 @@ extern crate ws;
 extern crate libc;
 
 use ws::{listen, Handler, Result, Message, CloseCode, Handshake};
-use ws::Message::Text;
-use ws::Message::Binary;
+use ws::Message::{Text, Binary};
 use ws::util::Token;
 use std::fs::{OpenOptions, File};
 use std::os::unix::fs::OpenOptionsExt;
 use std::os::unix::io::{AsRawFd};
+use std::f64;
 use std::io;
-use std::io::{Write, Read, Cursor};
+use std::io::{Write, Read};
 use std::ptr::{self, read_volatile, write_volatile};
 use std::thread;
-use std::sync::mpsc::channel;
-use std::sync::mpsc::{Sender, Receiver};
+use std::sync::mpsc::{Sender, Receiver, channel};
 use std::sync::Arc;
 use std::slice;
 use std::vec::Vec;
-use std::mem;
 use std::boxed::Box;
+use std::str::FromStr;
 
 struct Server {
     out: ws::Sender,
@@ -32,6 +31,7 @@ const MEM_SIZE : libc::size_t = 512*MB;
 const MEM_OFFSET : libc::off_t = 512*MB as libc::off_t;
 const ZERO_OFFSET : libc::off_t = 0;
 const PAGE_SIZE : libc::size_t = 4096;
+const SAMPLE_RATE : f32 = 40e+6;
 
 // https://qiita.com/hukatama024e/items/1edd5c58ed68b5264d40
 
@@ -47,7 +47,7 @@ fn memmap() -> io::Result<*mut u32> {
                             MEM_SIZE, libc::PROT_READ | libc::PROT_WRITE,
                             libc::MAP_SHARED,
                             mem_file.as_raw_fd(),
-                            MEM_OFFSET);
+                            MEM_OFFSET);        // second 512MB of the total of 1GB of DDR memory
         if ptr == libc::MAP_FAILED {
             Err(io::Error::last_os_error())
         }
@@ -58,24 +58,39 @@ fn memmap() -> io::Result<*mut u32> {
     }
 }
 
-fn uiomap() -> (*mut u32, File) {
+fn uiomap(id : u32) -> (*mut u32, File) {
     let uio_file = OpenOptions::new()
                     .read(true)
                     .write(true)
                     .custom_flags(libc::O_SYNC)
-                    .open("/dev/uio0")
-                    .expect("can't open /dev/uio0");
+                    .open(format!("/dev/uio{}", id))
+                    .expect("can't open /dev/uio");
     unsafe {
         let ptr = libc::mmap(ptr::null_mut(),
                             PAGE_SIZE, libc::PROT_READ | libc::PROT_WRITE,
                             libc::MAP_SHARED,
                             uio_file.as_raw_fd(),
-                            ZERO_OFFSET);        // second 512MB of the total of 1GB of DDR memory
+                            ZERO_OFFSET);
         if ptr == libc::MAP_FAILED {
             panic!("{}", io::Error::last_os_error())
         }
         (ptr as *mut u32, uio_file)
     }    
+}
+
+fn init_dds_frequency(freq : f32) -> () {
+    let (uio_ptr, mut uio_file) = uiomap(1);
+    let ratio = f64::from(freq / SAMPLE_RATE);
+    for i in 0..400 {
+        let s = (f64::from(i as i32) * f64::consts::PI*2.0*ratio).sin() * f64::from(1<<12);
+        let c = (f64::from(i as i32) * f64::consts::PI*2.0*ratio).cos() * f64::from(1<<12);
+        let si = s as i32;
+        let ci = c as i32;
+        let sc = (si<<16) | (ci & 0xFFFF);
+        unsafe {
+            write_volatile(uio_ptr.offset(i), sc as u32);
+        }
+    }
 }
 
 fn set_axi_dma_reg(reg_adr : *mut u32, size : u32, offset : u32) {
@@ -120,7 +135,7 @@ impl Handler for Server {
         println!("on_open");
         Ok(())
     }
-    fn on_timeout(&mut self, event: Token) -> Result<()> {
+    fn on_timeout(&mut self, _event: Token) -> Result<()> {
         println!("on_timeout");
         Ok(())
     }
@@ -128,11 +143,13 @@ impl Handler for Server {
 //        println!("on_message");
         match msg {
             Text(t) => {
-                println!("{}", t);
+                let freq = f32::from_str(&t).unwrap();
+                println!("{}", freq);
+                init_dds_frequency(freq * 1e+6);
                 let vec: Vec<u8> = vec![0; 1024];
                 self.out.send(vec)
             },
-            Binary(v) => {
+            Binary(_v) => {
                 let adr = self.rx.recv().unwrap();
 //                println!("send Binary at address {}", adr);
 //                mem::forget(adr);
@@ -154,7 +171,7 @@ impl Handler for Server {
 fn main() {
    println!("Hello, world!");
    let mapped_ptr : *mut u32 = memmap().expect("failed mmap");
-   let (uio_ptr, mut uio_file) = uiomap();
+   let (uio_ptr, mut uio_file) = uiomap(0);
    let one : [u8; 4] = [1, 0, 0, 0];
 
    let (tx_web, rx_cap) = channel();
