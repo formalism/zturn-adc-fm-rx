@@ -1,0 +1,8 @@
+[package]
+name = "ws-rust"
+version = "0.1.0"
+authors = ["Tomoyuki Ueda <tueda@imagetech.co.jp>"]
+
+[dependencies]
+ws = "*"
+libc = "0.2"
